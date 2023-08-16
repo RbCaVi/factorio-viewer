@@ -11,30 +11,30 @@ movekey=function(d1,d2,i){
   }
 };
 
-fixrecipe=function(recipe,root=True){
+normalizerecipe=function(recipe,root=True){
   var recipe=clone(recipe);
   if('normal' in recipe){
-    recipe['normal']=fixrecipe(recipe['normal'],False);
+    recipe['normal']=normalizerecipe(recipe['normal'],False);
     if('expensive' not in recipe){
       return recipe;
     }
   }
     if('expensive' in recipe){
-        recipe['expensive']=fixrecipe(recipe['expensive'],False);
+        recipe['expensive']=normalizerecipe(recipe['expensive'],False);
         if('normal' not in recipe||!recipe['normal']){
             recipe['normal']=recipe['expensive'];
             delete recipe['expensive'];
         }
         return recipe
     }
-    recipe['ingredients']=recipe['ingredients'].map(fixingredient);
+    recipe['ingredients']=recipe['ingredients'].map(normalizeingredient);
     if('result' in recipe&&!('results' in recipe)){
         if(!('result_count' in recipe)){
             recipe['result_count']=1;
         }
         recipe['results']=[[recipe['result'],recipe['result_count']]];
     }
-    recipe['results']=recipe['results'].map(fixresult);
+    recipe['results']=recipe['results'].map(normalizeresult);
     recipe['energy_required']=recipe.get('energy_required',0.5);
     if(!root){
         return recipe;
@@ -64,7 +64,7 @@ fixrecipe=function(recipe,root=True){
     return recipe;
 }
 
-fixingredient=function(ingredient){
+normalizeingredient=function(ingredient){
     if(Array.isArray(ingredient)){
         return {
             'type':'item',
@@ -75,7 +75,7 @@ fixingredient=function(ingredient){
     return ingredient;
 }
 
-fixresult=function(result){
+normalizeresult=function(result){
     if(Array.isArray(result)){
         result={'type':'item','name':result[0],'amount':result[1]};
     }
@@ -91,16 +91,16 @@ fixresult=function(result){
     return result;
 }
 
-fixtech=function(tech,root=True){
+normalizetech=function(tech,root=True){
     var tech=clone(tech);
     if('normal' in tech){
-        tech['normal']=fixtech(tech['normal'],False);
+        tech['normal']=normalizetech(tech['normal'],False);
         if(!('expensive' in tech)){
             return tech;
         }
     }
     if('expensive' in tech){
-        tech['expensive']=fixtech(tech['expensive'],False);
+        tech['expensive']=normalizetech(tech['expensive'],False);
         if('normal' not in tech||!tech['normal']){
             tech['normal']=tech['expensive'];
             delete tech['expensive'];
@@ -110,7 +110,7 @@ fixtech=function(tech,root=True){
     if(!root){
         return tech;
     }
-    tech['unit']['ingredients']=tech['unit']['ingredients'].map(fixingredient);
+    tech['unit']['ingredients']=tech['unit']['ingredients'].map(normalizeingredient);
     tech['normal']={};
     movekey(tech,tech['normal'],'upgrade');
     movekey(tech,tech['normal'],'enabled');
@@ -123,3 +123,5 @@ fixtech=function(tech,root=True){
     movekey(tech,tech['normal'],'effects');
     return tech;
 }
+
+export {normalizerecipe,normalizetech};
