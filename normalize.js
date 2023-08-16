@@ -1,14 +1,13 @@
-import copy
 import {clone} from 'util.js';
 
-movekey=function(d1,d2,i){
+function movekey(d1,d2,i){
   if(i in d1){
     d2[i]=d1[i];
     delete d1[i];
   }
 };
 
-normalizerecipe=function(recipe,root=True){
+function normalizerecipe(recipe,root=True){
   var recipe=clone(recipe);
   if('normal' in recipe){
     recipe['normal']=normalizerecipe(recipe['normal'],False);
@@ -61,7 +60,7 @@ normalizerecipe=function(recipe,root=True){
     return recipe;
 }
 
-normalizeingredient=function(ingredient){
+function normalizeingredient(ingredient){
     if(Array.isArray(ingredient)){
         return {
             'type':'item',
@@ -72,7 +71,7 @@ normalizeingredient=function(ingredient){
     return ingredient;
 }
 
-normalizeresult=function(result){
+function normalizeresult(result){
     if(Array.isArray(result)){
         result={'type':'item','name':result[0],'amount':result[1]};
     }
@@ -88,7 +87,7 @@ normalizeresult=function(result){
     return result;
 }
 
-normalizetech=function(tech,root=True){
+function normalizetech(tech,root=True){
     var tech=clone(tech);
     if('normal' in tech){
         tech['normal']=normalizetech(tech['normal'],False);
