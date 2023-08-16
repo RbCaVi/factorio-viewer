@@ -8,7 +8,7 @@ import locales as locale
 import copy
 
 clone=function(data){
-  return JSON.parse(JSON.stringify(data));
+    return JSON.parse(JSON.stringify(data));
 };
 
 categories={
@@ -71,21 +71,31 @@ function unique(value, index, array){
     return array.indexOf(value) === index;
 }
 
-def reorder(l):
+function reorder(l):
     var newl=[];
-    for(var i of l)
+    for(var i of l){
         i=i.replace('-grounded','');
-        if(i.includes('telescope'))
+        if(i.includes('telescope')){
             i='se-space-telescope';
-        if(i.includes('character'))
+        }
+        if(i.includes('character')){
             i='character';
-        if(!order.includes(i))
+        }
+        if(!order.includes(i)){
             console.log('unordered',i);
+        }
         newl.push(i);
+    }
     newl.sort((a,b)=>order.indexOf(b)-order.indexOf(a));
     return newl.filter(unique);
 
 postfixes=['','2','3','4','5'];
+
+class Infobox{
+    constructor(){
+        
+    }
+}
 
 def numtostr(n):
     s=n.toString();
