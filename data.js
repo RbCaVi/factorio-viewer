@@ -1,4 +1,6 @@
 import {normalizerecipe,normalizetech} from 'normalize.js';
+import {processrecipe,processtech} from 'process.js';
+
 class Data{
   constructor(data,locale){
     if(typeof data=='string'){
@@ -14,6 +16,90 @@ class Data{
     }
     for(key in this.data['technology']){
       this.data[key]=normalizetech(data[key]);
+    }
+    this.pdata={};
+    for(key in this.data['recipe']){
+      this.pdata[key]=processrecipe(data[key]);
+    }
+    for(key in this.data['technology']){
+      this.pdata[key]=processtech(data[key]);
+    }
+
+    var getdifficulties=()=>util.difficulty.reduce((a,b)=> (a[b]={},a),{})
+    this.uses=getdifficulties();
+    this.produces=getdifficulties();
+
+    for(var recipe of this.pdata['recipe'].values()){
+      for(var x of util.difficulty){
+        if(!x in recipe){
+          continue;
+        }
+        for(var ing of recipe[x]['ingredients']){
+          if(!ing[0] in this.uses[x]){
+             this.uses[x][ing[0]]=[];
+          }
+          this.uses[x][ing[0]].push(recipe['name']);
+        }
+        for(var res in recipe[x]['results']){
+          if(!res[0] in this.produces[x]){
+            this.produces[x][res[0]]=[];
+          }
+          this.produces[x][res[0]].push(recipe['name']);
+        }
+      }
+    }
+
+    this.prereqs=getdifficulties();
+    this.postreqs=getdifficulties();
+    this.unlocks=getdifficulties();
+    this.unlockedby=getdifficulties();
+
+    for(var tech of this.pdata['technology'].values()){
+      for(var x of util.difficulty){
+        if(!x in tech){
+          continue;
+        }
+        for(var l of [this.prereqs,this.postreqs,this.unlocks,this.unlockedby]){
+          if(!tech['name'] in l[x]){
+            l[x][tech['name']]=[];
+          }
+        }
+        for(var prereq of tech[x]['prerequisites']){
+          if(!prereq in this.postreqs[x]){
+            this.postreqs[x][prereq]=[];
+          }
+          this.postreqs[x][prereq].push(tech['name']);
+          if(!tech['name'] in this.prereqs[x]){
+            this.prereqs[x][tech['name']]=[];
+          }
+          this.prereqs[x][tech['name']].push(prereq);
+        }
+        for(var effect of tech[x]['effects']){
+          if(!tech['name'] in this.unlocks[x]){
+            this.unlocks[x][tech['name']]=[];
+          }
+          this.unlocks[x][tech['name']].push(effect);
+          if(!effect in this.unlockedby[x]){
+            this.unlockedby[x][effect]=[];
+          }
+          this.unlockedby[x][effect].push(tech['name']);
+        }
+      }
+    }
+    
+    this.ccats={};
+    this.madein={};
+    
+    for(var ctype of craftertypes){
+      for(var crafter of data.data[ctype].values()){
+        this.ccats[crafter]=data.data[ctype][crafter]['crafting_categories'];
+        for(var ccat of data.data[ctype][crafter]['crafting_categories']){
+          if(!ccat in this.madein){
+            this.madein[ccat]=[];
+          }
+          this.madein[ccat].push(crafter);
+        }
+      }
     }
   }
 
