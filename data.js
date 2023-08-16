@@ -232,6 +232,22 @@ class FactorioData{
     namedesc[0]+=pf;
     return namedesc;
   }
+
+  getitemtype(item){
+    for(var itype of ['fluid']+util.itemtypes){
+      if(item in this.data[itype]){
+        return itype;
+      }
+    }
+  }
+
+  getitem(item){
+    for(var itype of ['fluid'].concat(util.itemtypes)){
+      if(item in this.data[itype]){
+        return this.data[itype][item];
+      }
+    }
+  }
 }
 
 export FactorioData;
