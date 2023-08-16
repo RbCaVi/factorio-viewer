@@ -5,14 +5,6 @@ craftertypes=[
   'furnace'
 ];
 
-getitemtype=function(item){
-  for(var itype of ['fluid']+util.itemtypes){
-    if(item in data.data[itype]){
-      return itype;
-    }
-  }
-}
-
 processrecipe=function(recipe){
   recipe=data.data['recipe'][recipe];
   newrecipe={};
