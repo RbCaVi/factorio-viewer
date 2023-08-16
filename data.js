@@ -1,7 +1,7 @@
 import {normalizerecipe,normalizetech} from 'normalize.js';
 import {processrecipe,processtech} from 'process.js';
 
-class Data{
+class FactorioData{
   constructor(data,locale){
     if(typeof data=='string'){
       data=JSON.parse(data);
@@ -233,3 +233,5 @@ class Data{
     return namedesc;
   }
 }
+
+export FactorioData;
