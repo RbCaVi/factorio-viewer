@@ -1,15 +1,4 @@
-import os
-
-import process
-import data
-import util
-import locales as locale
-
-import copy
-
-clone=function(data){
-    return JSON.parse(JSON.stringify(data));
-};
+import {util,clone} from 'util.js';
 
 categories={
     'logistics':'Logistics',
@@ -71,7 +60,7 @@ function unique(value, index, array){
     return array.indexOf(value) === index;
 }
 
-function reorder(l):
+function reorder(l){
     var newl=[];
     for(var i of l){
         i=i.replace('-grounded','');
@@ -88,148 +77,141 @@ function reorder(l):
     }
     newl.sort((a,b)=>order.indexOf(b)-order.indexOf(a));
     return newl.filter(unique);
+}
 
 postfixes=['','2','3','4','5'];
 
+function numtostr(n){
+    s=n.toString();
+    if(s.startsWith('0')){
+        s=s.slice(1);
+    }
+    return s;
+}
+
 class Infobox{
-    constructor(){
-        
+    constructor(data){
+        this.data=data;
+        this.info=null;
+    }
+
+    addtech(tech){
+        util.pj(tech)
+        if(this.info==null){
+            this.info={};
+        }else{
+            throw Error('already set');
+        }
+        var n=data.pdata['technology'][tech];
+        this.info['allows']=this.data.postreqs['normal'][tech].map(tech=>this.data.techlocale(tech)[1]).filter(unique);
+        this.info['effects']=locale.recipename,this.data.unlocks['normal'][tech].map(tech=>this.data.recipelocale(tech)[1]);
+        this.info['required-technologies']this.data.prereqs['normal'][tech].map(tech=>this.data.techlocale(tech)[1]).filter(unique);
+        this.info['cost-multiplier']=n['normal']['count'];
+        if('expensive' in this.info){
+            this.info['expensive-cost-multiplier']=n['expensive']['count'];
+        }
+        this.info['cost']=n['normal']['packs'].map(pack=>this.data.itemlocale(pack[0],data.data)[0]+','+numtostr(pack[1])).join(' + ');
+    }
+
+    additem(item){
+        if(this.info==null){
+            this.info={'producers':[]};
+        }
+        var proto=process.getitem(item);
+        this.info['category']=categories[data.data['item-subgroup'][proto['subgroup']]['group']];
+        this.info['internal-name']=item;
+        this.info['stack-size']=''+proto['stack_size'];
+        this.info['consumers']=this.data.uses['normal'][item]??[].map(this.data.recipename);
+    }
+
+    addfluid(fluid,group){
+        if(this.info==null){
+            this.info={'producers':[]};
+        }
+        var proto=process.getitem(fluid);
+        console.info(proto);
+        this.info['category']=group;
+        this.info['internal-name']=fluid;
+    }
+
+    towikirecipe(recipe){
+        if(this.info==null){
+            this.info={'producers':[]};
+        }
+        if type(recipe)==list or type(recipe)==tuple:
+            for x in recipe:
+                this.info=towikirecipe(x,replace)
+            return this.info
+        var postfix;
+        for(var i=0;i<postfixes.length;i++){
+            postfix=postfixes[i]
+            props=['recipe','total-raw','expensive-recipe','expensive-total-raw']
+            c=false
+            for(prop of props){
+                if(prop+postfix in this.info){
+                    c=true;
+                    break;
+                }
+            }
+            if(!c){
+                break;
+            }
+        }
+        var n=data.pdata['recipe'][recipe];
+        this.info['producers']+=this.data.madein[n['category']];
+        for(x of util.difficulty){
+            if(!x in n){
+                continue;
+            }
+            prefix=diff_prefixes[x];
+            recipeparts=[[['time',n[x]['time'],'time']].concat(n[x]['ingredients']),n[x]['results']];
+            info[prefix+'recipe'+postfix]=recipeparts;
+        }
+        techs=this.data.unlockedby['normal'][recipe]??[];
+        this.info['required-technologies']=this.info['required-technologies']??[].concat(techs.map(this.data.techname))
+        this.info['required-technologies']=sorted(set(this.info['required-technologies']))
+    }
+
+    setconsumers(consumers){
+        info['consumers']=consumers.map(this.data.recipename);
+        return info;
+    }
+
+    toinfobox(info){
+        for(postfix of postfixes){
+            for(x of util.difficulty){
+                prefix=diff_prefixes[x]
+                if(!prefix+'recipe'+postfix in info){
+                    continue;
+                }
+                r=info[prefix+'recipe'+postfix];
+                ings=r[0].map(ing=>this.data.itemlocale(ing[0])[0]+','+numtostr(ing[1]))
+                ress=r[1].map(res=>this.data.itemlocale(res[0])[0]+','+numtostr(res[1]))
+                recipestr=ings+' > '+ress
+                info[prefix+'recipe'+postfix]=recipestr
+            }
+        }
+        if('producers' in info){
+            console.info(info['producers']);
+            info['producers']=reorder(info['producers']).filter(unique).map(this.data.entityname).join(' + ');
+        }
+        s='{{Infobox SE';
+        for(key in info){
+            s+='\n|';
+            s+=key;
+            s+=' = ';
+            console.info('converting key',key,info);
+            val=info[key];
+            if(typeof val!='number'){
+                val=''+val;
+            }else if(Array.isArray(val)){
+                val=v.join(' + ');
+            }
+            s+=val;
+        }
+        s+='\n}}';
+        return s;
     }
 }
 
-def numtostr(n):
-    s=n.toString();
-    if s.startsWith('0'):
-        s=s[1:]
-    return s
-
-process.init()
-data.init()
-
-defaultrinfo={'producers':[]}
-defaulttinfo={}
-
-def towikitech(tech,info=None):
-    util.pj(tech)
-    if info is None:
-        info=copy.deepcopy(defaulttinfo)
-    else:
-        info=copy.deepcopy(info)
-    n=data.pdata['technology'][tech]
-    info['allows']=[*set(map(locale.techname,process.postreqs['normal'][tech]))]
-    info['effects']=[*map(locale.recipename,process.unlocks['normal'][tech])]
-    info['required-technologies']=[*map(locale.techname,process.prereqs['normal'][tech])]
-    info['cost-multiplier']=n['normal']['count']
-    if 'expensive' in info:
-        info['expensive-cost-multiplier']=n['expensive']['count']
-    info['cost']=' + '.join([
-        	   locale.itemlocale(pack[0],data.data)[0]+','+numtostr(pack[1])
-        	   for pack in
-        	   n['normal']['packs']
-        ])
-    return info
-
-def towikiitem(item,info=None):
-    if info is None:
-        info=copy.deepcopy(defaultrinfo)
-    else:
-        info=copy.deepcopy(info)
-    proto=process.getitem(item)
-    info['category']=categories[data.data['item-subgroup'][proto['subgroup']]['group']]
-    info['internal-name']=item
-    info['stack-size']=str(proto['stack_size'])
-    info['consumers']=[*map(locale.recipename,process.uses['normal'].get(item,[]))]
-    return info
-
-def towikifluid(fluid,group,info=None):
-    if info is None:
-        info=copy.deepcopy(defaultrinfo)
-    else:
-        info=copy.deepcopy(info)
-    proto=process.getitem(fluid)
-    util.pj(proto)
-    info['category']=group
-    info['internal-name']=fluid
-    return info
-
-def towikirecipe(recipe,info=None,replace=None):
-    if info is None:
-        info=copy.deepcopy(defaultrinfo)
-    else:
-        info=copy.deepcopy(info)
-    if type(recipe)==list or type(recipe)==tuple:
-        for x in recipe:
-            info=towikirecipe(x,info,replace)
-        return info
-    if not replace:
-        for i,postfix in enumerate(postfixes):
-            props=['recipe','total-raw','expensive-recipe','expensive-total-raw']
-            c=False
-            for prop in props:
-                if prop+postfix in info:
-                    c=True
-                    break
-            if not c:
-                break
-    elif type(replace)==int:
-        postfix=postfixes[replace]
-    else:
-        postfix=replace
-    n=data.pdata['recipe'][recipe]
-    info['producers']+=process.madein[n['category']]
-    for x in util.difficulty:
-        if x not in n:
-            continue
-        prefix=diff_prefixes[x]
-        ings=' + '.join([
-        	   locale.itemlocale(ing[0],data.data)[0]+','+numtostr(ing[1])
-        	   for ing in
-        	   [['time',n[x]['time'],'time']]+n[x]['ingredients']
-        ])
-        ress=' + '.join([
-        	   locale.itemlocale(res[0],data.data)[0]+','+numtostr(res[1])
-        	   for res in
-        	   n[x]['results']
-        ])
-        recipestr=ings+' > '+ress
-        info[prefix+'recipe'+postfix]=recipestr
-    util.debug(recipe)
-    techs=process.unlockedby['normal'].get(recipe,[])
-    info['required-technologies']=info.get('required-technologies',[])+[*map(locale.techname,techs)]
-    info['required-technologies']=sorted(set(info['required-technologies']))
-    return info
-
-def addconsumers(consumers,info):
-    if info is None:
-        info=copy.deepcopy(defaultrinfo)
-    else:
-        info=copy.deepcopy(info)
-    info['consumers']=[*map(locale.recipename,consumers)]
-    return info
-
-def toinfobox(info):
-    if 'producers' in info:
-      util.debug(info['producers'])
-      info['producers']=' + '.join(map(locale.entityname,reorder(set(info['producers']))))
-    s='{{Infobox SE'
-    for key in info:
-        s+='\n|'
-        s+=key
-        s+=' = '
-        util.debug(key,info)
-        val=info[key]
-        if type(val)==int:
-            val=str(val)
-        elif type(val)!=str:
-            util.debug(val)
-            val=' + '.join(val)
-        s+=val
-    s+='\n}}'
-    return s
-
-#util.pj([x for x in data.data['recipe'].keys() if 'simu' in x])
-
-#util.pj([*process.uses['expensive'].keys()])
-#a=towikirecipe('se-simulation-ab')
-#util.pj(a)
-#util.pj(towikirecipe(['se-simulation-ab','se-simulation-abm'],a))
+export {Infobox};
