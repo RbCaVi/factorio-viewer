@@ -1,11 +1,10 @@
-import sys,os
-import json
-
 function clone(data){
   return JSON.parse(JSON.stringify(data));
 };
 
-itemtypes=[
+util={};
+
+util.itemtypes=[
   'item',
   'ammo',
   'capsule',
@@ -28,19 +27,19 @@ itemtypes=[
   'repair-tool'
 ]
 
-equipmenttypes=[
-    'active-defense-equipment',
-    'battery-equipment',
-    'belt-immunity-equipment',
-    'energy-shield-equipment',
-    'generator-equipment',
-    'movement-bonus-equipment',
-    'night-vision-equipment',
-    'roboport-equipment',
-    'solar-panel-equipment',
+util.equipmenttypes=[
+  'active-defense-equipment',
+  'battery-equipment',
+  'belt-immunity-equipment',
+  'energy-shield-equipment',
+  'generator-equipment',
+  'movement-bonus-equipment',
+  'night-vision-equipment',
+  'roboport-equipment',
+  'solar-panel-equipment',
 ]
 
-entitytypes=[
+util.entitytypes=[
   "arrow",
   "artillery-flare",
   "artillery-projectile",
@@ -144,32 +143,6 @@ entitytypes=[
   "tile-ghost"
 ]
 
-root='/home/rvail/seauto/SEAutoUpdate/'
+util.difficulty=['normal','expensive']
 
-todofile='todo.txt'
-
-fdir='/home/rvail/Desktop/factorios/SEtest/'
-
-fexe=['wine',os.path.join(fdir,'bin/x64/factorio.exe')]
-
-difficulty=['normal','expensive']
-
-dodebug=False
-
-def pj(x):
-  if type(x) not in [int,float,dict,list,str] and x is not None:
-    x=list(x)
-  debug(json.dumps(x,indent=2))
-
-def debug(*a):
-  if dodebug:
-    print(*a)
-
-def trace(f):
-    def g(*args,**kwargs):
-        try:
-            return f(*args,**kwargs)
-        except Exception as e:
-            print(args,kwargs)
-            raise e
-    return g
+export {clone,util}
