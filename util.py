@@ -1,6 +1,10 @@
 import sys,os
 import json
 
+function clone(data){
+  return JSON.parse(JSON.stringify(data));
+};
+
 itemtypes=[
   'item',
   'ammo',

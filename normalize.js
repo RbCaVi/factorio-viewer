@@ -1,8 +1,5 @@
 import copy
-
-clone=function(data){
-  return JSON.parse(JSON.stringify(data));
-};
+import {clone} from 'util.js';
 
 movekey=function(d1,d2,i){
   if(i in d1){
