@@ -6,8 +6,7 @@ craftertypes=[
 ];
 
 processrecipe=function(recipe){
-  recipe=data.data['recipe'][recipe];
-  newrecipe={};
+  newrecipe={'type':'recipe'};
   for(var x of ['normal','expensive']){
     if(!x in recipe){
       continue;
@@ -16,15 +15,15 @@ processrecipe=function(recipe){
     for(var ingredient of recipe[x]['ingredients']){
       newrecipe[x]['ingredients'].push([
         ingredient['name'],
-        ingredient['amount'],
-        getitemtype(ingredient['name'])
+        ingredient['amount']//,
+        //getitemtype(ingredient['name'])
       ]);
     }
     for(var result in recipe[x]['results']){
       newrecipe[x]['results'].push([
         result['name'],
-        result['amount'],
-        getitemtype(result['name'])
+        result['amount']//,
+        //getitemtype(result['name'])
       ]);
     }
     newrecipe[x]['time']=recipe[x]['energy_required'];
@@ -35,8 +34,7 @@ processrecipe=function(recipe){
 }
 
 processtech=function(tech){
-  tech=data.data['technology'][tech];
-  newtech={};
+  newtech={'type':'tech'};
   newtech['name']=tech['name'];
   for(var x of util.difficulty){
     if(!x in tech){
