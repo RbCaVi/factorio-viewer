@@ -2,7 +2,37 @@ import json,requests,os,copy,requests.exceptions
 
 import util
 
+wiki='https://spaceexploration.miraheze.org';
+
 class WikiSession{
+    constructor(wiki){
+        this.wiki=wiki;
+        this.apiendpoint=this.wiki+'/w/api.php';
+    }
+
+    login(user,pass){
+        query={
+            "action":"query",
+            "meta":"tokens",
+            "type":"login"
+        }
+        params=new URLSearchParams(query);
+        return safeFetch(apiendpoint+'?'+params.toString()).then(
+            response=>response.json()
+        ).then(
+            data=>{
+                token=data['query']['tokens']['logintoken'];
+                query={
+                    "action":"login",
+                    "lgname":user,
+                    "lgpassword":pass,
+                    "lgtoken":token,
+                };
+                params=new URLSearchParams(query);
+                return safeFetch(apiendpoint+'?'+params.toString())
+            }
+        );
+    }
 }
 
 csrftoken=None
@@ -70,23 +100,6 @@ def getpages(pages):
     "titles":"|".join(pages)
   }
   return get(query)
-
-def login(name,pw):
-    query={
-        "action":"query",
-        "meta":"tokens",
-        "type":"login"
-    }
-    data=get(query)
-    token=data['query']['tokens']['logintoken']
-    query={
-        "action":"login",
-        "lgname":name,
-        "lgpassword":pw,
-        "lgtoken":token,
-    }
-    post(query)
-    print("Logged in as "+name)
 
 def getcsrftoken():
     global csrftoken
