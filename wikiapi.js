@@ -73,6 +73,16 @@ class WikiSession{
             return new Promise((resolve)=>this.csrftoken);
         }
     }
+
+    getpagehtml(page){
+        var query={
+            "action":"parse",
+            "prop":"text",
+            "rvslots":"main",
+            "page":page
+        };
+        return get(apiendpoint,query);
+    }
 }
 
 def getpages(pages):
