@@ -4,6 +4,37 @@ import util
 
 wiki='https://spaceexploration.miraheze.org';
 
+headers={'User-Agent':"SEAutoUpdate/1.0 (robert@robertvail.info)"}
+
+function safeFetch(...args) {
+    return fetch(...args).then(response => {
+        if (!response.ok) {
+            throw new Error("Failed with HTTP code " + response.status);
+        }
+        return response;
+    });
+}
+
+function get(url,params){
+    params=clone(params);
+    params.formatversion="2";
+    params.format="json";
+    params=new URLSearchParams(params);
+    return safeFetch(url+'?'+params.toString(),{'headers':headers}).then(
+        response=>response.json()
+    );
+}
+
+function post(url,params){
+    params=clone(params);
+    params.formatversion="2";
+    params.format="json";
+    params=new URLSearchParams(params);
+    return safeFetch(url+'?'+params.toString(),{'method':'post','headers':headers}).then(
+        response=>response.json()
+    );
+}
+
 class WikiSession{
     constructor(wiki){
         this.wiki=wiki;
@@ -11,80 +42,38 @@ class WikiSession{
     }
 
     login(user,pass){
-        query={
+        var query={
             "action":"query",
             "meta":"tokens",
             "type":"login"
         }
-        params=new URLSearchParams(query);
-        return safeFetch(apiendpoint+'?'+params.toString()).then(
-            response=>response.json()
-        ).then(
-            data=>{
-                token=data['query']['tokens']['logintoken'];
-                query={
-                    "action":"login",
-                    "lgname":user,
-                    "lgpassword":pass,
-                    "lgtoken":token,
-                };
-                params=new URLSearchParams(query);
-                return safeFetch(apiendpoint+'?'+params.toString())
+        return get(this.apiendpoint,query).then(data=>{
+            var token=data['query']['tokens']['logintoken'];
+            var query={
+                "action":"login",
+                "lgname":user,
+                "lgpassword":pass,
+                "lgtoken":token,
+            };
+            return post(this.apiendpoint,query);
+        });
+    }
+
+    getcsrftoken(){
+        if(this.csrftoken==undefined){
+            var query={
+                "action":"query",
+                "meta":"tokens"
             }
-        );
+            return get(this.apiendpoint,query).then(data=>{
+                this.csrftoken=data['query']['tokens']['csrftoken'];
+                return this.csrftoken;
+            });
+        }else{
+            return new Promise((resolve)=>this.csrftoken);
+        }
     }
 }
-
-csrftoken=None
-
-session=requests.Session()
-
-apiendpoint="https://spaceexploration.miraheze.org/w/api.php"
-headers={'User-Agent':"SEAutoUpdate/1.0 (robert@robertvail.info)"}
-
-with open('creds.txt') as f:
-    data=f.read()
-
-username=data.split('\n')[0]
-password=data.split('\n')[1]
-
-def get(query):
-    query=copy.deepcopy(query)
-    query.update({
-        "formatversion":"2",
-        "format":"json",
-    })
-    while True:
-        try:
-            response=session.get(url=apiendpoint,params=query,headers=headers)
-            data=response.json()
-            break
-        except requests.exceptions.JSONDecodeError as e:
-            print(f'error in GET{json.dumps(query)}, retrying')
-            continue
-        except requests.exceptions.ConnectionError as e:
-            print(f'error in GET{json.dumps(query)}, retrying')
-            continue
-    return data
-
-def post(query,**kwargs):
-    query=copy.deepcopy(query)
-    query.update({
-        "formatversion":"2",
-        "format":"json",
-    })
-    while True:
-        try:
-            response=session.post(url=apiendpoint,data=query,headers=headers,**kwargs)
-            data=response.json()
-            break
-        except requests.exceptions.JSONDecodeError as e:
-            print(f'error in POST{json.dumps(query)}, retrying')
-            continue
-        except requests.exceptions.ConnectionError as e:
-            print(f'error in POST{json.dumps(query)}, retrying')
-            continue
-    return data
 
 def getpages(pages):
   query={
@@ -100,20 +89,6 @@ def getpages(pages):
     "titles":"|".join(pages)
   }
   return get(query)
-
-def getcsrftoken():
-    global csrftoken
-    if csrftoken is None:
-        query={
-            "action":"query",
-            "meta":"tokens"
-        }
-        try:
-            data=get(query)
-            csrftoken=data['query']['tokens']['csrftoken']
-        except:
-            print("Error getting csrf token")
-    return csrftoken
 
 def gettimestamp():
     query={
