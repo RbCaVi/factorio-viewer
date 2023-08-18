@@ -204,21 +204,21 @@ class WikiSession{
             })
         });
     }
-}
 
-
-def pageexists(title):
-    params={
-      "formatversion":"2",
-      "format":"json",
-      'action':'query',
-      'prop':'revisions',
-      'titles':title,
-      'rvlimit':'5',
-      'rvprop':'ids',
+    pagesexist(pages){
+        params={
+          'action':'query',
+          'prop':'revisions',
+          'titles':pages.join("|"),
+          'rvlimit':'5',
+          'rvprop':'ids',
+        };
+        return get(apiendpoint,query).then(data=>{
+            var out={};
+            for(var page of data.query.pages){
+                out[page.title]=!('missing' in page);
+            }
+            return out;
+        });
     }
-    data=get(params)
-    util.pj(data)
-    return 'missing' not in data.query.pages[0]
-
-gettimestamp()
+}
