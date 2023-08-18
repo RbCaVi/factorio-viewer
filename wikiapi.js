@@ -107,35 +107,32 @@ class WikiSession{
            "action":"query",
            "curtimestamp":"true"
         };
-        return get(apiendpoint,query).then(data=>data["curtimestamp"]);
+        return get(apiendpoint,query).then(data=>data.curtimestamp);
+    }
+    
+    edit(title,content,start,base='now',summary='Automatically edited by SEAutoUpdate',minor=false,createonly=true){
+        return getcsrftoken().then(token=>{
+            query={
+               "action":"edit",
+               "title":title,
+               "text":content,
+               "summary":summary,
+               "basetimestamp":base,
+               "starttimestamp":start,
+               "token":token,
+               "bot":"true"
+            };
+            if(!minor){
+                query.notminor='true';
+            }
+            if(createonly){
+                query.createonly='true';
+            }
+            return post(query);
+        });
     }
 }
 
-
-
-
-def edit(title,content,start,base='now',summary='Automatically edited by SEAutoUpdate',minor=False,createonly=True):
-    token=getcsrftoken()
-    if not token:
-        print("edit failed: no token")
-        return
-    query={
-       "action":"edit",
-       "title":title,
-       "text":content,
-       "summary":summary,
-       "basetimestamp":base,
-       "starttimestamp":start,
-       "token":token,
-       "bot":"true",
-    }
-    if not minor:
-        query['notminor']='true'
-    if createonly:
-        query['createonly']='true'
-
-    data=post(query)
-    return data
 
 def read_chunks(file,size=1024):
     while True:
