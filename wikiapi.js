@@ -85,20 +85,25 @@ class WikiSession{
     }
 }
 
-def getpages(pages):
-  query={
-    "action":"query",
-    "prop":"revisions",
-    "rvprop":'|'.join([
-        "content",
-        #"ids",
-        "timestamp"
-    ]),
-    "rvslots":"main",
-    "curtimestamp":"true",
-    "titles":"|".join(pages)
-  }
-  return get(query)
+def getpageswikitext(pages):
+    query={
+        "action":"query",
+        "prop":"revisions",
+        "rvprop":'|'.join([
+            "content",
+            "timestamp"
+        ]),
+        "rvslots":"main",
+        "curtimestamp":"true",
+        "titles":"|".join(pages)
+    }
+    return get(apiendpoint,query).then(data=>{
+        var out={};
+        for(var page of data.query.pages){
+            out[page.title]=page.revisions[0].content;
+        }
+        return out;
+    });
 
 def gettimestamp():
     query={
@@ -211,13 +216,5 @@ def pageexists(title):
     data=get(params)
     util.pj(data)
     return 'missing' not in data['query']['pages'][0]
-
-#pj(getpages(['umbrella']))
-
-login(username,password)
-
-#file="/storage/emulated/0/Download/usb.jpg"
-
-#upload(file,'usb-data-card.jpg')
 
 gettimestamp()
