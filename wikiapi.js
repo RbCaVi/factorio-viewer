@@ -39,6 +39,17 @@ function post(url,params,body){
     );
 }
 
+function *read_chunks(blob,size){
+    var offset=0;
+    while(true){
+        data=blob.slice(offset,offset+size);
+        if(data.size==0){
+            break;
+        }
+        yield data;
+    }
+}
+
 class WikiSession{
     constructor(wiki){
         this.wiki=wiki;
@@ -195,17 +206,6 @@ class WikiSession{
     }
 }
 
-
-function *read_chunks(blob,size){
-    var offset=0;
-    while(true){
-        data=blob.slice(offset,offset+size);
-        if(data.size==0){
-            break;
-        }
-        yield data;
-    }
-}
 
 def pageexists(title):
     params={
