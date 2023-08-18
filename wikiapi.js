@@ -113,7 +113,7 @@ class WikiSession{
         };
         return get(apiendpoint,query).then(data=>data.curtimestamp);
     }
-    
+
     edit(title,content,start,base='now',summary='Automatically edited by SEAutoUpdate',minor=false,createonly=true){
         return getcsrftoken().then(token=>{
             query={
@@ -135,75 +135,77 @@ class WikiSession{
             return post(query);
         });
     }
+
+    upload(file,uploadname,comment='Uploaded by SEAutoUpdate',chunksize=16384){
+        //Send multiple post requests to upload a file in chunks using `stash` mode.
+        //Stash mode is used to build a file up in pieces and then commit it at the end
+        
+        size=file.size;
+        chunks = read_chunks(file,chunksize);
+        var {value:chunk} = next(chunks);
+        
+        return getcsrftoken().then(token=>{
+            // Parameters for the first chunk
+            var params = {
+                "action": "upload",
+                "stash": 1,
+                "filename": uploadname,
+                "filesize": size,
+                "offset": 0,
+                "token": token,
+                "ignorewarnings": 1
+            };
+            var index = 0;
+            var filedata=new FormData();
+            filedata.append('chunk',new File(chunk,index+'.jpg',{'type':'multipart/form-data'}))
+            var p=post(this.apiendpoint,params,filedata);
+
+            // Pass the filekey parameter for second and further chunks
+            for(var chunk of chunks){
+                index += 1;
+                p=p.then(data=>{
+                    var params = {
+                        "action": "upload",
+                        "stash": 1,
+                        "offset": data.upload.offset,
+                        "filename": uploadname,
+                        "filesize": size,
+                        "filekey": data.upload.filekey,
+                        "token": token,
+                        "ignorewarnings": 1
+                    };
+                    var filedata=new FormData();
+                    filedata.append('chunk',new File(chunk,index+'.jpg',{'type':'multipart/form-data'}))
+                    return post(this.apiendpoint,params,filedata);
+                });
+            }
+            return p.then(data=>{
+                // Final upload using the filekey to commit the upload out of the stash area
+                params = {
+                    "action": "upload",
+                    "filename": uploadname,
+                    "filekey": data.upload.filekey,
+                    "comment": comment,
+                    "token": token,
+                    "ignorewarnings":1
+                };
+                return post(this.apiendpoint,params);
+            })
+        });
+    }
 }
 
 
-def read_chunks(file,size=1024):
-    while True:
-        data=file.read(size)
-        if not data:
-            break
-        yield data
-
-def upload(filename,uploadname,comment='Uploaded by SEAutoUpdate',chunksize=16384):
-    """Send multiple post requests to upload a file in chunks using `stash` mode.
-    Stash mode is used to build a file up in pieces and then commit it at the end
-    """
-    
-    file=open(filename,'rb')
-    size=os.stat(filename).st_size
-    
-    token=getcsrftoken()
-    if not token:
-        print("upload failed: no token")
-
-    chunks = read_chunks(file,chunksize)
-    chunk = next(chunks)
-
-    # Parameters for the first chunk
-    params = {
-        "action": "upload",
-        "stash": 1,
-        "filename": uploadname,
-        "filesize": size,
-        "offset": 0,
-        "token": token,
-        "ignorewarnings": 1
-    }
-    index = 0
-    filedata = {'chunk':('{}.jpg'.format(index), chunk, 'multipart/form-data')}
-    index += 1
-    data=post(params, files=filedata)
-    util.pj(data)
-
-    # Pass the filekey parameter for second and further chunks
-    for chunk in chunks:
-        params = {
-            "action": "upload",
-            "stash": 1,
-            "offset": data["upload"]["offset"],
-            "filename": uploadname,
-            "filesize": size,
-            "filekey": data["upload"]["filekey"],
-            "token": token,
-            "ignorewarnings": 1
+function *read_chunks(blob,size){
+    var offset=0;
+    while(true){
+        data=blob.slice(offset,offset+size);
+        if(data.size==0){
+            break;
         }
-        filedata = {'chunk':('{}.jpg'.format(index), chunk, 'multipart/form-data')}
-        index += 1
-        data=post(params, files=filedata)
-        util.pj(data)
-
-    # Final upload using the filekey to commit the upload out of the stash area
-    params = {
-        "action": "upload",
-        "filename": uploadname,
-        "filekey": data["upload"]["filekey"],
-        "comment": comment,
-        "token": token,
-        "ignorewarnings":1
+        yield data;
     }
-    data=post(params)
-    util.pj(data)
+}
 
 def pageexists(title):
     params={
@@ -217,6 +219,6 @@ def pageexists(title):
     }
     data=get(params)
     util.pj(data)
-    return 'missing' not in data['query']['pages'][0]
+    return 'missing' not in data.query.pages[0]
 
 gettimestamp()
