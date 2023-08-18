@@ -92,7 +92,7 @@ class WikiSession{
             "rvslots":"main",
             "curtimestamp":"true",
             "titles":pages.join("|")
-        }
+        };
         return get(apiendpoint,query).then(data=>{
             var out={};
             for(var page of data.query.pages){
@@ -101,16 +101,18 @@ class WikiSession{
             return out;
         });
     }
+
+    gettimestamp(){
+        query={
+           "action":"query",
+           "curtimestamp":"true"
+        };
+        return get(apiendpoint,query).then(data=>data["curtimestamp"]);
+    }
 }
 
 
-def gettimestamp():
-    query={
-       "action":"query",
-       "curtimestamp":"true"
-    }
-    data=get(query)
-    return data["curtimestamp"]
+
 
 def edit(title,content,start,base='now',summary='Automatically edited by SEAutoUpdate',minor=False,createonly=True):
     token=getcsrftoken()
