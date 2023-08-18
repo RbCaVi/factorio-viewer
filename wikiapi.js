@@ -25,12 +25,16 @@ function get(url,params){
     );
 }
 
-function post(url,params){
+function post(url,params,body){
     params=clone(params);
     params.formatversion="2";
     params.format="json";
     params=new URLSearchParams(params);
-    return safeFetch(url+'?'+params.toString(),{'method':'post','headers':headers}).then(
+    var options={'method':'post','headers':headers};
+    if(body){
+        options.body=body;
+    }
+    return safeFetch(url+'?'+params.toString(),options).then(
         response=>response.json()
     );
 }
