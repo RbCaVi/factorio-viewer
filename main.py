@@ -50,7 +50,7 @@ def putitemonwiki(item,recipenames,consumers):
     uploadimage(idata,realname)
     
     if force or forcepage or not wikiapi.pageexists(realname):
-        info=towiki.towikiitem(item)
+        info=towiki.towikiitem(idata)
         info=towiki.towikirecipe(recipenames,info)
         info=towiki.addconsumers(consumers,info)
         if len(recipenames)==0:
@@ -78,7 +78,7 @@ def putfluidonwiki(fluid,group,recipenames,consumers):
     uploadimage(idata,realname)
     
     if force or forcepage or not wikiapi.pageexists(realname):
-        info=towiki.towikifluid(fluid,group)
+        info=towiki.towikifluid(idata,group)
         info=towiki.towikirecipe(recipenames,info)
         info=towiki.addconsumers(consumers,info)
         infobox=towiki.toinfobox(info)

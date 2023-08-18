@@ -91,6 +91,7 @@ function numtostr(n){
 
 class Infobox{
     constructor(data){
+        // data is the FactorioData object that this infobox gets its data from
         this.data=data;
         this.info=null;
     }
@@ -117,31 +118,24 @@ class Infobox{
         if(this.info==null){
             this.info={'producers':[]};
         }
-        var proto=process.getitem(item);
-        this.info['category']=categories[data.data['item-subgroup'][proto['subgroup']]['group']];
-        this.info['internal-name']=item;
-        this.info['stack-size']=''+proto['stack_size'];
-        this.info['consumers']=this.data.uses['normal'][item]??[].map(this.data.recipename);
+        this.info['category']=categories[data.data['item-subgroup'][item['subgroup']]['group']];
+        this.info['internal-name']=item.name;
+        this.info['stack-size']=''+item['stack_size'];
+        this.info['consumers']=this.data.uses['normal'][item.name]??[].map(this.data.recipename);
     }
 
     addfluid(fluid,group){
         if(this.info==null){
             this.info={'producers':[]};
         }
-        var proto=process.getitem(fluid);
-        console.info(proto);
         this.info['category']=group;
-        this.info['internal-name']=fluid;
+        this.info['internal-name']=fluid.name;
     }
 
     towikirecipe(recipe){
         if(this.info==null){
             this.info={'producers':[]};
         }
-        if type(recipe)==list or type(recipe)==tuple:
-            for x in recipe:
-                this.info=towikirecipe(x,replace)
-            return this.info
         var postfix;
         for(var i=0;i<postfixes.length;i++){
             postfix=postfixes[i]
