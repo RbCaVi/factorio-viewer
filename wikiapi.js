@@ -48,7 +48,7 @@ class WikiSession{
             "type":"login"
         }
         return get(this.apiendpoint,query).then(data=>{
-            var token=data['query']['tokens']['logintoken'];
+            var token=data.query.tokens.logintoken;
             var query={
                 "action":"login",
                 "lgname":user,
@@ -66,7 +66,7 @@ class WikiSession{
                 "meta":"tokens"
             }
             return get(this.apiendpoint,query).then(data=>{
-                this.csrftoken=data['query']['tokens']['csrftoken'];
+                this.csrftoken=data.query.tokens.csrftoken;
                 return this.csrftoken;
             });
         }else{
@@ -81,29 +81,28 @@ class WikiSession{
             "rvslots":"main",
             "page":page
         };
-        return get(apiendpoint,query);
+        return get(apiendpoint,query).then(data=>data.parse.text);
+    }
+
+    getpageswikitext(pages){
+        query={
+            "action":"query",
+            "prop":"revisions",
+            "rvprop":"content|timestamp",
+            "rvslots":"main",
+            "curtimestamp":"true",
+            "titles":pages.join("|")
+        }
+        return get(apiendpoint,query).then(data=>{
+            var out={};
+            for(var page of data.query.pages){
+                out[page.title]=page.revisions[0].content;
+            }
+            return out;
+        });
     }
 }
 
-def getpageswikitext(pages):
-    query={
-        "action":"query",
-        "prop":"revisions",
-        "rvprop":'|'.join([
-            "content",
-            "timestamp"
-        ]),
-        "rvslots":"main",
-        "curtimestamp":"true",
-        "titles":"|".join(pages)
-    }
-    return get(apiendpoint,query).then(data=>{
-        var out={};
-        for(var page of data.query.pages){
-            out[page.title]=page.revisions[0].content;
-        }
-        return out;
-    });
 
 def gettimestamp():
     query={
