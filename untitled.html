@@ -5,35 +5,6 @@
 	  // ps is {key:promise ...}
 	  // returns a Promise that resolves to {key:promise value}
 	  // will reject with any error
-	  /*return new Promise((resolve,reject)=>{
-	    var resolved={}
-	    var values={}
-	    for(var key in ps){
-	      resolved[key]=false;
-	    }
-	    for(var key in ps){
-	      ps[key].then(data=>{
-	        var allresolved=true;
-	        for(var rkey in resolved){
-	          if(key==rkey){
-	            continue;
-	          }
-	          if(resolved[rkey]){
-	            continue;
-	          }
-	          allresolved=false;
-	          break;
-	        }
-	        resolved[key]=true;
-	        values[key]=data;
-	        if(allresolved){
-	          resolve(values);
-	        }
-	      },err=>{
-	        reject(err);
-	      });
-	    }
-	  });*/
 	  var values={};
 	  return Object.entries(ps).map(([k,p])=>p.then(data=>{values[k]=data;})).reduce((p1,p2)=>p1.then(()=>p2)).then(()=>values);
 	}

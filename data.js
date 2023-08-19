@@ -105,6 +105,7 @@ class FactorioData{
   }
 
   #getnamedesc(thing,type,name){
+    var name,desc;
     if(!name){
       name=thing.name;
     }
@@ -133,7 +134,7 @@ class FactorioData{
       }
       var l=this.locale[s[0]];
       if(l==undefined){
-        throw Error(s[0]+' is not in the locale');
+        return null;throw Error(s[0]+' is not in the locale');
       }
       for(var i=1;i<s.length;i++){
         l=l.replace('__'+i+'__',this.#localizeraw(s[i]))
@@ -185,7 +186,7 @@ class FactorioData{
     if(item=='time'){
       return ['Time','Time'];
     }
-    for(var itype in util.itemtypes){
+    for(var itype of util.itemtypes){
       if(item in this.data[itype]){
         item=this.data[itype][item];
         console.info(item);
