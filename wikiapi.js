@@ -1,10 +1,4 @@
-import json,requests,os,copy,requests.exceptions
-
-import util
-
-wiki='https://spaceexploration.miraheze.org';
-
-headers={'User-Agent':"SEAutoUpdate/1.0 (robert@robertvail.info)"}
+var headers={'User-Agent':"SEAutoUpdate/1.0 (robert@robertvail.info)"}
 
 function safeFetch(...args) {
     return fetch(...args).then(response => {
@@ -222,3 +216,4 @@ class WikiSession{
         });
     }
 }
+export {WikiSession};

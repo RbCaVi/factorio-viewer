@@ -13,16 +13,16 @@ class FactorioData{
     this.data=data;
     this.locale=locale;
     for(key in this.data.recipe){
-      this.data[key]=normalizerecipe(data[key]);
+      this.data.recipe[key]=normalizerecipe(data.recipe[key]);
     }
     for(key in this.data.technology){
-      this.data[key]=normalizetech(data[key]);
+      this.data.technology[key]=normalizetech(data.technology[key]);
     }
     this.pdata={"recipe":{},"technology":{}};
-    for(key in this.data.recipe){
+    for(var key in this.data.recipe){
       this.pdata.recipe[key]=processrecipe(data.recipe[key]);
     }
-    for(key in this.data.technology){
+    for(var key in this.data.technology){
       this.pdata.technology[key]=processtech(data.technology[key]);
     }
 

@@ -1,6 +1,6 @@
-import {util,clone} from 'util.js';
+import {util,clone} from './util.js';
 
-categories={
+var categories={
     'logistics':'Logistics',
     'production':'Production',
     'resources':'Resources',
@@ -9,12 +9,12 @@ categories={
     'science':'Science',
 }
 
-diff_prefixes={
+var diff_prefixes={
 	   'normal':'',
 	   'expensive':'expensive-'
 }
 
-order=[
+var order=[
     'stone-furnace',
     'steel-furnace',
     'electric-furnace',
@@ -50,11 +50,9 @@ order=[
     'se-space-radiator-2',
     'se-space-hypercooler',
     'se-space-telescope',
-]
-[
     'character',
     'character-jetpack',
-]
+];
 
 function unique(value, index, array){
     return array.indexOf(value) === index;
@@ -79,7 +77,7 @@ function reorder(l){
     return newl.filter(unique);
 }
 
-postfixes=['','2','3','4','5'];
+var postfixes=['','2','3','4','5'];
 
 function numtostr(n){
     s=n.toString();
@@ -97,7 +95,6 @@ class Infobox{
     }
 
     addtech(tech){
-        util.pj(tech)
         if(this.info==null){
             this.info={};
         }else{
@@ -106,7 +103,7 @@ class Infobox{
         var n=data.pdata['technology'][tech];
         this.info['allows']=this.data.postreqs['normal'][tech].map(tech=>this.data.techlocale(tech)[1]).filter(unique);
         this.info['effects']=locale.recipename,this.data.unlocks['normal'][tech].map(tech=>this.data.recipelocale(tech)[1]);
-        this.info['required-technologies']this.data.prereqs['normal'][tech].map(tech=>this.data.techlocale(tech)[1]).filter(unique);
+        this.info['required-technologies']=this.data.prereqs['normal'][tech].map(tech=>this.data.techlocale(tech)[1]).filter(unique);
         this.info['cost-multiplier']=n['normal']['count'];
         if('expensive' in this.info){
             this.info['expensive-cost-multiplier']=n['expensive']['count'];
@@ -132,7 +129,7 @@ class Infobox{
         this.info['internal-name']=fluid.name;
     }
 
-    towikirecipe(recipe){
+    addrecipe(recipe){
         if(this.info==null){
             this.info={'producers':[]};
         }
@@ -172,30 +169,30 @@ class Infobox{
     }
 
     toString(){
-        for(postfix of postfixes){
-            for(x of util.difficulty){
-                prefix=diff_prefixes[x]
-                if(!prefix+'recipe'+postfix in this.info){
+        for(var postfix of postfixes){
+            for(var x of util.difficulty){
+                var prefix=diff_prefixes[x]
+                if(!(prefix+'recipe'+postfix in this.info)){
                     continue;
                 }
-                r=this.info[prefix+'recipe'+postfix];
-                ings=r[0].map(ing=>this.data.itemlocale(ing[0])[0]+','+numtostr(ing[1]))
-                ress=r[1].map(res=>this.data.itemlocale(res[0])[0]+','+numtostr(res[1]))
-                recipestr=ings+' > '+ress
+                var r=this.info[prefix+'recipe'+postfix];
+                var ings=r[0].map(ing=>this.data.itemlocale(ing[0])[0]+','+numtostr(ing[1]))
+                var ress=r[1].map(res=>this.data.itemlocale(res[0])[0]+','+numtostr(res[1]))
+                var recipestr=ings+' > '+ress
                 this.info[prefix+'recipe'+postfix]=recipestr
             }
         }
         if('producers' in this.info){
             console.info(this.info['producers']);
-            this.info['producers']=reorder(this.info['producers']).filter(unique).map(this.data.entityname).join(' + ');
+            this.info['producers']=reorder(this.info['producers']).filter(unique).map(e=>this.data.entitylocale(e)[0]).join(' + ');
         }
-        s='{{Infobox SE';
-        for(key in this.info){
+        var s='{{Infobox SE';
+        for(var key in this.info){
             s+='\n|';
             s+=key;
             s+=' = ';
             console.info('converting key',key,this.info);
-            val=this.info[key];
+            var val=this.info[key];
             if(typeof val!='number'){
                 val=''+val;
             }else if(Array.isArray(val)){

@@ -57,7 +57,7 @@ function fixcolor(col){
     }else{
         ['r','g','b','a'].map(x=>{color[x]=col[x]});
     }
-    if max(color.values())<=1:
+    if(Math.max(...Object.values(color))<=1)
         ['r','g','b','a'].map(x=>{color[x]*=255});
     return colorToString(['r','g','b','a'].map(i=>color[i]))
 }

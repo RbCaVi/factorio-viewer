@@ -7,16 +7,16 @@ function movekey(d1,d2,i){
   }
 };
 
-function normalizerecipe(recipe,root=True){
+function normalizerecipe(recipe,root=true){
   var recipe=clone(recipe);
   if('normal' in recipe){
-    recipe['normal']=normalizerecipe(recipe['normal'],False);
+    recipe['normal']=normalizerecipe(recipe['normal'],false);
     if(!('expensive' in recipe)){
       return recipe;
     }
   }
     if('expensive' in recipe){
-        recipe['expensive']=normalizerecipe(recipe['expensive'],False);
+        recipe['expensive']=normalizerecipe(recipe['expensive'],false);
         if(!('normal' in recipe)||!recipe['normal']){
             recipe['normal']=recipe['expensive'];
             delete recipe['expensive'];
