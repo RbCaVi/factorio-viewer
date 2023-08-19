@@ -2,7 +2,14 @@ function clone(data){
   return JSON.parse(JSON.stringify(data));
 };
 
-util={};
+const craftertypes=[
+  'character',
+  'assembling-machine',
+  'rocket-silo',
+  'furnace'
+];
+
+const util={};
 
 util.itemtypes=[
   'item',
@@ -145,4 +152,4 @@ util.entitytypes=[
 
 util.difficulty=['normal','expensive']
 
-export {clone,util}
+export {clone,util,craftertypes};

@@ -1,29 +1,22 @@
-craftertypes=[
-  'character',
-  'assembling-machine',
-  'rocket-silo',
-  'furnace'
-];
+import {craftertypes} from './util.js';
 
-processrecipe=function(recipe){
+function processrecipe(recipe){
   newrecipe={'type':'recipe'};
   for(var x of ['normal','expensive']){
-    if(!x in recipe){
+    if(!(x in recipe)){
       continue;
     }
     newrecipe[x]={'ingredients':[],'results':[]};
     for(var ingredient of recipe[x]['ingredients']){
       newrecipe[x]['ingredients'].push([
         ingredient['name'],
-        ingredient['amount']//,
-        //getitemtype(ingredient['name'])
+        ingredient['amount']
       ]);
     }
     for(var result in recipe[x]['results']){
       newrecipe[x]['results'].push([
         result['name'],
-        result['amount']//,
-        //getitemtype(result['name'])
+        result['amount']
       ]);
     }
     newrecipe[x]['time']=recipe[x]['energy_required'];
@@ -33,11 +26,11 @@ processrecipe=function(recipe){
   return newrecipe;
 }
 
-processtech=function(tech){
+function processtech(tech){
   newtech={'type':'tech'};
   newtech['name']=tech['name'];
   for(var x of util.difficulty){
-    if(!x in tech){
+    if(!(x in tech)){
       continue;
     }
     newtech[x]={'packs':[]};

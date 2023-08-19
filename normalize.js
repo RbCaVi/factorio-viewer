@@ -1,4 +1,4 @@
-import {clone} from 'util.js';
+import {clone} from './util.js';
 
 function movekey(d1,d2,i){
   if(i in d1){
@@ -11,13 +11,13 @@ function normalizerecipe(recipe,root=True){
   var recipe=clone(recipe);
   if('normal' in recipe){
     recipe['normal']=normalizerecipe(recipe['normal'],False);
-    if('expensive' not in recipe){
+    if(!('expensive' in recipe)){
       return recipe;
     }
   }
     if('expensive' in recipe){
         recipe['expensive']=normalizerecipe(recipe['expensive'],False);
-        if('normal' not in recipe||!recipe['normal']){
+        if(!('normal' in recipe)||!recipe['normal']){
             recipe['normal']=recipe['expensive'];
             delete recipe['expensive'];
         }
@@ -75,13 +75,13 @@ function normalizeresult(result){
     if(Array.isArray(result)){
         result={'type':'item','name':result[0],'amount':result[1]};
     }
-    if('amount_min' in result and !('amount' in result)){
-        if('probability' not in result){
+    if(('amount_min' in result)&&!('amount' in result)){
+        if(!('probability' in result)){
             result['probability']=1;
         }
         result['amount']=result['probability']*(0.5*(result['amount_min']+result['amount_max']));
     }
-    if('type' not in result){
+    if(!('type' in result)){
         result['type']='item';
     }
     return result;
@@ -97,7 +97,7 @@ function normalizetech(tech,root=True){
     }
     if('expensive' in tech){
         tech['expensive']=normalizetech(tech['expensive'],False);
-        if('normal' not in tech||!tech['normal']){
+        if(!('normal' in tech)||!tech['normal']){
             tech['normal']=tech['expensive'];
             delete tech['expensive'];
         }

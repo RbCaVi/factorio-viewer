@@ -1,6 +1,6 @@
-import {clone} from 'util.js';
-import {normalizerecipe,normalizetech} from 'normalize.js';
-import {processrecipe,processtech} from 'process.js';
+import {craftertypes,clone,util} from './util.js';
+import {normalizerecipe,normalizetech} from './normalize.js';
+import {processrecipe,processtech} from './process.js';
 
 class FactorioData{
   constructor(data,locale){
@@ -8,44 +8,44 @@ class FactorioData{
       data=JSON.parse(data);
     }
     if(typeof locale=='string'){
-      data=JSON.parse(locale);
+      locale=JSON.parse(locale);
     }
     this.data=data;
     this.locale=locale;
-    for(key in this.data['recipe']){
+    for(key in this.data.recipe){
       this.data[key]=normalizerecipe(data[key]);
     }
-    for(key in this.data['technology']){
+    for(key in this.data.technology){
       this.data[key]=normalizetech(data[key]);
     }
-    this.pdata={};
-    for(key in this.data['recipe']){
-      this.pdata[key]=processrecipe(data[key]);
+    this.pdata={"recipe":{},"technology":{}};
+    for(key in this.data.recipe){
+      this.pdata.recipe[key]=processrecipe(data.recipe[key]);
     }
-    for(key in this.data['technology']){
-      this.pdata[key]=processtech(data[key]);
+    for(key in this.data.technology){
+      this.pdata.technology[key]=processtech(data.technology[key]);
     }
 
     var getdifficulties=()=>util.difficulty.reduce((a,b)=> (a[b]={},a),{})
     this.uses=getdifficulties();
     this.produces=getdifficulties();
 
-    for(var recipe of this.pdata['recipe'].values()){
+    for(var recipe of Object.values(this.pdata.recipe)){
       for(var x of util.difficulty){
-        if(!x in recipe){
+        if(!(x in recipe)){
           continue;
         }
-        for(var ing of recipe[x]['ingredients']){
-          if(!ing[0] in this.uses[x]){
+        for(var ing of recipe[x].ingredients){
+          if(!(ing[0] in this.uses[x])){
              this.uses[x][ing[0]]=[];
           }
-          this.uses[x][ing[0]].push(recipe['name']);
+          this.uses[x][ing[0]].push(recipe.name);
         }
-        for(var res in recipe[x]['results']){
-          if(!res[0] in this.produces[x]){
+        for(var res in recipe[x].results){
+          if(!(res[0] in this.produces[x])){
             this.produces[x][res[0]]=[];
           }
-          this.produces[x][res[0]].push(recipe['name']);
+          this.produces[x][res[0]].push(recipe.name);
         }
       }
     }
@@ -55,35 +55,35 @@ class FactorioData{
     this.unlocks=getdifficulties();
     this.unlockedby=getdifficulties();
 
-    for(var tech of this.pdata['technology'].values()){
+    for(var tech of Object.values(this.pdata.technology)){
       for(var x of util.difficulty){
-        if(!x in tech){
+        if(!(x in tech)){
           continue;
         }
         for(var l of [this.prereqs,this.postreqs,this.unlocks,this.unlockedby]){
-          if(!tech['name'] in l[x]){
-            l[x][tech['name']]=[];
+          if(!(tech.name in l[x])){
+            l[x][tech.name]=[];
           }
         }
-        for(var prereq of tech[x]['prerequisites']){
-          if(!prereq in this.postreqs[x]){
+        for(var prereq of tech[x].prerequisites){
+          if(!(prereq in this.postreqs[x])){
             this.postreqs[x][prereq]=[];
           }
-          this.postreqs[x][prereq].push(tech['name']);
-          if(!tech['name'] in this.prereqs[x]){
-            this.prereqs[x][tech['name']]=[];
+          this.postreqs[x][prereq].push(tech.name);
+          if(!(tech.name in this.prereqs[x])){
+            this.prereqs[x][tech.name]=[];
           }
-          this.prereqs[x][tech['name']].push(prereq);
+          this.prereqs[x][tech.name].push(prereq);
         }
-        for(var effect of tech[x]['effects']){
-          if(!tech['name'] in this.unlocks[x]){
-            this.unlocks[x][tech['name']]=[];
+        for(var effect of tech[x].effects){
+          if(!(tech.name in this.unlocks[x])){
+            this.unlocks[x][tech.name]=[];
           }
-          this.unlocks[x][tech['name']].push(effect);
-          if(!effect in this.unlockedby[x]){
+          this.unlocks[x][tech.name].push(effect);
+          if(!(effect in this.unlockedby[x])){
             this.unlockedby[x][effect]=[];
           }
-          this.unlockedby[x][effect].push(tech['name']);
+          this.unlockedby[x][effect].push(tech.name);
         }
       }
     }
@@ -92,10 +92,10 @@ class FactorioData{
     this.madein={};
     
     for(var ctype of craftertypes){
-      for(var crafter of data.data[ctype].values()){
-        this.ccats[crafter]=data.data[ctype][crafter]['crafting_categories'];
-        for(var ccat of data.data[ctype][crafter]['crafting_categories']){
-          if(!ccat in this.madein){
+      for(var crafter of Object.keys(this.data[ctype])){
+        this.ccats[crafter]=this.data[ctype][crafter].crafting_categories;
+        for(var ccat of this.data[ctype][crafter].crafting_categories){
+          if(!(ccat in this.madein)){
             this.madein[ccat]=[];
           }
           this.madein[ccat].push(crafter);
@@ -106,15 +106,15 @@ class FactorioData{
 
   #getnamedesc(thing,type,name){
     if(!name){
-      name=thing['name'];
+      name=thing.name;
     }
     if('localised_description' in thing){
-      desc=this.localize(thing['localised_description']);
+      desc=this.localize(thing.localised_description);
     }else{
       desc=this.localize(type+'-description.'+name);
     }
     if('localised_name' in thing){
-      name=this.localize(thing['localised_name']);
+      name=this.localize(thing.localised_name);
     }else{
       name=this.localize(type+'-name.'+name);
     }
@@ -148,7 +148,7 @@ class FactorioData{
   }
   
   recipelocale(recipe){
-    recipe=this.data['recipe'][recipe]
+    recipe=this.data.recipe[recipe]
     return this.#recipelocaleraw(recipe)
   }
 
@@ -156,17 +156,17 @@ class FactorioData{
     console.info(recipe)
     if('normal' in recipe){
       recipe=clone(recipe);
-      Object.assign(recipe,recipe['normal']);
-      delete recipe['normal'];
+      Object.assign(recipe,recipe.normal);
+      delete recipe.normal;
     }
-    if(recipe['results'].length==1){
-      if('main_product' in recipe&&recipe['main_product']==''){
+    if(recipe.results.length==1){
+      if('main_product' in recipe&&recipe.main_product==''){
         return this.#getnamedesc(recipe,'recipe');
       }
-      return this.itemlocale(recipe['results'][0]['name']);
+      return this.itemlocale(recipe.results[0].name);
     }
-    if('main_product' in recipe&&recipe['main_product']!=''){
-      return this.itemlocale(recipe['main_product']);
+    if('main_product' in recipe&&recipe.main_product!=''){
+      return this.itemlocale(recipe.main_product);
     }
     return this.#getnamedesc(recipe,'recipe');
   }
@@ -191,10 +191,10 @@ class FactorioData{
         console.info(item);
         name,desc=this.#getnamedesc(item,'item');
         if('placed_as_equipment_result' in item){
-          namedesc=this.equipmentlocale(item['placed_as_equipment_result']);
+          namedesc=this.equipmentlocale(item.placed_as_equipment_result);
         }
         if(!name){
-          return this.entitylocale(item['place_result']);
+          return this.entitylocale(item.place_result);
         }
         namedesc[1]||='';
         return namedesc;
@@ -204,7 +204,7 @@ class FactorioData{
   }
 
   fluidlocale(fluid){
-    var fluid=this.data['fluid'][fluid];
+    var fluid=this.data.fluid[fluid];
     return this.#getnamedesc(fluid,'fluid');
   }
 
@@ -220,7 +220,7 @@ class FactorioData{
 
   techlocale(tech){
     var name=tech;
-    tech=this.data['technology'][tech];
+    tech=this.data.technology[tech];
     var n=+name.slice(name.lastIndexOf('-')+1);
     var pf;
     if(isNaN(n)||n==Infinity||n==-Infinity){
@@ -251,4 +251,4 @@ class FactorioData{
   }
 }
 
-export FactorioData;
+export {FactorioData};

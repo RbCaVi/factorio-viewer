@@ -171,31 +171,31 @@ class Infobox{
         return info;
     }
 
-    toinfobox(info){
+    toString(){
         for(postfix of postfixes){
             for(x of util.difficulty){
                 prefix=diff_prefixes[x]
-                if(!prefix+'recipe'+postfix in info){
+                if(!prefix+'recipe'+postfix in this.info){
                     continue;
                 }
-                r=info[prefix+'recipe'+postfix];
+                r=this.info[prefix+'recipe'+postfix];
                 ings=r[0].map(ing=>this.data.itemlocale(ing[0])[0]+','+numtostr(ing[1]))
                 ress=r[1].map(res=>this.data.itemlocale(res[0])[0]+','+numtostr(res[1]))
                 recipestr=ings+' > '+ress
-                info[prefix+'recipe'+postfix]=recipestr
+                this.info[prefix+'recipe'+postfix]=recipestr
             }
         }
-        if('producers' in info){
-            console.info(info['producers']);
-            info['producers']=reorder(info['producers']).filter(unique).map(this.data.entityname).join(' + ');
+        if('producers' in this.info){
+            console.info(this.info['producers']);
+            this.info['producers']=reorder(this.info['producers']).filter(unique).map(this.data.entityname).join(' + ');
         }
         s='{{Infobox SE';
-        for(key in info){
+        for(key in this.info){
             s+='\n|';
             s+=key;
             s+=' = ';
-            console.info('converting key',key,info);
-            val=info[key];
+            console.info('converting key',key,this.info);
+            val=this.info[key];
             if(typeof val!='number'){
                 val=''+val;
             }else if(Array.isArray(val)){
