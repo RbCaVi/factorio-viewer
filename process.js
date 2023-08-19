@@ -1,7 +1,7 @@
 import {craftertypes} from './util.js';
 
 function processrecipe(recipe){
-  newrecipe={'type':'recipe'};
+  var newrecipe={'type':'recipe'};
   for(var x of ['normal','expensive']){
     if(!(x in recipe)){
       continue;
@@ -27,7 +27,7 @@ function processrecipe(recipe){
 }
 
 function processtech(tech){
-  newtech={'type':'tech'};
+  var newtech={'type':'tech'};
   newtech['name']=tech['name'];
   for(var x of util.difficulty){
     if(!(x in tech)){
@@ -46,10 +46,13 @@ function processtech(tech){
       newtech[x]['count']=tech[x]['unit']['count_formula'];
     }
     newtech[x]['time']=tech[x]['unit']['time'];
-    newtech[x]['prerequisites']=tech[x]['prerequisites']??{};
-    effects=tech[x]['effects']??{};
+    newtech[x]['prerequisites']=tech[x]['prerequisites']??[];
+    if(!Array.isArray(newtech[x]['prerequisites'])){
+      newtech[x]['prerequisites']=Object.values(newtech[x]['prerequisites']);
+    }
+    var effects=tech[x]['effects']??{};
     if(!Array.isArray(effects)){
-      effects=effects.values();
+      effects=Object.values(effects);
     }
     newtech[x]['effects']=effects.filter(e=>e['type']=='unlock-recipe').map(e=>e['recipe']);
   }

@@ -31,7 +31,7 @@ function normalizerecipe(recipe,root=true){
         recipe['results']=[[recipe['result'],recipe['result_count']]];
     }
     recipe['results']=recipe['results'].map(normalizeresult);
-    recipe['energy_required']=recipe.get('energy_required',0.5);
+    recipe['energy_required']=recipe['energy_required']??0.5;
     if(!root){
         return recipe;
     }
@@ -87,16 +87,16 @@ function normalizeresult(result){
     return result;
 }
 
-function normalizetech(tech,root=True){
+function normalizetech(tech,root=true){
     var tech=clone(tech);
     if('normal' in tech){
-        tech['normal']=normalizetech(tech['normal'],False);
+        tech['normal']=normalizetech(tech['normal'],false);
         if(!('expensive' in tech)){
             return tech;
         }
     }
     if('expensive' in tech){
-        tech['expensive']=normalizetech(tech['expensive'],False);
+        tech['expensive']=normalizetech(tech['expensive'],false);
         if(!('normal' in tech)||!tech['normal']){
             tech['normal']=tech['expensive'];
             delete tech['expensive'];
