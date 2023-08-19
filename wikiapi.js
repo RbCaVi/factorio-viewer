@@ -1,3 +1,5 @@
+import {clone} from './util.js';
+
 var headers={'User-Agent':"SEAutoUpdate/1.0 (robert@robertvail.info)"}
 
 function safeFetch(...args) {
@@ -13,6 +15,7 @@ function get(url,params){
     params=clone(params);
     params.formatversion="2";
     params.format="json";
+    params.origin="*";
     params=new URLSearchParams(params);
     return safeFetch(url+'?'+params.toString(),{'headers':headers}).then(
         response=>response.json()
@@ -23,6 +26,7 @@ function post(url,params,body){
     params=clone(params);
     params.formatversion="2";
     params.format="json";
+    params.origin="*";
     params=new URLSearchParams(params);
     var options={'method':'post','headers':headers};
     if(body){
@@ -90,11 +94,11 @@ class WikiSession{
             "rvslots":"main",
             "page":page
         };
-        return get(apiendpoint,query).then(data=>data.parse.text);
+        return get(this.apiendpoint,query).then(data=>data.parse.text);
     }
 
     getpageswikitext(pages){
-        query={
+        var query={
             "action":"query",
             "prop":"revisions",
             "rvprop":"content|timestamp",
@@ -102,10 +106,11 @@ class WikiSession{
             "curtimestamp":"true",
             "titles":pages.join("|")
         };
-        return get(apiendpoint,query).then(data=>{
+        return get(this.apiendpoint,query).then(data=>{
+            console.log(data);
             var out={};
             for(var page of data.query.pages){
-                out[page.title]=page.revisions[0].content;
+                out[page.title]=page.revisions[0].slots.main.content;
             }
             return out;
         });
@@ -116,7 +121,7 @@ class WikiSession{
            "action":"query",
            "curtimestamp":"true"
         };
-        return get(apiendpoint,query).then(data=>data.curtimestamp);
+        return get(this.apiendpoint,query).then(data=>data.curtimestamp);
     }
 
     edit(title,content,start,base='now',summary='Automatically edited by SEAutoUpdate',minor=false,createonly=true){
@@ -137,7 +142,7 @@ class WikiSession{
             if(createonly){
                 query.createonly='true';
             }
-            return post(query);
+            return post(this.apiendpoint,query);
         });
     }
 
@@ -207,7 +212,7 @@ class WikiSession{
           'rvlimit':'5',
           'rvprop':'ids',
         };
-        return get(apiendpoint,query).then(data=>{
+        return get(this.apiendpoint,query).then(data=>{
             var out={};
             for(var page of data.query.pages){
                 out[page.title]=!('missing' in page);
