@@ -7,6 +7,7 @@ function getimage(data,size) {
     return makeicon(data,size).then(iconcanvas=>{
         var img=document.createElement('img');
         img.src=iconcanvas.toDataURL('image/png');
+        document.querySelector('body').append(img);
         return img;
     });
 }
@@ -109,31 +110,21 @@ function makeicon(data,size=32){
             parts.push(packPromise(geticon(iconname,iconsize),icondata).then(([icon,idata])=>{
                 var icanvas=getCanvas(icon.width,icon.height);
                 var ctx=icanvas.getContext("2d");
-                ctx.globalCompositeOperation='copy';
-                ctx.fillStyle='#000000';
-                ctx.fillRect(0,0,icanvas.width,icanvas.height);
-                ctx.globalCompositeOperation='source-over';
-                ctx.drawImage(icon,0,0);
-                return [icanvas,idata];
-            }).then(([icanvas,idata])=>{
-                var img1=document.createElement('img');
-                img1.src=icanvas.toDataURL('image/png');
                 if('tint' in idata){
                     var tint=fixcolor(idata.tint);
                     console.log(tint);
                     var ctx=icanvas.getContext("2d");
-                    ctx.globalCompositeOperation='multiply';
                     ctx.fillStyle=tint;
                     ctx.fillRect(0,0,icanvas.width,icanvas.height);
-                    ctx.globalCompositeOperation='source-over';
                 }
-                var img2=document.createElement('img');
-                img2.src=icanvas.toDataURL('image/png');
-                document.querySelector('body').append(img1,img2);
+                ctx.globalCompositeOperation='multiply';
+                ctx.drawImage(icon,0,0);
+                ctx.globalCompositeOperation='destination-atop';
+                ctx.drawImage(icon,0,0);
+                ctx.globalCompositeOperation='source-over';
                 return [icanvas,idata];
             }));
         }
-        console.log(parts);
         return new Promise((resolve,reject)=>
             promiseChain(parts,([icanvas,idata])=>{
                 var iconsize=idata.icon_size??baseiconsize;
