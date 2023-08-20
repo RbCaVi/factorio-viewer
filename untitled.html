@@ -29,4 +29,13 @@
 	window.mtowiki=mtowiki;
 	window.mutil=mutil;
 	window.mwikiapi=mwikiapi;
+</script>
+<script>
+	function getimage(data,size) {
+    return mimage.makeicon(data,size).then(iconcanvas=>{
+      var img=document.createElement('img');
+      img.src=iconcanvas.toDataURL('image/png');
+      document.querySelector('body').append(img);
+    });
+	}
 </script></body></html>

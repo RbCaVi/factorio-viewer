@@ -3,14 +3,6 @@
 //        makeicon(data,size).then(iconcanvas=>wikiapi.upload(iconcanvas.toBlob(),uploadname+'.png'));
 //    }
 //}
-function getimage(data,size) {
-    return makeicon(data,size).then(iconcanvas=>{
-        var img=document.createElement('img');
-        img.src=iconcanvas.toDataURL('image/png');
-        document.querySelector('body').append(img);
-        return img;
-    });
-}
 
 function getOffscreenCanvas(width,height){
     return new OffscreenCanvas(width,height);
@@ -71,7 +63,6 @@ function packPromise(p,data){
 }
 
 function colorToString(color){
-    console.log(color);
     return color.reduce((s, channel) => {
         var c = Math.floor(channel).toString(16);
         c = (c.length==1?'0':'')+c;
@@ -93,7 +84,6 @@ function fixcolor(col){
     if(Math.max(...Object.values(color))<=1){
         ['r','g','b','a'].map(x=>{color[x]*=255});
     }
-    console.log(color);
     return colorToString(['r','g','b','a'].map(i=>color[i]))
 }
 
@@ -112,7 +102,6 @@ function makeicon(data,size=32){
                 var ctx=icanvas.getContext("2d");
                 if('tint' in idata){
                     var tint=fixcolor(idata.tint);
-                    console.log(tint);
                     var ctx=icanvas.getContext("2d");
                     ctx.fillStyle=tint;
                     ctx.fillRect(0,0,icanvas.width,icanvas.height);
@@ -131,6 +120,7 @@ function makeicon(data,size=32){
                 var shift=[0,0];
                 if('shift' in idata){
                     shift=idata.shift;
+                    shift=shift.map(x=>x*(size/baseiconsize)*2);// i don't know why 2
                 }
                 var isize=iconsize*(size/baseiconsize);
                 if('scale' in idata){
@@ -162,4 +152,4 @@ function geticon(name,size){
     });
 }
 
-export {makeicon,getimage};
+export {makeicon};
