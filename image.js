@@ -3,6 +3,31 @@
 //        makeicon(data,size).then(iconcanvas=>wikiapi.upload(iconcanvas.toBlob(),uploadname+'.png'));
 //    }
 //}
+function getimage(data,size) {
+    return makeicon(data,size).then(iconcanvas=>{
+        var img=document.createElement('img');
+        img.src=iconcanvas.toDataURL('image/png');
+        return img;
+    });
+}
+
+function getOffscreenCanvas(width,height){
+    return new OffscreenCanvas(width,height);
+}
+
+function getDOMCanvas(width,height){
+    var canvas=document.createElement('canvas');
+    canvas.width=width;
+    canvas.height=height;
+    return canvas;
+}
+let getCanvas;
+
+if(typeof OffscreenCanvas=='function'){
+    getCanvas=getOffscreenCanvas
+}else{
+    getCanvas=getDOMCanvas
+}
 
 function loadImage(src){
     return new Promise((resolve,reject)=>{
@@ -39,10 +64,17 @@ function promiseChain(ps,f){
         f(data);
     });
 }
+function packPromise(p,data){
+    // puts a data value into a promise
+    return p.then(pdata=>[pdata,data]);
+}
 
 function colorToString(color){
+    console.log(color);
     return color.reduce((s, channel) => {
-        s += channel.toString(16);
+        var c = Math.floor(channel).toString(16);
+        c = (c.length==1?'0':'')+c;
+        s += c;
         return s;
     }, '#')
 }
@@ -57,8 +89,10 @@ function fixcolor(col){
     }else{
         ['r','g','b','a'].map(x=>{color[x]=col[x]});
     }
-    if(Math.max(...Object.values(color))<=1)
+    if(Math.max(...Object.values(color))<=1){
         ['r','g','b','a'].map(x=>{color[x]*=255});
+    }
+    console.log(color);
     return colorToString(['r','g','b','a'].map(i=>color[i]))
 }
 
@@ -67,40 +101,52 @@ function makeicon(data,size=32){
     if('icons' in data){
         var icons=data.icons;
         var baseiconsize=data.icon_size;
-        var canvas=OffscreenCanvas(size,size);
+        var canvas=getCanvas(size,size);
         var parts=[];
         for(var icondata of icons){
             var iconname=icondata.icon;
             var iconsize=icondata.icon_size??baseiconsize;
-            parts.push(geticon(iconname,iconsize).then(icon=>{
-                var icanvas=OffscreenCanvas(icon.width,icon.height);
+            parts.push(packPromise(geticon(iconname,iconsize),icondata).then(([icon,idata])=>{
+                var icanvas=getCanvas(icon.width,icon.height);
                 var ctx=icanvas.getContext("2d");
+                ctx.globalCompositeOperation='copy';
+                ctx.fillStyle='#000000';
+                ctx.fillRect(0,0,icanvas.width,icanvas.height);
+                ctx.globalCompositeOperation='source-over';
                 ctx.drawImage(icon,0,0);
-                return icanvas;
-            }).then(icanvas=>{
-                if('tint' in icondata){
-                    var tint=fixcolor(icondata.tint);
+                return [icanvas,idata];
+            }).then(([icanvas,idata])=>{
+                var img1=document.createElement('img');
+                img1.src=icanvas.toDataURL('image/png');
+                if('tint' in idata){
+                    var tint=fixcolor(idata.tint);
+                    console.log(tint);
                     var ctx=icanvas.getContext("2d");
                     ctx.globalCompositeOperation='multiply';
-                    ctx.fillStyle=color;
-                    ctx.rect(0,0,icanvas.width,icanvas.height);
+                    ctx.fillStyle=tint;
+                    ctx.fillRect(0,0,icanvas.width,icanvas.height);
                     ctx.globalCompositeOperation='source-over';
                 }
-                return icanvas;
+                var img2=document.createElement('img');
+                img2.src=icanvas.toDataURL('image/png');
+                document.querySelector('body').append(img1,img2);
+                return [icanvas,idata];
             }));
         }
+        console.log(parts);
         return new Promise((resolve,reject)=>
-            promiseChain(parts,icanvas=>{
+            promiseChain(parts,([icanvas,idata])=>{
+                var iconsize=idata.icon_size??baseiconsize;
                 var shift=[0,0];
-                if('shift' in icondata){
-                    shift=icondata.shift;
+                if('shift' in idata){
+                    shift=idata.shift;
                 }
-                var isize=size;
-                if('scale' in icondata){
-                    isize=iconsize*icondata.scale*(baseiconsize/size);
+                var isize=iconsize*(size/baseiconsize);
+                if('scale' in idata){
+                    isize*=idata.scale;
                 }
                 var ctx=canvas.getContext("2d");
-                ctx.drawImage(icanvas,(icanvas.width-isize)/2-shift[0],(icanvas.height-isize)/2-shift[1],isize,isize);
+                ctx.drawImage(icanvas,(canvas.width-isize)/2+shift[0],(canvas.height-isize)/2+shift[1],isize,isize);
             }).then(()=>
                 resolve(canvas),
             (error)=>
@@ -108,7 +154,7 @@ function makeicon(data,size=32){
             )
         )
     }else{
-        var canvas=OffscreenCanvas(size,size);
+        var canvas=getCanvas(size,size);
         iconname=data.icon;
         iconsize=data.icon_size;
         return geticon(iconname,iconsize).then(icon=>{
@@ -120,9 +166,9 @@ function makeicon(data,size=32){
 }
 
 function geticon(name,size){
-    return loadImage(name).then(image=>{
+    return loadImage('mods/'+name).then(image=>{
         return createImageBitmap(image,0,0,size,size);
     });
 }
 
-export {makeicon};
+export {makeicon,getimage};
