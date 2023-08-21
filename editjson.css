@@ -1,0 +1,31 @@
+ /* Style the buttons that are used to open and close the accordion panel */
+.jsonaccordion {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  text-align: left;
+  border: none;
+  outline: none;
+  transition: 0.4s;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.jsonaccordionactive, .jsonaccordion:hover {
+  background-color: #ccc;
+}
+
+.jsonaccordion:before {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  font-size: 13px;
+  color: #777;
+  float: left;
+  margin-right: 5px;
+}
+
+.jsonaccordionactive:before {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+.jsonaccordion + * {
+    padding-left: 3em;
+}

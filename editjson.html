@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="editjson.css">
+        <script src="editjson.js" type='module'></script>
+        <script type='module'>
+            import * as medit from "./editjson.js";
+            window.getjson=medit.getjson;
+            window.fromjson=medit.fromjson;
+
+            window.onload=function() {
+                var body=document.querySelector('body>div');
+                var xhr = new XMLHttpRequest();
+                xhr.onload = function() {
+                    var div=fromjson(xhr.response);
+                    body.append(div);
+                    div.classList.add('jsonroot');
+                };
+                xhr.open('GET','data.json');
+                xhr.responseType='json';
+                xhr.send();
+            }
+        </script>
+    </head>
+    <body>
+        <div></div>
+        <button onclick="document.querySelector('#jsonout').textContent=getjson(document.querySelector('div.jsonroot'),0)"></button>
+        <div id='jsonout'></div>
+    </body>
+</html>
