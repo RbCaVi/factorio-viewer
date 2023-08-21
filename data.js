@@ -158,6 +158,9 @@ class FactorioData{
   }
   
   recipelocale(recipe){
+    if(recipe in this.#localecache.recipe){
+      return this.#localecache.recipe[recipe];
+    }
     var namedesc;
     recipe=this.data.recipe[recipe];
     namedesc=this.#recipelocaleraw(recipe);
@@ -185,6 +188,9 @@ class FactorioData{
   }
 
   entitylocale(entity){
+    if(entity in this.#localecache.entity){
+      return this.#localecache.entity[entity];
+    }
     var namedesc;
     for(var etype of util.entitytypes){
       if(entity in this.data[etype]){
@@ -200,13 +206,21 @@ class FactorioData{
   }
 
   itemlocale(item){
+    if(item in this.#localecache.item){
+      return this.#localecache.item[item];
+    }
     var namedesc;
     if(item=='time'){
       namedesc=['Time','Time'];
       this.#localecache.item[item]=namedesc;
       return namedesc;
     }
-    item=getitem(item);
+    item=this.getitem(item);
+    if(item.type=='fluid'){
+      namedesc=this.fluidlocale(item.name);
+      this.#localecache.item[item]=namedesc;
+      return namedesc;
+    }
     namedesc=this.#getnamedesc(item,'item');
     if('placed_as_equipment_result' in item){
       namedesc=this.equipmentlocale(item.placed_as_equipment_result);
@@ -220,6 +234,9 @@ class FactorioData{
   }
 
   fluidlocale(fluid){
+    if(fluid in this.#localecache.fluid){
+      return this.#localecache.fluid[fluid];
+    }
     var namedesc;
     var fluid=this.data.fluid[fluid];
     namedesc=this.#getnamedesc(fluid,'fluid');
@@ -228,12 +245,15 @@ class FactorioData{
   }
 
   equipmentlocale(equipment){
+    if(equipment in this.#localecache.equipment){
+      return this.#localecache.equipment[equipment];
+    }
     var namedesc;
     for(var etype of util.equipmenttypes){
       if(equipment in this.data[etype]){
         equipment=this.data[etype][equipment];
         namedesc=this.#getnamedesc(equipment,'equipment');
-        this.#localecache.item[item]=namedesc;
+        this.#localecache.equipment[equipment]=namedesc;
         return namedesc;
       }
     }
@@ -243,6 +263,9 @@ class FactorioData{
   }
 
   techlocale(tech){
+    if(tech in this.#localecache.tech){
+      return this.#localecache.tech[tech];
+    }
     var name=tech;
     tech=this.data.technology[tech];
     var n=+name.slice(name.lastIndexOf('-')+1);
