@@ -59,4 +59,12 @@ function processtech(tech){
   return newtech;
 }
 
+function processitem(item){
+  return item;
+}
+
+function processentity(entity){
+  return entity;
+}
+
 export {processrecipe,processtech};
