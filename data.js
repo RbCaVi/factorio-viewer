@@ -164,7 +164,7 @@ class FactorioData{
     var namedesc;
     recipe=this.data.recipe[recipe];
     namedesc=this.#recipelocaleraw(recipe);
-    this.#localecache.recipe[recipe]=namedesc;
+    this.#localecache.recipe[recipe.name]=namedesc;
     return namedesc;
   }
 
@@ -196,12 +196,12 @@ class FactorioData{
       if(entity in this.data[etype]){
         entity=this.data[etype][entity];
         namedesc=this.#getnamedesc(entity,'entity');
-        this.#localecache.item[item]=namedesc;
+        this.#localecache.item[item.name]=namedesc;
         return namedesc;
       }
     }
     namedesc=[null,null];
-    this.#localecache.entity[entity]=namedesc;
+    this.#localecache.entity[entity.name]=namedesc;
     return namedesc;
   }
 
@@ -212,13 +212,13 @@ class FactorioData{
     var namedesc;
     if(item=='time'){
       namedesc=['Time','Time'];
-      this.#localecache.item[item]=namedesc;
+      this.#localecache.item[item.name]=namedesc;
       return namedesc;
     }
     item=this.getitem(item);
     if(item.type=='fluid'){
       namedesc=this.fluidlocale(item.name);
-      this.#localecache.item[item]=namedesc;
+      this.#localecache.item[item.name]=namedesc;
       return namedesc;
     }
     namedesc=this.#getnamedesc(item,'item');
@@ -229,7 +229,7 @@ class FactorioData{
       namedesc=this.entitylocale(item.place_result);
     }
     namedesc[1]=namedesc[1]??'';
-    this.#localecache.item[item]=namedesc;
+    this.#localecache.item[item.name]=namedesc;
     return namedesc;
   }
 
@@ -240,7 +240,7 @@ class FactorioData{
     var namedesc;
     var fluid=this.data.fluid[fluid];
     namedesc=this.#getnamedesc(fluid,'fluid');
-    this.#localecache.fluid[fluid]=namedesc;
+    this.#localecache.fluid[fluid.name]=namedesc;
     return namedesc;
   }
 
@@ -253,12 +253,12 @@ class FactorioData{
       if(equipment in this.data[etype]){
         equipment=this.data[etype][equipment];
         namedesc=this.#getnamedesc(equipment,'equipment');
-        this.#localecache.equipment[equipment]=namedesc;
+        this.#localecache.equipment[equipment.name]=namedesc;
         return namedesc;
       }
     }
     namedesc=[null,null];
-    this.#localecache.equipment[equipment]=namedesc;
+    this.#localecache.equipment[equipment.name]=namedesc;
     return namedesc;
   }
 
@@ -278,7 +278,7 @@ class FactorioData{
     }
     var namedesc=this.#getnamedesc(tech,'technology',name);
     namedesc[0]+=pf;
-    this.#localecache.tech[tech]=namedesc;
+    this.#localecache.tech[tech.name]=namedesc;
     return namedesc;
   }
 
@@ -296,6 +296,10 @@ class FactorioData{
         return this.data[itype][item];
       }
     }
+  }
+
+  getlcache(){
+    return this.#localecache;
   }
 }
 
