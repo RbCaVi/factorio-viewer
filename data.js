@@ -3,6 +3,15 @@ import {normalizerecipe,normalizetech} from './normalize.js';
 import {processrecipe,processtech} from './process.js';
 
 class FactorioData{
+  #localecache={
+    'recipe':{},
+    'entity':{},
+    'item':{},
+    'fluid':{},
+    'equipment':{},
+    'tech':{}
+  };
+
   constructor(data,locale){
     if(typeof data=='string'){
       data=JSON.parse(data);
@@ -134,14 +143,14 @@ class FactorioData{
       }
       var l=this.locale[s[0]];
       if(l==undefined){
-        return null;throw Error(s[0]+' is not in the locale');
+        return null;
       }
       for(var i=1;i<s.length;i++){
-        l=l.replace('__'+i+'__',this.#localizeraw(s[i]))
+        l=l.replace('__'+i+'__',this.#localizeraw(s[i]));
       }
-      return l
+      return l;
     }
-    return this.locale.get(s)
+    return this.locale.get(s);
   }
 
   localize(s){
@@ -149,8 +158,11 @@ class FactorioData{
   }
   
   recipelocale(recipe){
-    recipe=this.data.recipe[recipe]
-    return this.#recipelocaleraw(recipe)
+    var namedesc;
+    recipe=this.data.recipe[recipe];
+    namedesc=this.#recipelocaleraw(recipe);
+    this.#localecache.recipe[recipe]=namedesc;
+    return namedesc;
   }
 
   #recipelocaleraw(recipe){
@@ -173,50 +185,61 @@ class FactorioData{
   }
 
   entitylocale(entity){
+    var namedesc;
     for(var etype of util.entitytypes){
       if(entity in this.data[etype]){
         entity=this.data[etype][entity];
-        return this.#getnamedesc(entity,'entity');
-      }
-    }
-    return [null,null];
-  }
-
-  itemlocale(item){
-    if(item=='time'){
-      return ['Time','Time'];
-    }
-    for(var itype of util.itemtypes){
-      if(item in this.data[itype]){
-        item=this.data[itype][item];
-        console.info(item);
-        name,desc=this.#getnamedesc(item,'item');
-        if('placed_as_equipment_result' in item){
-          namedesc=this.equipmentlocale(item.placed_as_equipment_result);
-        }
-        if(!name){
-          return this.entitylocale(item.place_result);
-        }
-        namedesc[1]||='';
+        namedesc=this.#getnamedesc(entity,'entity');
+        this.#localecache.item[item]=namedesc;
         return namedesc;
       }
     }
-    return this.fluidlocale(item,data)
+    namedesc=[null,null];
+    this.#localecache.entity[entity]=namedesc;
+    return namedesc;
+  }
+
+  itemlocale(item){
+    var namedesc;
+    if(item=='time'){
+      namedesc=['Time','Time'];
+      this.#localecache.item[item]=namedesc;
+      return namedesc;
+    }
+    item=getitem(item);
+    namedesc=this.#getnamedesc(item,'item');
+    if('placed_as_equipment_result' in item){
+      namedesc=this.equipmentlocale(item.placed_as_equipment_result);
+    }
+    if(!namedesc[0]){
+      namedesc=this.entitylocale(item.place_result);
+    }
+    namedesc[1]=namedesc[1]??'';
+    this.#localecache.item[item]=namedesc;
+    return namedesc;
   }
 
   fluidlocale(fluid){
+    var namedesc;
     var fluid=this.data.fluid[fluid];
-    return this.#getnamedesc(fluid,'fluid');
+    namedesc=this.#getnamedesc(fluid,'fluid');
+    this.#localecache.fluid[fluid]=namedesc;
+    return namedesc;
   }
 
   equipmentlocale(equipment){
+    var namedesc;
     for(var etype of util.equipmenttypes){
       if(equipment in this.data[etype]){
         equipment=this.data[etype][equipment];
-        return this.#getnamedesc(equipment,'equipment');
+        namedesc=this.#getnamedesc(equipment,'equipment');
+        this.#localecache.item[item]=namedesc;
+        return namedesc;
       }
     }
-    return [null,null];
+    namedesc=[null,null];
+    this.#localecache.equipment[equipment]=namedesc;
+    return namedesc;
   }
 
   techlocale(tech){
@@ -232,11 +255,12 @@ class FactorioData{
     }
     var namedesc=this.#getnamedesc(tech,'technology',name);
     namedesc[0]+=pf;
+    this.#localecache.tech[tech]=namedesc;
     return namedesc;
   }
 
   getitemtype(item){
-    for(var itype of ['fluid']+util.itemtypes){
+    for(var itype of ['fluid'].concat(util.itemtypes)){
       if(item in this.data[itype]){
         return itype;
       }
