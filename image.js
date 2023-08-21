@@ -57,9 +57,15 @@ function promiseChain(ps,f){
         f(data);
     });
 }
+
 function packPromise(p,data){
     // puts a data value into a promise
     return p.then(pdata=>[pdata,data]);
+}
+
+function makePromise(data){
+    // returns a promise that returns this data
+    return new Promise(resolve=>resolve(data));
 }
 
 function colorToString(color){
@@ -89,6 +95,10 @@ function fixcolor(col){
 
 function makeicon(data,size=32){
     // return a promise for the canvas being fully rendered
+    var cachekey={icon:data.icon,icons:data.icons,icon_size:data.icon_size};
+    if(cachekey in iconcache){
+        return makePromise(iconcache[cachekey]);
+    }
     if('icons' in data){
         var icons=data.icons;
         var baseiconsize=data.icon_size;
@@ -128,8 +138,11 @@ function makeicon(data,size=32){
                 }
                 var ctx=canvas.getContext("2d");
                 ctx.drawImage(icanvas,(canvas.width-isize)/2+shift[0],(canvas.height-isize)/2+shift[1],isize,isize);
-            }).then(()=>
-                resolve(canvas),
+            }).then(()=>{
+                Object.freeze(canvas); // just in case
+                iconcache[JSON.stringify(cachekey)]=canvas;
+                resolve(canvas)
+            },
             (error)=>
                 reject(error),
             )
