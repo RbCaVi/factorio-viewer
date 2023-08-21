@@ -29,6 +29,12 @@
 	window.mtowiki=mtowiki;
 	window.mutil=mutil;
 	window.mwikiapi=mwikiapi;
+  import * as maccordion from './accordion.js';
+	window.maccordion=maccordion;
+  import * as meditjson from './editjson.js';
+	window.meditjson=meditjson;
+  //import * as m from './.js';
+	//window.m=m;
 </script>
 <script>
 	function getimage(data,size) {
@@ -38,4 +44,49 @@
       document.querySelector('body').append(img);
     });
 	}
-</script></body></html>
+
+	/*function addstyles(element,styles){
+		// styles is {style name:style value}
+		
+	}*/
+
+	function addclasses(element,classes){
+		// classes is [class...]
+		for(var c of classes){
+			element.classList.add(c);
+		}
+	}
+
+	function renderstructure(structure){
+		var out
+		if(structure.type=='accordion'){
+			var contents=structure.contents.map(renderstructure);
+			var div=document.createElement('div');
+			div.append(...contents);
+			out=maccordion.createaccordion(div);
+		}else if(structure.type=='json'){
+			out=meditjson.fromjson(structure.data);
+		}else{
+			var contents=structure.contents.map(renderstructure);
+			var container=document.createElement(structure.type);
+			container.append(...contents);
+			out=container;
+		}
+		if('classes' in structure){
+			addclasses(out,structure.classes);
+		}
+		return out;
+	}
+
+	function renderitem(data){
+		var structure={}
+	}
+
+	function renderrecipe(){}
+
+	function rendertech(){}
+
+	function renderentity(){}
+</script>
+</body>
+</html>

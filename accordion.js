@@ -17,7 +17,7 @@ function createaccordion(element){
     var button=document.createElement('button');
     button.classList.add('accordion');
     button.addEventListener('click',accordionclick);
-    container.append(button,div);
+    container.append(button,element);
     return container;
 }
 
