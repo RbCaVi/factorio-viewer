@@ -65,7 +65,6 @@
 			}
 
 			function renderstructure(structure){
-				console.log(structure);
 				var out;
 				if(typeof structure=='string'||typeof structure=='number'){
 					return structure;
@@ -84,7 +83,16 @@
 				}else if(structure.type=='json'){
 					out=maccordion.fromjson(structure.data);
 				}else if(structure.type=='icon'){
-					out=maccordion.fromjson(structure);
+					// promise to load the image
+					var img=document.createElement('img');
+					var idata;
+					if(structure.itype=='item'){
+						idata=data.getitem(structure.name);
+					}
+					mimage.makeicon(idata).then(iconcanvas=>{
+						img.src=iconcanvas.toDataURL('image/png');
+					})
+					out=img;
 				}else{
 					var contents=structure.contents.map(renderstructure);
 					var container=document.createElement(structure.type);
@@ -114,8 +122,6 @@
 					rescontents.push('+');
 					rescontents.push({type:'icon',itype:'item',name:ress[i][0]},ress[i][1]);
 				}
-				console.log(ingcontents,rescontents);
-				console.log(rdata)
 				var structure={
 					type:'div',
 					contents:ingcontents.concat(['→'],rescontents,rdata.normal.time+' s')
@@ -142,9 +148,7 @@
 						{
 							type:'accordion',
 							header:['Produced by'],
-							contents:[
-								recipetostructure('iron-plate')
-							]
+							contents:data.produces.normal[item].map(recipetostructure)
 						}
 					]
 				};
