@@ -1,6 +1,7 @@
 <html>
 	<head>
     <link rel="stylesheet" href="accordion.css">
+    <link rel="stylesheet" href="style.css">
 	</head>
 	<body>
 		<script type='module'>
@@ -17,7 +18,7 @@
 			var localep=fetch('SElocale.json').then(r=>r.json());
 			resolveAll({'data':datap,'locale':localep}).then(d=>{
 				window.data=new FactorioData(d.data,d.locale);
-			});
+			}).then(()=>{renderitem('se-pyroflux');});
 			window.util=util;
 		  import * as mdata from './data.js';
 		  import * as mimage from './image.js';
@@ -42,12 +43,12 @@
 			//window.m=m;
 		</script>
 		<script>
-			function getimage(data,size) {
-		    return mimage.makeicon(data,size).then(iconcanvas=>{
-		      var img=document.createElement('img');
-		      img.src=iconcanvas.toDataURL('image/png');
-		      document.querySelector('body').append(img);
-		    });
+			function toObjectURL(canvas){
+				if(typeof canvas.convertToBlob=='function'){
+			    return canvas.convertToBlob().then(URL.createObjectURL);
+			  }else{
+			    return new Promise(resolve=>canvas.toBlob(resolve)).then(URL.createObjectURL);
+			  }
 			}
 
 			function addstyles(element,styles){
@@ -89,8 +90,23 @@
 					if(structure.itype=='item'){
 						idata=data.getitem(structure.name);
 					}
+					if(structure.itype=='recipe'){
+						idata=data.data.recipe[structure.name];
+						console.log(idata);
+						if(idata.icons==undefined&&idata.icon==undefined){
+							if(idata.normal.main_product){
+								idata=data.getitem(idata.normal.main_product);
+							}else if(idata.normal.result){
+								idata=data.getitem(idata.normal.result.name);
+							}else{
+								idata=data.getitem(idata.normal.results[0].name);
+							}
+						}
+					}
 					mimage.makeicon(idata).then(iconcanvas=>{
-						img.src=iconcanvas.toDataURL('image/png');
+			      toObjectURL(iconcanvas).then(url=>{
+			      	img.src=url;
+			      });
 					})
 					out=img;
 				}else{
@@ -112,19 +128,55 @@
 				var rdata=data.pdata.recipe[recipe];
 				var ings=rdata.normal.ingredients;
 				var ress=rdata.normal.results;
-				var ingcontents=[{type:'icon',itype:'item',name:ings[0][0]},ings[0][1]];
+				var iconstyle={
+					'borderColor':'black','borderWidth':'1px','borderStyle':'solid'
+				};
+				var ingcontents=[{
+					type:'span',
+					contents:[
+						{type:'icon',itype:'item',name:ings[0][0]},
+						{type:'span',contents:[ings[0][1]],classes:['icon-text']}
+					],
+					styles:iconstyle
+				}];
 				for(var i=1;i<ings.length;i++){
 					ingcontents.push('+');
-					ingcontents.push({type:'icon',itype:'item',name:ings[i][0]},ings[i][1]);
+					ingcontents.push({
+						type:'span',
+						contents:[
+							{type:'icon',itype:'item',name:ings[i][0]},
+							{type:'span',contents:[ings[i][1]],classes:['icon-text']}
+						],
+						styles:iconstyle
+					});
 				}
-				var rescontents=[{type:'icon',itype:'item',name:ress[0][0]},ress[0][1]];
+				var rescontents=[{
+					type:'span',
+					contents:[
+						{type:'icon',itype:'item',name:ress[0][0]},
+						{type:'span',contents:[ress[0][1]],classes:['icon-text']}
+					],
+					styles:iconstyle
+				}];
 				for(var i=1;i<ress.length;i++){
 					rescontents.push('+');
-					rescontents.push({type:'icon',itype:'item',name:ress[i][0]},ress[i][1]);
+					rescontents.push({
+						type:'span',
+						contents:[
+							{type:'icon',itype:'item',name:ress[i][0]},
+							{type:'span',contents:[ress[i][1]],classes:['icon-text']}
+						],
+						styles:iconstyle
+					});
 				}
 				var structure={
-					type:'div',
-					contents:ingcontents.concat(['→'],rescontents,rdata.normal.time+' s')
+					type:'accordion',
+					header:[
+						data.recipelocale(recipe)[0],
+						{type:'span',contents:[recipe],styles:{'padding-left':'1em',color:'grey'}},
+						{type:'icon',itype:'recipe',name:recipe}
+					],
+					contents:ingcontents.concat(['→'],rescontents,' ',rdata.normal.time+' s')
 				};
 				return structure
 			}
@@ -135,6 +187,7 @@
 					contents:[
 						data.itemlocale(item)[0],
 						{type:'span',contents:[item],styles:{'padding-left':'1em',color:'grey'}},
+						{type:'icon',itype:'item',name:item},
 						{
 							type:'accordion',
 							header:['Prototype'],
@@ -149,6 +202,11 @@
 							type:'accordion',
 							header:['Produced by'],
 							contents:data.produces.normal[item].map(recipetostructure)
+						},
+						{
+							type:'accordion',
+							header:['Used by'],
+							contents:data.uses.normal[item].map(recipetostructure)
 						}
 					]
 				};

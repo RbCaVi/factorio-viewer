@@ -32,7 +32,7 @@ util.itemtypes=[
   'tool',
   'armor',
   'repair-tool'
-]
+];
 
 util.equipmenttypes=[
   'active-defense-equipment',
@@ -44,7 +44,7 @@ util.equipmenttypes=[
   'night-vision-equipment',
   'roboport-equipment',
   'solar-panel-equipment',
-]
+];
 
 util.entitytypes=[
   "arrow",
