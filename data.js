@@ -20,6 +20,7 @@ class FactorioData{
       locale=JSON.parse(locale);
     }
     this.data=data;
+    this.rawdata=data;
     this.locale=locale;
     for(key in this.data.recipe){
       this.data.recipe[key]=normalizerecipe(data.recipe[key]);
