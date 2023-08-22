@@ -1,25 +1,20 @@
+import {promiseChain,packPromise,makePromise} from './util.js';
+
 //function uploadimage(data,uploadname,size=32){
 //    if(force||forceimage||!wikiapi.pageexists('File:'+uploadname+'.png')){
 //        makeicon(data,size).then(iconcanvas=>wikiapi.upload(iconcanvas.toBlob(),uploadname+'.png'));
 //    }
 //}
 
-function getOffscreenCanvas(width,height){
-    return new OffscreenCanvas(width,height);
-}
-
-function getDOMCanvas(width,height){
-    var canvas=document.createElement('canvas');
-    canvas.width=width;
-    canvas.height=height;
-    return canvas;
-}
-let getCanvas;
-
-if(typeof OffscreenCanvas=='function'){
-    getCanvas=getOffscreenCanvas
-}else{
-    getCanvas=getDOMCanvas
+function getCanvas(width,height){
+    //if(typeof OffscreenCanvas=='function'){
+    //    return new OffscreenCanvas(width,height);
+    //}else{
+        var canvas=document.createElement('canvas');
+        canvas.width=width;
+        canvas.height=height;
+        return canvas;
+    //}
 }
 
 function loadImage(src){
