@@ -1,92 +1,166 @@
-<html><head></head><body><script type='module'>
-	import {FactorioData} from './data.js';
-	import {util} from './util.js';
-	function resolveAll(ps){
-	  // ps is {key:promise ...}
-	  // returns a Promise that resolves to {key:promise value}
-	  // will reject with any error
-	  var values={};
-	  return Object.entries(ps).map(([k,p])=>p.then(data=>{values[k]=data;})).reduce((p1,p2)=>p1.then(()=>p2)).then(()=>values);
-	}
-	var datap=fetch('SE.json').then(r=>r.json());
-	var localep=fetch('SElocale.json').then(r=>r.json());
-	resolveAll({'data':datap,'locale':localep}).then(d=>{
-		window['data']=new FactorioData(d.data,d.locale);
-	});
-	window['util']=util;
-  import * as mdata from './data.js';
-  import * as mimage from './image.js';
-  import * as mnormalize from './normalize.js';
-  import * as mprocess from './process.js';
-  import * as mtowiki from './towiki.js';
-  import * as mutil from './util.js';
-  import * as mwikiapi from './wikiapi.js';
-  window.wiki='https://spaceexploration.miraheze.org';
-  window.mdata=mdata;
-	window.mimage=mimage;
-	window.mnormalize=mnormalize;
-	window.mprocess=mprocess;
-	window.mtowiki=mtowiki;
-	window.mutil=mutil;
-	window.mwikiapi=mwikiapi;
-  import * as maccordion from './accordion.js';
-	window.maccordion=maccordion;
-  import * as meditjson from './editjson.js';
-	window.meditjson=meditjson;
-  //import * as m from './.js';
-	//window.m=m;
-</script>
-<script>
-	function getimage(data,size) {
-    return mimage.makeicon(data,size).then(iconcanvas=>{
-      var img=document.createElement('img');
-      img.src=iconcanvas.toDataURL('image/png');
-      document.querySelector('body').append(img);
-    });
-	}
+<html>
+	<head>
+    <link rel="stylesheet" href="accordion.css">
+	</head>
+	<body>
+		<script type='module'>
+			import {FactorioData} from './data.js';
+			import {util} from './util.js';
+			function resolveAll(ps){
+			  // ps is {key:promise ...}
+			  // returns a Promise that resolves to {key:promise value}
+			  // will reject with any error
+			  var values={};
+			  return Object.entries(ps).map(([k,p])=>p.then(data=>{values[k]=data;})).reduce((p1,p2)=>p1.then(()=>p2)).then(()=>values);
+			}
+			var datap=fetch('SE.json').then(r=>r.json());
+			var localep=fetch('SElocale.json').then(r=>r.json());
+			resolveAll({'data':datap,'locale':localep}).then(d=>{
+				window.data=new FactorioData(d.data,d.locale);
+			});
+			window.util=util;
+		  import * as mdata from './data.js';
+		  import * as mimage from './image.js';
+		  import * as mnormalize from './normalize.js';
+		  import * as mprocess from './process.js';
+		  import * as mtowiki from './towiki.js';
+		  import * as mutil from './util.js';
+		  import * as mwikiapi from './wikiapi.js';
+		  window.wiki='https://spaceexploration.miraheze.org';
+		  window.mdata=mdata;
+			window.mimage=mimage;
+			window.mnormalize=mnormalize;
+			window.mprocess=mprocess;
+			window.mtowiki=mtowiki;
+			window.mutil=mutil;
+			window.mwikiapi=mwikiapi;
+		  import * as maccordion from './accordion.js';
+			window.maccordion=maccordion;
+		  import * as meditjson from './editjson.js';
+			window.meditjson=meditjson;
+		  //import * as m from './.js';
+			//window.m=m;
+		</script>
+		<script>
+			function getimage(data,size) {
+		    return mimage.makeicon(data,size).then(iconcanvas=>{
+		      var img=document.createElement('img');
+		      img.src=iconcanvas.toDataURL('image/png');
+		      document.querySelector('body').append(img);
+		    });
+			}
 
-	/*function addstyles(element,styles){
-		// styles is {style name:style value}
-		
-	}*/
+			function addstyles(element,styles){
+				// styles is {style name:style value}
+				for(var [key,value] of Object.entries(styles)){
+					element.style[key]=value;
+				}
+			}
 
-	function addclasses(element,classes){
-		// classes is [class...]
-		for(var c of classes){
-			element.classList.add(c);
-		}
-	}
+			function addclasses(element,classes){
+				// classes is [class...]
+				for(var c of classes){
+					element.classList.add(c);
+				}
+			}
 
-	function renderstructure(structure){
-		var out
-		if(structure.type=='accordion'){
-			var contents=structure.contents.map(renderstructure);
-			var div=document.createElement('div');
-			div.append(...contents);
-			out=maccordion.createaccordion(div);
-		}else if(structure.type=='json'){
-			out=meditjson.fromjson(structure.data);
-		}else{
-			var contents=structure.contents.map(renderstructure);
-			var container=document.createElement(structure.type);
-			container.append(...contents);
-			out=container;
-		}
-		if('classes' in structure){
-			addclasses(out,structure.classes);
-		}
-		return out;
-	}
+			function renderstructure(structure){
+				console.log(structure);
+				var out;
+				if(typeof structure=='string'||typeof structure=='number'){
+					return structure;
+				}else if(structure.type=='accordion'){
+					if('header' in structure){
+						var headerparts=structure.header.map(renderstructure);
+						var header=document.createElement('span');
+						header.append(...headerparts);
+					}
+					var contents=structure.contents.map(renderstructure);
+					var div=document.createElement('div');
+					div.append(...contents);
+					out=maccordion.createaccordion(header,div);
+				}else if(structure.type=='editjson'){
+					out=meditjson.fromjson(structure.data);
+				}else if(structure.type=='json'){
+					out=maccordion.fromjson(structure.data);
+				}else if(structure.type=='icon'){
+					out=maccordion.fromjson(structure);
+				}else{
+					var contents=structure.contents.map(renderstructure);
+					var container=document.createElement(structure.type);
+					container.append(...contents);
+					out=container;
+				}
+				if('classes' in structure){
+					addclasses(out,structure.classes);
+				}
+				if('styles' in structure){
+					addstyles(out,structure.styles);
+				}
+				return out;
+			}
 
-	function renderitem(data){
-		var structure={}
-	}
+			function recipetostructure(recipe){
+				var rdata=data.pdata.recipe[recipe];
+				var ings=rdata.normal.ingredients;
+				var ress=rdata.normal.results;
+				var ingcontents=[{type:'icon',itype:'item',name:ings[0][0]},ings[0][1]];
+				for(var i=1;i<ings.length;i++){
+					ingcontents.push('+');
+					ingcontents.push({type:'icon',itype:'item',name:ings[i][0]},ings[i][1]);
+				}
+				var rescontents=[{type:'icon',itype:'item',name:ress[0][0]},ress[0][1]];
+				for(var i=1;i<ress.length;i++){
+					rescontents.push('+');
+					rescontents.push({type:'icon',itype:'item',name:ress[i][0]},ress[i][1]);
+				}
+				console.log(ingcontents,rescontents);
+				console.log(rdata)
+				var structure={
+					type:'div',
+					contents:ingcontents.concat(['→'],rescontents,rdata.normal.time+' s')
+				};
+				return structure
+			}
 
-	function renderrecipe(){}
+			function renderitem(item){
+				var structure={
+					type:'div',
+					contents:[
+						data.itemlocale(item)[0],
+						{type:'span',contents:[item],styles:{'padding-left':'1em',color:'grey'}},
+						{
+							type:'accordion',
+							header:['Prototype'],
+							contents:[
+								{
+									type:'json',
+									data:data.getitem(item)
+								}
+							]
+						},
+						{
+							type:'accordion',
+							header:['Produced by'],
+							contents:[
+								recipetostructure('iron-plate')
+							]
+						}
+					]
+				};
 
-	function rendertech(){}
+		    var body=document.querySelector('body');
+				var div=renderstructure(structure);
+		    body.append(div);
+			}
 
-	function renderentity(){}
-</script>
-</body>
+			var arrow='→';
+
+			function renderrecipe(){}
+
+			function rendertech(){}
+
+			function renderentity(){}
+		</script>
+	</body>
 </html>
