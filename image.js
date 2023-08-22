@@ -74,7 +74,7 @@ function makeicon(data,size=32){
     }
     if('icons' in data){
         var icons=data.icons;
-        var baseiconsize=data.icon_size;
+        var baseiconsize=data.icon_size??icons[0].icon_size;
         var canvas=getCanvas(size,size);
         var parts=[];
         for(var icondata of icons){
