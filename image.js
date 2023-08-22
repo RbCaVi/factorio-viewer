@@ -132,11 +132,11 @@ function makeicon(data,size=32){
                 var shift=[0,0];
                 if('shift' in idata){
                     shift=idata.shift;
-                    shift=shift.map(x=>x*(size/baseiconsize)*2);// i don't know why 2
+                    shift=shift.map(x=>x*(size/baseiconsize)*2); // i don't know why 2
                 }
                 var isize=iconsize*(size/baseiconsize);
                 if('scale' in idata){
-                    isize*=idata.scale;
+                    isize*=idata.scale*2;
                 }
                 var ctx=canvas.getContext("2d");
                 ctx.drawImage(icanvas,(canvas.width-isize)/2+shift[0],(canvas.height-isize)/2+shift[1],isize,isize);
