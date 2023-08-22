@@ -155,7 +155,14 @@ class FactorioData{
   }
 
   localize(s){
-    return this.#localizeraw([s]);
+    if(typeof s=='string'){
+      var l=this.#localizeraw([s]);
+      console.info('localized to',l);
+      return l;
+    }
+    var l=this.#localizeraw(s);
+    console.info('localized to',l);
+    return l;
   }
   
   recipelocale(recipe){
@@ -175,6 +182,20 @@ class FactorioData{
       recipe=clone(recipe);
       Object.assign(recipe,recipe.normal);
       delete recipe.normal;
+    }
+    var name,desc;
+    if('localised_name' in recipe){
+      name=this.localize(recipe.localised_name);
+    }else{
+      name=this.localize('recipe-name.'+recipe.name);
+    }
+    if('localised_description' in recipe){
+      desc=this.localize(recipe.localised_description);
+    }else{
+      desc=this.localize('recipe-description.'+recipe.name);
+    }
+    if(name!=null){
+      return [name,desc];
     }
     if(recipe.results.length==1){
       if('main_product' in recipe&&recipe.main_product==''){
