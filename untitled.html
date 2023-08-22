@@ -43,6 +43,16 @@
 			//window.m=m;
 		</script>
 		<script>
+			function getimage(data,size) {
+	      var img=document.createElement('img');
+	      document.querySelector('body').append(img);
+		    return mimage.makeicon(data,size).then(iconcanvas=>{
+		    	return toObjectURL(iconcanvas);
+		    }).then(url=>{
+		      img.src=url;
+		    });
+		  }
+
 			function toObjectURL(canvas){
 				if(typeof canvas.convertToBlob=='function'){
 			    return canvas.convertToBlob().then(URL.createObjectURL);
@@ -108,6 +118,14 @@
 			      	img.src=url;
 			      });
 					})
+					var iconstyle={
+						borderColor:'black',
+						borderWidth:'1px',
+						borderStyle:'solid',
+						position:'relative',
+						display:'inline-block'
+					};
+					addstyles(img,iconstyle);
 					out=img;
 				}else{
 					var contents=structure.contents.map(renderstructure);
@@ -129,7 +147,11 @@
 				var ings=rdata.normal.ingredients;
 				var ress=rdata.normal.results;
 				var iconstyle={
-					'borderColor':'black','borderWidth':'1px','borderStyle':'solid'
+					borderColor:'black',
+					borderWidth:'1px',
+					borderStyle:'solid',
+					position:'relative',
+					display:'inline-block'
 				};
 				var ingcontents=[{
 					type:'span',
@@ -173,7 +195,7 @@
 					type:'accordion',
 					header:[
 						data.recipelocale(recipe)[0],
-						{type:'span',contents:[recipe],styles:{'padding-left':'1em',color:'grey'}},
+						{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
 						{type:'icon',itype:'recipe',name:recipe}
 					],
 					contents:ingcontents.concat(['→'],rescontents,' ',rdata.normal.time+' s')
