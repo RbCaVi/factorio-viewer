@@ -100,32 +100,32 @@ class Infobox{
         }else{
             throw Error('already set');
         }
-        var n=data.pdata['technology'][tech];
-        this.info['allows']=this.data.postreqs['normal'][tech].map(tech=>this.data.techlocale(tech)[1]).filter(unique);
-        this.info['effects']=locale.recipename,this.data.unlocks['normal'][tech].map(tech=>this.data.recipelocale(tech)[1]);
-        this.info['required-technologies']=this.data.prereqs['normal'][tech].map(tech=>this.data.techlocale(tech)[1]).filter(unique);
-        this.info['cost-multiplier']=n['normal']['count'];
+        var n=data.pdata.technology[tech];
+        this.info.allows=this.data.postreqs.normal[tech].map(tech=>this.data.techlocale(tech)[1]).filter(unique);
+        this.info.effects=locale.recipename,this.data.unlocks.normal[tech].map(tech=>this.data.recipelocale(tech)[1]);
+        this.info['required-technologies']=this.data.prereqs.normal[tech].map(tech=>this.data.techlocale(tech)[1]).filter(unique);
+        this.info['cost-multiplier']=n.normal.count;
         if('expensive' in this.info){
-            this.info['expensive-cost-multiplier']=n['expensive']['count'];
+            this.info['expensive-cost-multiplier']=n.expensive.count;
         }
-        this.info['cost']=n['normal']['packs'].map(pack=>this.data.itemlocale(pack[0],data.data)[0]+','+numtostr(pack[1])).join(' + ');
+        this.info.cost=n.normal.packs.map(pack=>this.data.itemlocale(pack[0],data.data)[0]+','+numtostr(pack[1])).join(' + ');
     }
 
     additem(item){
         if(this.info==null){
             this.info={'producers':[]};
         }
-        this.info['category']=categories[data.data['item-subgroup'][item['subgroup']]['group']];
+        this.info.category=categories[data.data['item-subgroup'][item.subgroup].group];
         this.info['internal-name']=item.name;
-        this.info['stack-size']=''+item['stack_size'];
-        this.info['consumers']=this.data.uses['normal'][item.name]??[].map(this.data.recipename);
+        this.info['stack-size']=''+item.stack_size;
+        this.info.consumers=this.data.uses.normal[item.name]??[].map(this.data.recipename);
     }
 
     addfluid(fluid,group){
         if(this.info==null){
             this.info={'producers':[]};
         }
-        this.info['category']=group;
+        this.info.category=group;
         this.info['internal-name']=fluid.name;
     }
 
@@ -148,23 +148,23 @@ class Infobox{
                 break;
             }
         }
-        var n=data.pdata['recipe'][recipe];
-        this.info['producers']+=this.data.madein[n['category']];
+        var n=data.pdata.recipe[recipe];
+        this.info.producers+=this.data.madein[n.category];
         for(x of util.difficulty){
             if(!x in n){
                 continue;
             }
             prefix=diff_prefixes[x];
-            recipeparts=[[['time',n[x]['time'],'time']].concat(n[x]['ingredients']),n[x]['results']];
+            recipeparts=[[['time',n[x].time,'time']].concat(n[x].ingredients),n[x].results];
             info[prefix+'recipe'+postfix]=recipeparts;
         }
-        techs=this.data.unlockedby['normal'][recipe]??[];
+        techs=this.data.unlockedby.normal[recipe]??[];
         this.info['required-technologies']=this.info['required-technologies']??[].concat(techs.map(this.data.techname))
         this.info['required-technologies']=sorted(set(this.info['required-technologies']))
     }
 
     setconsumers(consumers){
-        info['consumers']=consumers.map(this.data.recipename);
+        info.consumers=consumers.map(this.data.recipename);
         return info;
     }
 
@@ -183,8 +183,8 @@ class Infobox{
             }
         }
         if('producers' in this.info){
-            console.info(this.info['producers']);
-            this.info['producers']=reorder(this.info['producers']).filter(unique).map(e=>this.data.entitylocale(e)[0]).join(' + ');
+            console.info(this.info.producers);
+            this.info.producers=reorder(this.info.producers).filter(unique).map(e=>this.data.entitylocale(e)[0]).join(' + ');
         }
         var s='{{Infobox SE';
         for(var key in this.info){
