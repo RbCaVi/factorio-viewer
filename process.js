@@ -13,10 +13,10 @@ function processrecipe(recipe){
         ingredient['amount']
       ]);
     }
-    for(var result in recipe[x]['results']){
       newrecipe[x]['results'].push([
         result['name'],
         result['amount']
+    for(var result of recipe[x].results){
       ]);
     }
     newrecipe[x]['time']=recipe[x]['energy_required'];
