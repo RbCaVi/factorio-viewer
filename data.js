@@ -51,7 +51,7 @@ class FactorioData{
           }
           this.uses[x][ing[0]].push(recipe.name);
         }
-        for(var res in recipe[x].results){
+        for(var res of recipe[x].results){
           if(!(res[0] in this.produces[x])){
             this.produces[x][res[0]]=[];
           }

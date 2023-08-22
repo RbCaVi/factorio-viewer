@@ -93,6 +93,8 @@ function fixcolor(col){
     return colorToString(['r','g','b','a'].map(i=>color[i]))
 }
 
+let iconcache={}
+
 function makeicon(data,size=32){
     // return a promise for the canvas being fully rendered
     var cachekey={icon:data.icon,icons:data.icons,icon_size:data.icon_size};
