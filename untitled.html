@@ -18,7 +18,7 @@
 			var localep=fetch('SElocale.json').then(r=>r.json());
 			resolveAll({'data':datap,'locale':localep}).then(d=>{
 				window.data=new FactorioData(d.data,d.locale);
-			}).then(()=>{renderrecipe('se-iridium-ingot');renderitem('se-pyroflux');});
+			}).then(()=>{renderrecipe('se-iridium-ingot');renderitem('se-naquium-processor');});
 			window.util=util;
 		  import * as mdata from './data.js';
 		  import * as mimage from './image.js';
@@ -307,8 +307,10 @@
 				switch(type){
 				case 'recipe':
 					renderrecipe(name);
+					break;
 				case 'item':
 					renderitem(name);
+					break;
 				}
 			}
 		</script>
