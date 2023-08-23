@@ -159,16 +159,8 @@
 					position:'relative',
 					display:'inline-block'
 				};
-				var ingcontents=[{
-					type:'span',
-					contents:[
-						{type:'icon',itype:'item',name:ings[0][0]},
-						{type:'span',contents:[ings[0][1]],classes:['icon-text']}
-					],
-					styles:iconstyle
-				}];
-				for(var i=1;i<ings.length;i++){
-					ingcontents.push('+');
+				var ingcontents=[];
+				for(var i=0;i<ings.length;i++){
 					ingcontents.push({
 						type:'span',
 						contents:[
@@ -177,17 +169,10 @@
 						],
 						styles:iconstyle
 					});
+					ingcontents.push('+');
 				}
-				var rescontents=[{
-					type:'span',
-					contents:[
-						{type:'icon',itype:'item',name:ress[0][0]},
-						{type:'span',contents:[ress[0][1]],classes:['icon-text']}
-					],
-					styles:iconstyle
-				}];
-				for(var i=1;i<ress.length;i++){
-					rescontents.push('+');
+				var rescontents=[];
+				for(var i=0;i<ress.length;i++){
 					rescontents.push({
 						type:'span',
 						contents:[
@@ -196,7 +181,10 @@
 						],
 						styles:iconstyle
 					});
+					rescontents.push('+');
 				}
+				ingcontents.pop();
+				rescontents.pop();
 				return ingcontents.concat(['→'],rescontents,' ',rdata.normal.time+' s');
 			}
 
