@@ -218,7 +218,7 @@ class FactorioData{
       if(entity in this.data[etype]){
         entity=this.data[etype][entity];
         namedesc=this.#getnamedesc(entity,'entity');
-        this.#localecache.item[item.name]=namedesc;
+        this.#localecache.entity[entity.name]=namedesc;
         return namedesc;
       }
     }
