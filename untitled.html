@@ -18,7 +18,7 @@
 			var localep=fetch('SElocale.json').then(r=>r.json());
 			resolveAll({'data':datap,'locale':localep}).then(d=>{
 				window.data=new FactorioData(d.data,d.locale);
-			}).then(()=>{renderitem('se-pyroflux');});
+			}).then(()=>{renderrecipe('se-iridium-ingot');renderitem('se-pyroflux');});
 			window.util=util;
 		  import * as mdata from './data.js';
 		  import * as mimage from './image.js';
@@ -99,8 +99,9 @@
 					var idata;
 					if(structure.itype=='item'){
 						idata=data.getitem(structure.name);
-					}
-					if(structure.itype=='recipe'){
+					}else if(structure.itype=='tech'){
+						idata=data.data.technology[structure.name];
+					}else if(structure.itype=='recipe'){
 						idata=data.data.recipe[structure.name];
 						console.log(idata);
 						if(idata.icons==undefined&&idata.icon==undefined){
@@ -247,7 +248,51 @@
 
 			var arrow='→';
 
-			function renderrecipe(){}
+			function accordionifmultiple(header,parts){
+				if(parts.length==1){
+					return {type:'div',contents:[header,parts[0]]};
+				}
+				return {type:'accordion',header:header,contents:parts};
+			}
+
+			function renderrecipe(recipe){
+				var structure={
+					type:'div',
+					contents:[
+						data.recipelocale(recipe)[0],
+						{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
+						{type:'icon',itype:'recipe',name:recipe},
+						{type:'br',contents:[]},
+						...recipetostructure(recipe),
+						accordionifmultiple(
+							'Unlocked by ',
+							data.unlockedby.normal[recipe].map(tech=>({
+								type:'span',
+								contents:[
+									//{type:'br',contents:[]},
+									data.techlocale(tech)[0],
+									{type:'span',contents:[tech],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
+									{type:'icon',itype:'tech',name:tech}
+								]
+							}))
+						),
+						{
+							type:'accordion',
+							header:['Prototype'],
+							contents:[
+								{
+									type:'json',
+									data:data.data.recipe[recipe]
+								}
+							]
+						}
+					]
+				};
+
+		    var body=document.querySelector('body');
+				var div=renderstructure(structure);
+		    body.append(div);
+			}
 
 			function rendertech(){}
 
