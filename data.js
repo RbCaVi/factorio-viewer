@@ -140,7 +140,7 @@ class FactorioData{
       return ''+s;
     }else if(Array.isArray(s)){
       if(s[0]==''){
-        return s.slice(1).map(this.#localizeraw).join('');
+        return s.slice(1).map(x=>this.#localizeraw(x)).join('');
       }
       var l=this.locale[s[0]];
       if(l==undefined){
