@@ -102,16 +102,18 @@
 					}else if(structure.itype=='tech'){
 						idata=data.data.technology[structure.name];
 					}else if(structure.itype=='recipe'){
-						idata=data.data.recipe[structure.name];
-						console.log(idata);
-						if(idata.icons==undefined&&idata.icon==undefined){
-							if(idata.normal.main_product){
-								idata=data.getitem(idata.normal.main_product);
-							}else if(idata.normal.result){
-								idata=data.getitem(idata.normal.result.name);
+						var rdata=data.data.recipe[structure.name];
+						console.log(rdata);
+						if(rdata.icons==undefined&&rdata.icon==undefined){
+							if(rdata.normal.main_product){
+								idata=data.getitem(rdata.normal.main_product);
+							}else if(rdata.normal.result){
+								idata=data.getitem(rdata.normal.result);
 							}else{
-								idata=data.getitem(idata.normal.results[0].name);
+								idata=data.getitem(rdata.normal.results[0].name);
 							}
+						}else{
+							idata=rdata;
 						}
 					}
 					mimage.makeicon(idata).then(iconcanvas=>{
