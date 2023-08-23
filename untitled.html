@@ -220,7 +220,7 @@
 						{
 							type:'accordion',
 							header:['Produced by'],
-							contents:data.produces.normal[item].map(recipe=>({
+							contents:(data.produces.normal[item]??[]).map(recipe=>({
 								type:'accordion',
 								header:[
 									data.recipelocale(recipe)[0],
@@ -233,7 +233,7 @@
 						{
 							type:'accordion',
 							header:['Used by'],
-							contents:data.uses.normal[item].map(recipe=>({
+							contents:(data.uses.normal[item]??[]).map(recipe=>({
 								type:'accordion',
 								header:[
 									data.recipelocale(recipe)[0],
