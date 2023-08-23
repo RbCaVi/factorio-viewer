@@ -211,7 +211,7 @@
 							contents:(data.produces.normal[item]??[]).map(recipe=>({
 								type:'accordion',
 								header:[
-									data.recipelocale(recipe)[0],
+									data.recipelocale(recipe)[0]??'???',
 									{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
 									{type:'icon',itype:'recipe',name:recipe}
 								],
@@ -224,7 +224,7 @@
 							contents:(data.uses.normal[item]??[]).map(recipe=>({
 								type:'accordion',
 								header:[
-									data.recipelocale(recipe)[0],
+									data.recipelocale(recipe)[0]??'???',
 									{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
 									{type:'icon',itype:'recipe',name:recipe}
 								],
@@ -252,7 +252,7 @@
 				var structure={
 					type:'div',
 					contents:[
-						data.recipelocale(recipe)[0],
+						data.recipelocale(recipe)[0]??'???',
 						{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
 						{type:'icon',itype:'recipe',name:recipe},
 						{type:'br',contents:[]},
