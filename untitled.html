@@ -191,16 +191,7 @@
 						styles:iconstyle
 					});
 				}
-				var structure={
-					type:'accordion',
-					header:[
-						data.recipelocale(recipe)[0],
-						{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
-						{type:'icon',itype:'recipe',name:recipe}
-					],
-					contents:ingcontents.concat(['→'],rescontents,' ',rdata.normal.time+' s')
-				};
-				return structure
+				return ingcontents.concat(['→'],rescontents,' ',rdata.normal.time+' s');
 			}
 
 			function renderitem(item){
@@ -223,12 +214,28 @@
 						{
 							type:'accordion',
 							header:['Produced by'],
-							contents:data.produces.normal[item].map(recipetostructure)
+							contents:data.produces.normal[item].map(recipe=>({
+								type:'accordion',
+								header:[
+									data.recipelocale(recipe)[0],
+									{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
+									{type:'icon',itype:'recipe',name:recipe}
+								],
+								contents:recipetostructure(recipe)
+							}))
 						},
 						{
 							type:'accordion',
 							header:['Used by'],
-							contents:data.uses.normal[item].map(recipetostructure)
+							contents:data.uses.normal[item].map(recipe=>({
+								type:'accordion',
+								header:[
+									data.recipelocale(recipe)[0],
+									{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
+									{type:'icon',itype:'recipe',name:recipe}
+								],
+								contents:recipetostructure(recipe)
+							}))
 						}
 					]
 				};
