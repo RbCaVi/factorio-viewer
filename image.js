@@ -6,6 +6,14 @@ import {promiseChain,packPromise,makePromise} from './util.js';
 //    }
 //}
 
+function toObjectURL(canvas){
+    if(typeof canvas.convertToBlob=='function'){
+        return canvas.convertToBlob().then(URL.createObjectURL);
+    }else{
+        return new Promise(resolve=>canvas.toBlob(resolve)).then(URL.createObjectURL);
+    }
+}
+
 function getCanvas(width,height){
     //if(typeof OffscreenCanvas=='function'){
     //    return new OffscreenCanvas(width,height);
@@ -66,10 +74,11 @@ function fixcolor(col){
 
 let iconcache={}
 
-function makeicon(data,size=32){
+function makeiconURL(data,size=32){
     // return a promise for the canvas being fully rendered
-    var cachekey={icon:data.icon,icons:data.icons,icon_size:data.icon_size};
+    var cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size});
     if(cachekey in iconcache){
+        console.log(cachekey);
         return makePromise(iconcache[cachekey]);
     }
     if('icons' in data){
@@ -112,14 +121,15 @@ function makeicon(data,size=32){
                 var ctx=canvas.getContext("2d");
                 ctx.drawImage(icanvas,(canvas.width-isize)/2+shift[0],(canvas.height-isize)/2+shift[1],isize,isize);
             }).then(()=>{
-                Object.freeze(canvas); // just in case
-                iconcache[JSON.stringify(cachekey)]=canvas;
-                resolve(canvas)
+                return toObjectURL(canvas);
+            }).then(url=>{
+                iconcache[cachekey]=url;
+                resolve(url);
             },
             (error)=>
-                reject(error),
+                reject(error)
             )
-        )
+        );
     }else{
         var canvas=getCanvas(size,size);
         iconname=data.icon;
@@ -127,7 +137,11 @@ function makeicon(data,size=32){
         return geticon(iconname,iconsize).then(icon=>{
             var ctx=canvas.getContext("2d");
             ctx.drawImage(icon,0,0,size,size);
-            return canvas;
+        }).then(()=>{
+            return toObjectURL(canvas);
+        }).then(url=>{
+            iconcache[cachekey]=url;
+            return url;
         });
     }
 }
@@ -138,4 +152,4 @@ function geticon(name,size){
     });
 }
 
-export {makeicon};
+export {makeiconURL};

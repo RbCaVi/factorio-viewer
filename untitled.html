@@ -46,20 +46,10 @@
 			function getimage(data,size) {
 	      var img=document.createElement('img');
 	      document.querySelector('body').append(img);
-		    return mimage.makeicon(data,size).then(iconcanvas=>{
-		    	return toObjectURL(iconcanvas);
-		    }).then(url=>{
+		    return mimage.makeiconURL(data,size).then(url=>{
 		      img.src=url;
 		    });
 		  }
-
-			function toObjectURL(canvas){
-				if(typeof canvas.convertToBlob=='function'){
-			    return canvas.convertToBlob().then(URL.createObjectURL);
-			  }else{
-			    return new Promise(resolve=>canvas.toBlob(resolve)).then(URL.createObjectURL);
-			  }
-			}
 
 			function addstyles(element,styles){
 				// styles is {style name:style value}
@@ -116,11 +106,9 @@
 							idata=rdata;
 						}
 					}
-					mimage.makeicon(idata).then(iconcanvas=>{
-			      toObjectURL(iconcanvas).then(url=>{
+					mimage.makeiconURL(idata).then(url=>{
 			      	img.src=url;
-			      });
-					})
+					});
 					var iconstyle={
 						borderColor:'black',
 						borderWidth:'1px',
