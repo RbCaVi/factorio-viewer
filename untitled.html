@@ -127,6 +127,9 @@
 						display:'inline-block'
 					};
 					addstyles(img,iconstyle);
+					var itype=structure.itype;
+					var name=structure.name;
+					img.addEventListener('click',()=>render(itype,name));
 					out=img;
 				}else{
 					var contents=structure.contents.map(renderstructure);
@@ -297,6 +300,15 @@
 			function rendertech(){}
 
 			function renderentity(){}
+
+			function render(type,name){
+				switch(type){
+				case 'recipe':
+					renderrecipe(name);
+				case 'item':
+					renderitem(name);
+				}
+			}
 		</script>
 	</body>
 </html>
