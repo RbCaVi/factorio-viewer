@@ -3,6 +3,17 @@ import {clone} from './util.js';
 let rtable={};
 
 function unallowed(recipe,data) {
+	if(recipe.name=='se-matter-fusion-dirty'){
+		return false;
+	}
+	if(recipe.name.startsWith('se-matter-fusion-')){
+		console.log('rejected',recipe,'by fusion');
+		return true;
+	}
+	if((recipe.name.startsWith('empty-')||recipe.name.startsWith('fill-'))&&recipe.name.endsWith('-barrel')){
+		console.log('rejected',recipe,'by barrel');
+		return true;
+	}
 	if(recipe.category!='hard-recycling'){
 		return false;
 	}
