@@ -3,20 +3,31 @@ import {clone} from './util.js';
 let rtable={};
 
 function unallowed(recipe,data) {
+	if(recipe.category!='hard-recycling'){
+		return false;
+	}
 	if(recipe.normal.ingredients.length==1){
-		for(var precipe of data.produces[recipe.normal.ingredients[0]]){
+		for(var precipe of data.produces.normal[recipe.normal.ingredients[0][0]]??[]){
+			if(data.pdata.recipe[precipe].normal.results.length>1){
+				continue;
+			}
 			var icounts={};
-			for(var [ing,count] of data.pdata.recipe[precipe]){
+			for(var [ing,count] of data.pdata.recipe[precipe].normal.ingredients){
 				icounts[ing]=(icounts[ing]??0)+count;
 			}
+			var rcounts={};
+			for(var [res,count] of data.pdata.recipe[precipe].normal.results){
+				rcounts[res]=(icounts[res]??0)+count;
+			}
 			var pass=true;
-			for(var [res,count] of recipe.results){
-				if(count>icounts[ing]??0){
+			for(var [res,count] of recipe.normal.results){
+				if((count/recipe.normal.ingredients[0][1])>=((icounts[res]??0)/rcounts[recipe.normal.ingredients[0][0]])){
 					pass=false;
 					break;
 				}
 			}
 			if(pass){
+				console.log('rejected',recipe,'by',data.pdata.recipe[precipe]);
 				return true;
 			}
 		}
