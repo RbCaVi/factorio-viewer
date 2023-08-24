@@ -18,7 +18,10 @@
 			var localep=fetch('SElocale.json').then(r=>r.json());
 			resolveAll({'data':datap,'locale':localep}).then(d=>{
 				window.data=new FactorioData(d.data,d.locale);
-			}).then(()=>{renderrecipe('se-iridium-ingot');renderitem('se-naquium-processor');});
+			}).then(()=>{
+				render('recipe','se-iridium-ingot');
+				render('item','se-naquium-processor');
+			});
 			window.util=util;
 		  import * as mdata from './data.js';
 		  import * as mimage from './image.js';
@@ -222,9 +225,8 @@
 					]
 				};
 
-		    var body=document.querySelector('body');
 				var div=renderstructure(structure);
-		    body.append(div);
+				put(div);
 			}
 
 			var arrow='→';
@@ -270,16 +272,24 @@
 					]
 				};
 
-		    var body=document.querySelector('body');
 				var div=renderstructure(structure);
-		    body.append(div);
+				put(div);
 			}
 
 			function rendertech(){}
 
 			function renderentity(){}
 
+			let history=[];
+			let fhistory=[];
+
 			function render(type,name){
+				history.push([type,name]);
+				fhistory=[];
+				_render(type,name);
+			}
+
+			function _render(type,name) {
 				switch(type){
 				case 'recipe':
 					renderrecipe(name);
@@ -289,6 +299,34 @@
 					break;
 				}
 			}
+
+			function back(){
+				if(history.length<=1){
+					return;
+				}
+				var typename=history.pop();
+				fhistory.push(typename);
+				_render(...history[history.length-1]);
+			}
+
+			function forward(){
+				if(fhistory.length==0){
+					return;
+				}
+				var typename=fhistory.pop();
+				history.push(typename);
+				_render(...typename);
+			}
+
+			function put(div) {
+		    var body=document.querySelector('.items');
+			  while (body.firstChild) {
+			    body.removeChild(body.lastChild);
+			  }
+		    body.append(div);
+			}
 		</script>
+		<button onclick="back()">back</button><button onclick="forward()">forward</button>
+		<div class="items"></div>
 	</body>
 </html>
