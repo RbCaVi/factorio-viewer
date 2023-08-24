@@ -159,19 +159,34 @@ function mult(r1,r2){
 }
 
 function unallowed(recipe,data) {
+	if(recipe.name=='empty-barrel'){
+		return false;
+	}
 	if(recipe.name=='se-matter-fusion-dirty'){
 		return false;
+	}
+	if(recipe.name=='se-big-turbine-internal'){
+		console.log('rejected',recipe,'by turbine-internal');
+		return true;
+	}
+	if(recipe.name.startsWith('se-condenser-turbine-reclaim-water-')){
+		console.log('rejected',recipe,'by turbine-reclaim');
+		return true;
+	}
+	if(recipe.name.startsWith('se-melting-')){
+		console.log('rejected',recipe,'by ice');
+		return true;
 	}
 	if(recipe.name.startsWith('se-matter-fusion-')){
 		console.log('rejected',recipe,'by fusion');
 		return true;
 	}
-	if((recipe.name.startsWith('empty-')||recipe.name.startsWith('fill-'))&&recipe.name.endsWith('-barrel')){
+	if(recipe.name.startsWith('empty-')&&recipe.name.endsWith('-barrel')){
 		console.log('rejected',recipe,'by barrel');
 		return true;
 	}
 	if(recipe.category!='hard-recycling'){
-		return false;
+		//return false;
 	}
 	if(recipe.normal.ingredients.length==1){
 		for(var precipe of data.produces.normal[recipe.normal.ingredients[0][0]]??[]){
@@ -274,6 +289,9 @@ function f(outs){
 				continue;
 			}
 			if(col in recipe){
+				if(recipe===outs){
+					console.log('subtracting',minr,'*',recipe[col],'from .out')
+				}
 				subtractObject(recipe,minr,recipe[col]);
 			}
 		}
