@@ -29,6 +29,7 @@ function normalizerecipe(recipe,root=true){
             recipe.result_count=1;
         }
         recipe.results=[[recipe.result,recipe.result_count]];
+        delete recipe.result;
     }
     recipe.results=recipe.results.map(normalizeresult);
     recipe.energy_required=recipe.energy_required??0.5;
