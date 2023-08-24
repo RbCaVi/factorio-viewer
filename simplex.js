@@ -169,6 +169,58 @@ function unallowed(recipe,data) {
 		console.log('rejected',recipe,'by turbine-internal');
 		return true;
 	}
+	if(recipe.name=='se-bio-methane-to-crude-oil'){
+		console.log('rejected',recipe,'by bio-crude');
+		return true;
+	}
+	if(recipe.name=='se-bio-sludge-crude-oil'){
+		console.log('rejected',recipe,'by bio-crude');
+		return true;
+	}
+	if(recipe.name=='coal-liquefaction'){
+		console.log('rejected',recipe,'by coal');
+		return true;
+	}
+	if(recipe.name.startsWith('se-core-fragment-')){
+		console.log('rejected',recipe,'by core');
+		return true;
+	}
+	if(recipe.name.includes('naq')){
+		console.log('rejected',recipe,'by naquium');
+		return true;
+	}
+	if(recipe.name.includes('cry')){
+		console.log('rejected',recipe,'by cryonite');
+		return true;
+	}
+	if(recipe.name.includes('vul')){
+		console.log('rejected',recipe,'by vulcanite');
+		return true;
+	}
+	if(recipe.name.includes('beryl')){
+		console.log('rejected',recipe,'by beryllium');
+		return true;
+	}
+	if(recipe.name.includes('vita')){
+		console.log('rejected',recipe,'by vitamelange');
+		return true;
+	}
+	if(recipe.name.includes('holm')){
+		console.log('rejected',recipe,'by holmium');
+		return true;
+	}
+	if(recipe.name.includes('iri')){
+		console.log('rejected',recipe,'by iridium');
+		return true;
+	}
+	if(recipe.name.includes('scrap')){
+		console.log('rejected',recipe,'by scrap');
+		return true;
+	}
+	if(recipe.name.includes('wood')||recipe.name.includes('bio')||recipe.name.includes('spec')){
+		console.log('rejected',recipe,'by biology');
+		return true;
+	}
 	if(recipe.name.startsWith('se-condenser-turbine-reclaim-water-')){
 		console.log('rejected',recipe,'by turbine-reclaim');
 		return true;
