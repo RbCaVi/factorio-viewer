@@ -19,6 +19,12 @@ function processrecipe(recipe){
         result.amount
       ]);
     }
+    if('result' in recipe[x]){
+      newrecipe[x].results.push([
+        recipe[x].result,
+        recipe[x].result_count??1
+      ]);
+    }
     newrecipe[x].time=recipe[x].energy_required;
   }
   newrecipe.name=recipe.name;

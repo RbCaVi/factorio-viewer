@@ -20,7 +20,7 @@ class FactorioData{
       locale=JSON.parse(locale);
     }
     this.data=data;
-    this.rawdata=data;
+    this.rawdata=clone(data);
     this.locale=locale;
     for(key in this.data.recipe){
       this.data.recipe[key]=normalizerecipe(data.recipe[key]);
@@ -316,6 +316,14 @@ class FactorioData{
     for(var itype of ['fluid'].concat(util.itemtypes)){
       if(item in this.data[itype]){
         return this.data[itype][item];
+      }
+    }
+  }
+
+  getrawitem(item){
+    for(var itype of ['fluid'].concat(util.itemtypes)){
+      if(item in this.rawdata[itype]){
+        return this.rawdata[itype][item];
       }
     }
   }

@@ -74,7 +74,11 @@
 				var out;
 				if(typeof structure=='string'||typeof structure=='number'){
 					return structure;
-				}else if(structure.type=='accordion'){
+				}
+				if('contents' in structure){
+					structure.contents=structure.contents.flat();
+				}
+				if(structure.type=='accordion'){
 					if('header' in structure){
 						var headerparts=structure.header.map(renderstructure);
 						var header=document.createElement('span');
@@ -194,7 +198,7 @@
 							contents:[
 								{
 									type:'json',
-									data:data.getitem(item)
+									data:data.getrawitem(item)
 								}
 							]
 						},
@@ -234,6 +238,9 @@
 			var arrow='→';
 
 			function accordionifmultiple(header,parts){
+				if(parts.length==0){
+					return [];
+				}
 				if(parts.length==1){
 					return {type:'div',contents:[header,parts[0]]};
 				}
@@ -248,13 +255,12 @@
 						{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
 						{type:'icon',itype:'recipe',name:recipe},
 						{type:'br',contents:[]},
-						...recipetostructure(recipe),
+						recipetostructure(recipe),
 						accordionifmultiple(
 							'Unlocked by ',
-							data.unlockedby.normal[recipe].map(tech=>({
+							(data.unlockedby.normal[recipe]??[]).map(tech=>({
 								type:'span',
 								contents:[
-									//{type:'br',contents:[]},
 									data.techlocale(tech)[0],
 									{type:'span',contents:[tech],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
 									{type:'icon',itype:'tech',name:tech}
@@ -267,7 +273,7 @@
 							contents:[
 								{
 									type:'json',
-									data:data.data.recipe[recipe]
+									data:data.rawdata.recipe[recipe]
 								}
 							]
 						}

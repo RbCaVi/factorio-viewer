@@ -21,7 +21,7 @@ function normalizerecipe(recipe,root=true){
             recipe.normal=recipe.expensive;
             delete recipe.expensive;
         }
-        return recipe
+        return recipe;
     }
     recipe.ingredients=recipe.ingredients.map(normalizeingredient);
     if('result' in recipe&&!('results' in recipe)){
