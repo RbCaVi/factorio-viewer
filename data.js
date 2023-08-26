@@ -70,11 +70,6 @@ class FactorioData{
         if(!(x in tech)){
           continue;
         }
-        for(var l of [this.prereqs,this.postreqs,this.unlocks,this.unlockedby]){
-          if(!(tech.name in l[x])){
-            l[x][tech.name]=[];
-          }
-        }
         for(var prereq of tech[x].prerequisites){
           if(!(prereq in this.postreqs[x])){
             this.postreqs[x][prereq]=[];
