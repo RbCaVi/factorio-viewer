@@ -1,6 +1,19 @@
 import {clone} from './util.js';
 import {normalizeresult} from './normalize.js';
 
+function tofrac(num) {
+		var denom=1;
+		var epsilon=0.00001;
+		var factor=2*3*5*7;//*11;
+		while(Math.abs(Math.round(num)-num)>epsilon||Math.abs(Math.round(denom)-denom)>epsilon){
+			num*=factor;
+			denom*=factor;
+		}
+		num=Math.round(num);
+		denom=Math.round(denom);
+		return [num,denom];
+}
+
 class Rational{
 	constructor(num,denom=1){
 		var n1,d1,n2,d2;
@@ -8,15 +21,13 @@ class Rational{
 			n1=num.num;
 			d1=num.denom;
 		}else{
-			n1=num;
-			d1=1;
+			[n1,d1]=tofrac(num);
 		}
 		if(denom instanceof Rational){
 			n2=denom.denom;
 			d2=denom.num;
 		}else{
-			n2=1;
-			d2=denom;
+			[d2,n2]=tofrac(denom);
 		}
 		this.num=n1*n2;
 		this.denom=d1*d2;
@@ -24,14 +35,6 @@ class Rational{
 	}
 
 	reduce(){
-		var epsilon=0.00001;
-		var factor=2*3*5*7;//*11;
-		while(Math.abs(Math.round(this.num)-this.num)>epsilon||Math.abs(Math.round(this.denom)-this.denom)>epsilon){
-			this.num*=30;
-			this.denom*=30;
-		}
-		this.num=Math.round(this.num);
-		this.denom=Math.round(this.denom);
 		// find gcd https://stackoverflow.com/questions/4652468/is-there-a-javascript-function-that-reduces-a-fraction
 		var a = Math.abs(this.num);
 		var b = Math.abs(this.denom);
@@ -148,7 +151,9 @@ class Rational{
 }
 
 function div(r1,r2){
-	return new Rational(r1,r2);
+	var r=new Rational(r1);
+	r.div(r2);
+	return r;
 }
 
 function mult(r1,r2){
@@ -426,6 +431,8 @@ function subtractObject(o,o2,multiplier){
 		o[key].sub(x);
 		if(o[key].iszero()){
 			delete o[key];
+		}else{
+			o[key].reduce();
 		}
 	}
 }
