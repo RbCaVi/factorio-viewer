@@ -359,6 +359,9 @@ class SimplexSolver{
 					minrow=row;
 				}
 			}
+			if((!(col in minr))||(!minr[col].positive())||minrow=='.out'){
+				throw 'nothing making '+col;
+			}
 			var v=minr[col];
 			mapKeys(minr,x=>div(x,v));
 			console.log('pivot',minrow,'by',col);
