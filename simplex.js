@@ -1,4 +1,5 @@
 import {clone} from './util.js';
+import {normalizeresult} from './normalize.js';
 
 class Rational{
 	constructor(num,denom=1){
@@ -183,24 +184,28 @@ class SimplexSolver{
 		}
 
 		for(var resource of Object.values(this.data.data.resource)){
+			if(!('minable' in resource)){
+				continue;
+			}
 			var entry={};
-			if((resource.fluid_amount??0)>0){
-				entry[resource.required_fluid]=div(-resource.fluid_amount,resource.mining_time);
+			if((resource.minable.fluid_amount??0)>0){
+				entry[resource.minable.required_fluid]=div(-resource.minable.fluid_amount,resource.minable.mining_time);
 			}
-			if(resource.results){
-				for(var res of resource.results){
-					if(!(res[0] in entry)){
-						entry[res[0]]=new Rational(0);
+			if(resource.minable.results){
+				for(var res of resource.minable.results){
+					res=normalizeresult(res);
+					if(!(res.name in entry)){
+						entry[res.name]=new Rational(0);
 					}
-					entry[res[0]].add(div(res[1],resource.mining_time));
+					entry[res.name].add(div(res.amount,resource.minable.mining_time));
 				}
-			}else if(resource.result){
-				if(!(resource.result in entry)){
-					entry[resource.result]=new Rational(0);
+			}else if(resource.minable.result){
+				if(!(resource.minable.result in entry)){
+					entry[resource.minable.result]=new Rational(0);
 				}
-				entry[resource.result].add(div(resource.count,resource.mining_time));
+				entry[resource.minable.result].add(div(resource.minable.count??1,resource.minable.mining_time));
 			}
-			this.rtable['mine.'+item]=entry;
+			this.rtable['mine.'+resource.name]=entry;
 		}
 	}
 

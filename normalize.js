@@ -121,4 +121,4 @@ function normalizetech(tech,root=true){
     return tech;
 }
 
-export {normalizerecipe,normalizetech};
+export {normalizerecipe,normalizetech,normalizeresult};
