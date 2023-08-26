@@ -51,6 +51,8 @@
 			window.meditjson=meditjson;
 		  import * as msimplex from './simplex.js';
 			window.msimplex=msimplex;
+		  import * as mrational from './rational.js';
+			window.mrational=mrational;
 		  //import * as m from './.js';
 			//window.m=m;
 		</script>
@@ -339,6 +341,28 @@
 			    body.removeChild(body.lastChild);
 			  }
 		    body.append(div);
+			}
+
+			function getraw(item){
+				solver=new msimplex.SimplexSolver(data)
+				var outs={'space-science-pack':-1};
+				var result=solver.solve(outs);
+				Object.entries(result).filter(
+					x=>x[0].startsWith('recipe.mine.')||x[0].startsWith('recipe.pump.')
+				).map(
+					([name,amount])=>[name.slice(7),amount]
+				).map(
+					([name,amount])=>[solver.rtable[name],amount]
+				).map(
+					([recipe,amount])=>Object.entries(recipe).map(
+						([item,iamount])=>[item,mrational.mult(iamount,amount)]
+					)
+				).flat().map(
+					([name,amount])=>[name,amount.num/amount.denom]
+				).reduce(
+					(o,[name,amount])=>{o[name]=(o[name]??0)+amount;return o;},
+					{}
+				)
 			}
 		</script>
 		<button onclick="back()">back</button><button onclick="forward()">forward</button>
