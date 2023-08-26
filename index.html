@@ -6,6 +6,7 @@
 	<body>
 		<script type='module'>
 			import {FactorioData} from './data.js';
+			import {FactorioLocale,FactorioLocalizer} from './locale.js';
 			import {util} from './util.js';
 			function resolveAll(ps){
 			  // ps is {key:promise ...}
@@ -16,9 +17,11 @@
 			}
 			var datap=fetch('SE.json').then(r=>r.json()).then(data=>{
 				window.data=new FactorioData(data);
+				return window.data;
 			});
 			var localep=fetch('SElocale.json').then(r=>r.json()).then(locale=>{
 				window.locale=new FactorioLocale(locale);
+				return window.locale;
 			});
 			resolveAll({'data':datap,'locale':localep}).then(d=>{
 				window.localizer=new FactorioLocalizer(d.data,d.locale);

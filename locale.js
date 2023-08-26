@@ -1,4 +1,4 @@
-import {stringify} from './util.js';
+import {stringify,clone} from './util.js';
 
 class FactorioLocale{
 	#localecache={};
@@ -225,3 +225,5 @@ class FactorioLocalizer{
     return namedesc;
   }
 }
+
+export {FactorioLocale,FactorioLocalizer};
