@@ -356,6 +356,7 @@ class SimplexSolver{
 		outs=clone(outs);
 		mapKeys(outs,x=>new Rational(x));
 		rtable2['.out']=outs;
+		var pivots=0;
 		while(true){
 			var col=minIndex(outs);
 			if(!(outs[col].negative())){
@@ -389,8 +390,10 @@ class SimplexSolver{
 				}
 			}
 			console.log(s(outs));
+			pivots++;
 		}
 		mapKeys(outs,f=>f.reduce());
+		console.log('did',pivots,'pivots');
 		return outs;
 	}
 }
