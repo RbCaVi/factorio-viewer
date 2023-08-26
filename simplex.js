@@ -190,6 +190,9 @@ class SimplexSolver{
 	}
 
 	#getitemrank(item){
+		if(item.startsWith('recipe.')){
+			return this.reciperanks[item]+1;
+		}
 		return Math.min(...this.data.produces.normal[item].map(recipe=>this.reciperanks[recipe]));
   }
 

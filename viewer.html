@@ -345,9 +345,10 @@
 
 			function getraw(item){
 				solver=new msimplex.SimplexSolver(data)
-				var outs={'space-science-pack':-1};
+				var outs={};
+				outs[item]=-1;
 				var result=solver.solve(outs);
-				Object.entries(result).filter(
+				return Object.entries(result).filter(
 					x=>x[0].startsWith('recipe.mine.')||x[0].startsWith('recipe.pump.')
 				).map(
 					([name,amount])=>[name.slice(7),amount]
