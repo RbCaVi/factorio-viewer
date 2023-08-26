@@ -1,30 +1,52 @@
+import {stringify} from './util.js';
+
 class FactorioLocale{
 	#localecache={};
 
 	constructor(locale){
+    if(typeof locale=='string'){
+      locale=JSON.parse(locale);
+    }
 		this.locale=locale;
 	}
 
   #localizeraw(s){
-    console.info('localize',s)
+    console.info('localize',s);
+    var key=stringify(s);
+    if(key in this.#localecache){
+    	console.info('found',s,'in cache as',this.#localecache[key]);
+    	return this.#localecache[key];
+    }
     if(typeof s=='string'){
-      return s;
+      var out=s;
+      this.#localecache[key]=out;
+      return out;
     }else if(typeof s=='number'){
-      return ''+s;
+      var out=''+s;
+      this.#localecache[key]=out;
+      return out;
     }else if(Array.isArray(s)){
       if(s[0]==''){
-        return s.slice(1).map(x=>this.#localizeraw(x)).join('');
+        var out=s.slice(1).map(x=>this.#localizeraw(x)).join('');
+        this.#localecache[key]=out;
+        return out;
       }
       var l=this.locale[s[0]];
       if(l==undefined){
-        return null;
+        var out=null;
+        this.#localecache[key]=out;
+        return out;
       }
       for(var i=1;i<s.length;i++){
         l=l.replace('__'+i+'__',this.#localizeraw(s[i]));
       }
-      return l;
+      var out=l;
+      this.#localecache[key]=out;
+      return out;
     }
-    return this.locale.get(s);
+    //var out=this.locale.get(s);
+    //this.#localecache[key]=out;
+    //return out;
   }
 
   localize(s){
