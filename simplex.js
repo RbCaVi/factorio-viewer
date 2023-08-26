@@ -384,7 +384,7 @@ class SimplexSolver{
 				}
 				if(col in recipe){
 					if(recipe===outs){
-						console.log('subtracting',minr,'*',recipe[col],'from .out')
+						console.log('subtracting',s(minr),'*',s(recipe[col]),'from .out')
 					}
 					subtractObject(recipe,minr,recipe[col]);
 				}
