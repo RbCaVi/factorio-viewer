@@ -1,4 +1,4 @@
-import {clone} from './util.js';
+import {clone,s} from './util.js';
 import {normalizeresult} from './normalize.js';
 
 function tofrac(num) {
@@ -415,10 +415,6 @@ function mapKeys(o,f){
 	for(var key in o){
 		o[key]=f(o[key]);
 	}
-}
-
-function s(x){
-	return JSON.stringify(x);
 }
 
 function subtractObject(o,o2,multiplier){
