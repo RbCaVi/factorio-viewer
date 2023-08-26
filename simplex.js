@@ -443,10 +443,8 @@ function ranktech(data) {
 	for(var i=0;;i++){
 		var newranks=[];
 		for(var [techname,prereqs] of techpres.entries()){
-			if(allranked.has(techname)){
-				continue;
-			}
 			if(prereqs.every(p=>allranked.has(p))){
+				techpres.delete(techname);
 				newranks.push(techname);
 				ranked[techname]=i;
 			}
