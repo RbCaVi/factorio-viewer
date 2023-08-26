@@ -1,4 +1,4 @@
-import {clone,s} from './util.js';
+import {clone,stringify} from './util.js';
 import {normalizeresult} from './normalize.js';
 
 function tofrac(num) {
@@ -389,12 +389,12 @@ class SimplexSolver{
 				}
 				if(col in recipe){
 					if(recipe===outs){
-						console.log('subtracting',s(minr),'*',s(recipe[col]),'from .out')
+						console.log('subtracting',stringify(minr),'*',stringify(recipe[col]),'from .out')
 					}
 					subtractObject(recipe,minr,recipe[col]);
 				}
 			}
-			console.log(s(outs));
+			console.log(stringify(outs));
 			pivots++;
 		}
 		mapKeys(outs,f=>f.reduce());

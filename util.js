@@ -176,8 +176,8 @@ function makePromise(data){
     return new Promise(resolve=>resolve(data));
 }
 
-function s(x){
+function stringify(x){
   return JSON.stringify(x);
 }
 
-export {clone,util,craftertypes,promiseChain,packPromise,makePromise,s};
+export {clone,util,craftertypes,promiseChain,packPromise,makePromise,stringify};
