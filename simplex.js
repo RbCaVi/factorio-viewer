@@ -183,6 +183,13 @@ class SimplexSolver{
 			this.rtable[recipename]=entry;
 		}
 
+		for(var pump of Object.values(this.data.data['offshore-pump'])){
+			// add water recipe
+			var entry={};
+			entry[pump.fluid]=new Rational(pump.pumping_speed*60);
+			this.rtable['pump.'+pump.name]=entry;
+		}
+
 		for(var resource of Object.values(this.data.data.resource)){
 			if(!('minable' in resource)){
 				continue;
