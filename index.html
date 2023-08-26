@@ -14,10 +14,14 @@
 			  var values={};
 			  return Object.entries(ps).map(([k,p])=>p.then(data=>{values[k]=data;})).reduce((p1,p2)=>p1.then(()=>p2)).then(()=>values);
 			}
-			var datap=fetch('SE.json').then(r=>r.json());
-			var localep=fetch('SElocale.json').then(r=>r.json());
+			var datap=fetch('SE.json').then(r=>r.json()).then(data=>{
+				window.data=new FactorioData(data);
+			});
+			var localep=fetch('SElocale.json').then(r=>r.json()).then(locale=>{
+				window.locale=new FactorioLocale(locale);
+			});
 			resolveAll({'data':datap,'locale':localep}).then(d=>{
-				window.data=new FactorioData(d.data,d.locale);
+				window.localizer=new FactorioLocalizer(d.data,d.locale);
 			}).then(()=>{
 				render('recipe','se-iridium-ingot');
 				render('item','se-naquium-processor');
@@ -189,7 +193,7 @@
 				var structure={
 					type:'div',
 					contents:[
-						data.itemlocale(item)[0],
+						localizer.itemlocale(item)[0],
 						{type:'span',contents:[item],styles:{'padding-left':'1em',color:'grey'}},
 						{type:'icon',itype:'item',name:item},
 						{
@@ -208,7 +212,7 @@
 							contents:(data.produces.normal[item]??[]).map(recipe=>({
 								type:'accordion',
 								header:[
-									data.recipelocale(recipe)[0]??'???',
+									localizer.recipelocale(recipe)[0]??'???',
 									{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
 									{type:'icon',itype:'recipe',name:recipe}
 								],
@@ -221,7 +225,7 @@
 							contents:(data.uses.normal[item]??[]).map(recipe=>({
 								type:'accordion',
 								header:[
-									data.recipelocale(recipe)[0]??'???',
+									localizer.recipelocale(recipe)[0]??'???',
 									{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
 									{type:'icon',itype:'recipe',name:recipe}
 								],
@@ -251,7 +255,7 @@
 				var structure={
 					type:'div',
 					contents:[
-						data.recipelocale(recipe)[0]??'???',
+						localizer.recipelocale(recipe)[0]??'???',
 						{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
 						{type:'icon',itype:'recipe',name:recipe},
 						{type:'br',contents:[]},
@@ -261,7 +265,7 @@
 							(data.unlockedby.normal[recipe]??[]).map(tech=>({
 								type:'span',
 								contents:[
-									data.techlocale(tech)[0],
+									localizer.techlocale(tech)[0],
 									{type:'span',contents:[tech],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
 									{type:'icon',itype:'tech',name:tech}
 								]
