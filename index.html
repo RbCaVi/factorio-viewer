@@ -25,6 +25,17 @@
 			});
 			resolveAll({'data':datap,'locale':localep}).then(d=>{
 				window.localizer=new FactorioLocalizer(d.data,d.locale);
+			}).then(()=>{
+				window.itemlocales={};
+				window.recipelocales={};
+				for(var itype of util.itemtypes){
+					for(var name of Object.keys(data.data[itype])){
+						itemlocales[name]=localizer.itemlocale(name);
+					}
+				}
+				for(var name of Object.keys(data.data.recipe)){
+					recipelocales[name]=localizer.recipelocale(name);
+				}
 			});
 			window.util=util;
 		  import * as mdata from './data.js';
