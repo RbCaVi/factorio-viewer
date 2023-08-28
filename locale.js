@@ -172,7 +172,11 @@ class FactorioLocalizer{
       namedesc=this.equipmentlocale(item.placed_as_equipment_result);
     }
     if(!namedesc[0]){
-      namedesc=this.entitylocale(item.place_result);
+    	if(item.place_result){
+      	namedesc=this.entitylocale(item.place_result);
+    	}else{
+    		namedesc[0]='???';
+    	}
     }
     namedesc[1]=namedesc[1]??'';
     this.#localecache.item[item.name]=namedesc;
