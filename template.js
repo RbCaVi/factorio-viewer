@@ -2,6 +2,11 @@ import {createaccordion,fromjson as accordionfromjson} from './accordion.js';
 import {fromjson} from './editjson.js';
 import {makeiconURL} from './image.js';
 
+// https://stackoverflow.com/questions/384286/how-do-you-check-if-a-javascript-object-is-a-dom-object
+function isElement(element) {
+  return element instanceof Element || element instanceof HTMLDocument;  
+}
+
 function addstyles(element,styles){
 	// styles is {style name:style value}
 	for(var [key,value] of Object.entries(styles)){
@@ -18,7 +23,7 @@ function addclasses(element,classes){
 
 function renderstructure(structure){
 	var out;
-	if(typeof structure=='string'||typeof structure=='number'){
+	if(typeof structure=='string'||typeof structure=='number'||isElement(structure)){
 		return structure;
 	}
 	if('contents' in structure){
