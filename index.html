@@ -70,9 +70,10 @@
 				for(var i=0;i<s.length;i++){
 					if(s.charAt(i)==pattern.charAt(patterni)){
 						matches.push(i);
-						patterni++;
+						do{
+							patterni++;
+						}while(pattern.charAt(patterni)==' ');
 						if(patterni==pattern.length){
-							console.log(matches);
 							return [true,matches];
 						}
 					}
