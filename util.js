@@ -176,8 +176,20 @@ function makePromise(data){
     return new Promise(resolve=>resolve(data));
 }
 
+function resolveAll(ps){
+  // ps is {key:promise ...}
+  // returns a Promise that resolves to {key:promise value}
+  // will reject with any error
+  var values={};
+  return Object.entries(ps).map(
+    ([k,p])=>p.then(data=>{values[k]=data;})
+  ).reduce(
+    (p1,p2)=>p1.then(()=>p2)
+  ).then(()=>values);
+}
+
 function stringify(x){
   return JSON.stringify(x);
 }
 
-export {clone,util,craftertypes,promiseChain,packPromise,makePromise,stringify};
+export {clone,util,craftertypes,promiseChain,packPromise,makePromise,resolveAll,stringify};
