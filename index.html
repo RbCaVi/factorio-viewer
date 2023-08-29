@@ -303,7 +303,10 @@
 		<div>
 			<div style='width: 50%; float: left;'>
 				<h1>Item</h1>
-				<input type="text" id='itemsearch' oninput="itemsearch(this)">
+				<div style="position: relative;">
+					<input type="text" id='itemsearch' oninput="itemsearch(this)">
+					<div class='searcheditems searchresults'></div>
+				</div>
 			</div>
 			<div style='width: 50%; float: right;'>
 				<h1>Recipe</h1>
