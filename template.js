@@ -71,6 +71,39 @@ function renderstructure(structure){
 		});
 		addclasses(img,['factorio-icon']);
 		out=img;
+	}else if(structure.type=='texticon'){
+		// promise to load the image
+		var img=document.createElement('img');
+		var idata;
+		if(structure.itype=='item'){
+			idata=data.getitem(structure.name);
+		}else if(structure.itype=='tech'){
+			idata=data.data.technology[structure.name];
+		}else if(structure.itype=='recipe'){
+			var rdata=data.data.recipe[structure.name];
+			console.log(rdata);
+			if(rdata.icons==undefined&&rdata.icon==undefined){
+				if(rdata.normal.main_product){
+					idata=data.getitem(rdata.normal.main_product);
+				}else if(rdata.normal.result){
+					idata=data.getitem(rdata.normal.result);
+				}else{
+					idata=data.getitem(rdata.normal.results[0].name);
+				}
+			}else{
+				idata=rdata;
+			}
+		}
+		makeiconURL(idata).then(url=>{
+      	img.src=url;
+		});
+		var icontext=document.createElement('span');
+		icontext.textContent=structure.text;
+		addclasses(icontext,['icon-text']);
+		var span=document.createElement('span');
+		addclasses(span,['factorio-icon']);
+		span.append(img,icontext);
+		out=img;
 	}else{
 		var contents=structure.contents.map(renderstructure);
 		var container=document.createElement(structure.type);
@@ -92,24 +125,12 @@ function recipetostructure(recipe){
 	var ress=rdata.normal.results;
 	var ingcontents=[];
 	for(var i=0;i<ings.length;i++){
-		ingcontents.push({
-			type:'span',
-			contents:[
-				{type:'icon',itype:'item',name:ings[i][0]},
-				{type:'span',contents:[ings[i][1]],classes:['icon-text']}
-			]
-		});
+		ingcontents.push({type:'texticon',itype:'item',name:ings[i][0],text:ings[i][1]});
 		ingcontents.push('+');
 	}
 	var rescontents=[];
 	for(var i=0;i<ress.length;i++){
-		rescontents.push({
-			type:'span',
-			contents:[
-				{type:'icon',itype:'item',name:ress[i][0]},
-				{type:'span',contents:[ress[i][1]],classes:['icon-text']}
-			]
-		});
+		rescontents.push({type:'texticon',itype:'item',name:ress[i][0],text:ress[i][1]});
 		rescontents.push('+');
 	}
 	ingcontents.pop();
