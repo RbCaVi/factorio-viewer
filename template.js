@@ -26,16 +26,13 @@ function renderstructure(structure){
 	if(typeof structure=='string'||typeof structure=='number'||isElement(structure)){
 		return structure;
 	}
-	if('contents' in structure){
-		structure.contents=structure.contents.flat();
-	}
+	var contents=structure.contents.?flat().map(renderstructure);
 	if(structure.type=='accordion'){
 		if('header' in structure){
 			var headerparts=structure.header.map(renderstructure);
 			var header=document.createElement('span');
 			header.append(...headerparts);
 		}
-		var contents=structure.contents.map(renderstructure);
 		var div=document.createElement('div');
 		div.append(...contents);
 		out=createaccordion(header,div);
@@ -105,7 +102,6 @@ function renderstructure(structure){
 		span.append(img,icontext);
 		out=img;
 	}else{
-		var contents=structure.contents.map(renderstructure);
 		var container=document.createElement(structure.type);
 		container.append(...contents);
 		out=container;
