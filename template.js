@@ -140,3 +140,5 @@ function accordionifmultiple(header,parts){
 	}
 	return {type:'accordion',header:header,contents:parts};
 }
+
+export {addstyles,addclasses,renderstructure,recipetostructure,accordionifmultiple};
