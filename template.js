@@ -70,9 +70,6 @@ function renderstructure(structure){
       	img.src=url;
 		});
 		addclasses(img,['factorio-icon']);
-		var itype=structure.itype;
-		var name=structure.name;
-		img.addEventListener('click',()=>render(itype,name));
 		out=img;
 	}else{
 		var contents=structure.contents.map(renderstructure);
