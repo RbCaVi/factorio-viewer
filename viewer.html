@@ -199,7 +199,7 @@
 					type:'div',
 					contents:[
 						localizer.itemlocale(item)[0],
-						{type:'span',contents:[item],styles:{'padding-left':'1em',color:'grey'}},
+						{type:'span',contents:[item],classes:['internal-name']},
 						{type:'icon',itype:'item',name:item},
 						{
 							type:'accordion',
@@ -218,7 +218,7 @@
 								type:'accordion',
 								header:[
 									localizer.recipelocale(recipe)[0]??'???',
-									{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
+									{type:'span',contents:[recipe],classes:['internal-name']},
 									{type:'icon',itype:'recipe',name:recipe}
 								],
 								contents:recipetostructure(recipe)
@@ -231,7 +231,7 @@
 								type:'accordion',
 								header:[
 									localizer.recipelocale(recipe)[0]??'???',
-									{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
+									{type:'span',contents:[recipe],classes:['internal-name']},
 									{type:'icon',itype:'recipe',name:recipe}
 								],
 								contents:recipetostructure(recipe)
@@ -261,7 +261,7 @@
 					type:'div',
 					contents:[
 						localizer.recipelocale(recipe)[0]??'???',
-						{type:'span',contents:[recipe],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
+						{type:'span',contents:[recipe],classes:['internal-name']},
 						{type:'icon',itype:'recipe',name:recipe},
 						{type:'br',contents:[]},
 						recipetostructure(recipe),
@@ -271,7 +271,7 @@
 								type:'span',
 								contents:[
 									localizer.techlocale(tech)[0],
-									{type:'span',contents:[tech],styles:{'padding-left':'1em','padding-right':'1em',color:'grey'}},
+									{type:'span',contents:[tech],classes:['internal-name']},
 									{type:'icon',itype:'tech',name:tech}
 								]
 							}))
