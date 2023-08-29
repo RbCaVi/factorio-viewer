@@ -69,14 +69,7 @@ function renderstructure(structure){
 		makeiconURL(idata).then(url=>{
       	img.src=url;
 		});
-		var iconstyle={
-			borderColor:'black',
-			borderWidth:'1px',
-			borderStyle:'solid',
-			position:'relative',
-			display:'inline-block'
-		};
-		addstyles(img,iconstyle);
+		addclasses(img,['factorio-icon']);
 		var itype=structure.itype;
 		var name=structure.name;
 		img.addEventListener('click',()=>render(itype,name));
@@ -100,13 +93,6 @@ function recipetostructure(recipe){
 	var rdata=data.pdata.recipe[recipe];
 	var ings=rdata.normal.ingredients;
 	var ress=rdata.normal.results;
-	var iconstyle={
-		borderColor:'black',
-		borderWidth:'1px',
-		borderStyle:'solid',
-		position:'relative',
-		display:'inline-block'
-	};
 	var ingcontents=[];
 	for(var i=0;i<ings.length;i++){
 		ingcontents.push({
@@ -114,8 +100,7 @@ function recipetostructure(recipe){
 			contents:[
 				{type:'icon',itype:'item',name:ings[i][0]},
 				{type:'span',contents:[ings[i][1]],classes:['icon-text']}
-			],
-			styles:iconstyle
+			]
 		});
 		ingcontents.push('+');
 	}
@@ -126,8 +111,7 @@ function recipetostructure(recipe){
 			contents:[
 				{type:'icon',itype:'item',name:ress[i][0]},
 				{type:'span',contents:[ress[i][1]],classes:['icon-text']}
-			],
-			styles:iconstyle
+			]
 		});
 		rescontents.push('+');
 	}

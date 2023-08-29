@@ -7,3 +7,11 @@
   text-shadow: 0px 1px 1px #000,0px -1px 1px #000,1px 0px 1px #000,-1px 0px 1px #000;
   pointer-events: none;
 }
+
+.factorio-icon {
+  border-color: black;
+  border-width: 1px;
+  border-style: solid;
+  position: relative;
+  display: inline-block;
+}
