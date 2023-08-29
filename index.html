@@ -5,19 +5,46 @@
 	</head>
 	<body>
 		<script type='module'>
-			import {FactorioData} from './data.js';
-			import {FactorioLocale,FactorioLocalizer} from './locale.js';
 			import {util,resolveAll} from './util.js';
+			window.util=util;
+			window.modules={};
+		  import * as mdata from './data.js';
+		  modules.data=mdata;
+		  import * as mimage from './image.js';
+		  modules.image=mimage;
+		  import * as mnormalize from './normalize.js';
+		  modules.normalize=mnormalize;
+		  import * as mprocess from './process.js';
+		  modules.process=mprocess;
+		  import * as mtowiki from './towiki.js';
+		  modules.towiki=mtowiki;
+		  import * as mutil from './util.js';
+		  modules.util=mutil;
+		  import * as mwikiapi from './wikiapi.js';
+		  modules.wikiapi=mwikiapi;
+		  import * as meditjson from './editjson.js';
+		  modules.editjson=meditjson;
+		  import * as msimplex from './simplex.js';
+		  modules.simplex=msimplex;
+		  import * as mrational from './rational.js';
+		  modules.rational=mrational;
+		  import * as maccordion from './accordion.js';
+		  modules.accordion=maccordion;
+		  import * as mlocale from './locale.js';
+		  modules.locale=mlocale;
+		  //import * as m from './.js';
+		  //modules.=m;
+		  window.wiki='https://spaceexploration.miraheze.org';
 			var datap=fetch('SE.json').then(r=>r.json()).then(data=>{
-				window.data=new FactorioData(data);
+				window.data=new modules.data.FactorioData(data);
 				return window.data;
 			});
 			var localep=fetch('SElocale.json').then(r=>r.json()).then(locale=>{
-				window.locale=new FactorioLocale(locale);
+				window.locale=new modules.locale.FactorioLocale(locale);
 				return window.locale;
 			});
 			resolveAll({'data':datap,'locale':localep}).then(d=>{
-				window.localizer=new FactorioLocalizer(d.data,d.locale);
+				window.localizer=new modules.locale.FactorioLocalizer(d.data,d.locale);
 			}).then(()=>{
 				window.itemlocales={};
 				window.recipelocales={};
@@ -30,32 +57,6 @@
 					recipelocales[name]=localizer.recipelocale(name);
 				}
 			});
-			window.util=util;
-		  import * as mdata from './data.js';
-		  import * as mimage from './image.js';
-		  import * as mnormalize from './normalize.js';
-		  import * as mprocess from './process.js';
-		  import * as mtowiki from './towiki.js';
-		  import * as mutil from './util.js';
-		  import * as mwikiapi from './wikiapi.js';
-		  window.wiki='https://spaceexploration.miraheze.org';
-		  window.mdata=mdata;
-			window.mimage=mimage;
-			window.mnormalize=mnormalize;
-			window.mprocess=mprocess;
-			window.mtowiki=mtowiki;
-			window.mutil=mutil;
-			window.mwikiapi=mwikiapi;
-		  import * as maccordion from './accordion.js';
-			window.maccordion=maccordion;
-		  import * as meditjson from './editjson.js';
-			window.meditjson=meditjson;
-		  import * as msimplex from './simplex.js';
-			window.msimplex=msimplex;
-		  import * as mrational from './rational.js';
-			window.mrational=mrational;
-		  //import * as m from './.js';
-			//window.m=m;
 		</script>
 		<script>
 			function match(pattern,s){
@@ -151,7 +152,7 @@
 			function getimage(data,size) {
 	      var img=document.createElement('img');
 	      document.querySelector('body').append(img);
-		    return mimage.makeiconURL(data,size).then(url=>{
+		    return modules.image.makeiconURL(data,size).then(url=>{
 		      img.src=url;
 		    });
 		  }
@@ -187,11 +188,11 @@
 					var contents=structure.contents.map(renderstructure);
 					var div=document.createElement('div');
 					div.append(...contents);
-					out=maccordion.createaccordion(header,div);
+					out=modules.accordion.createaccordion(header,div);
 				}else if(structure.type=='editjson'){
-					out=meditjson.fromjson(structure.data);
+					out=modules.editjson.fromjson(structure.data);
 				}else if(structure.type=='json'){
-					out=maccordion.fromjson(structure.data);
+					out=modules.accordion.fromjson(structure.data);
 				}else if(structure.type=='icon'){
 					// promise to load the image
 					var img=document.createElement('img');
@@ -215,7 +216,7 @@
 							idata=rdata;
 						}
 					}
-					mimage.makeiconURL(idata).then(url=>{
+					modules.image.makeiconURL(idata).then(url=>{
 			      	img.src=url;
 					});
 					var iconstyle={
