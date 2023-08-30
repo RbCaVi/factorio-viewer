@@ -2,7 +2,7 @@
 	display: none;
 }
 
-input:focus + .searcheditems{
+input:focus + .searcheditems,.searcheditems:hover,.searcheditems:focus{
 	position: absolute; top: 100%;
 	display: block;
 	overflow: scroll;
