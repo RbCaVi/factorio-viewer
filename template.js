@@ -26,7 +26,7 @@ function renderstructure(structure){
 	if(typeof structure=='string'||typeof structure=='number'||isElement(structure)){
 		return structure;
 	}
-	var contents=structure.contents.?flat().map(renderstructure);
+	var contents=structure.contents?.flat().map(renderstructure);
 	if(structure.type=='accordion'){
 		if('header' in structure){
 			var headerparts=structure.header.map(renderstructure);
