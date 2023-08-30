@@ -139,6 +139,21 @@
 			  return array;
 			}
 
+			function highlightletters(s,highlighted){
+				var out=document.createElement('span');
+				for(var i=0;i<s.length;i++){
+					if(highlighted.includes(i)){
+						var h=document.createElement('span');
+						h.textContent=s.charAt(i);
+						modules.template.addclasses(h,['search-highlighted']);
+						out.append(h);
+					}else{
+						out.append(s.charAt(i));
+					}
+				}
+				return out;
+			}
+
 			function itemsearch(element){
 				var search=element.value;
 				var scores=[];
@@ -150,6 +165,19 @@
 					}
 				}
 				console.log(scores);
+				var resultsdiv=element.nextElementSibling;
+				resultsdiv.textContent='';
+				for(var [iname,lname,imatch,lmatch] of scores){
+					var structure={
+						type:'div',
+						contents:[
+							{type:'span',contents:[highlightletters(lname,lmatch)]},
+							{type:'span',contents:[highlightletters(iname,imatch)],classes:['internal-name']},
+							{type:'icon',itype:'item',name:iname}
+						]
+					};
+					resultsdiv.append(modules.template.renderstructure(structure));
+				}
 			}
 		</script>
 		<div class="items"></div>
