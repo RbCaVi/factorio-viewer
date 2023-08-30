@@ -7,12 +7,12 @@
 		<script type='module'>
 			import {FactorioData} from './data.js';
 			import {FactorioLocale,FactorioLocalizer} from './locale.js';
-			var datap=fetch('SE.json').then(r=>r.json()).then(data=>{
 			import {util,resolveAll} from './util.js';
+			let datap=fetch('SE.json').then(r=>r.json()).then(data=>{
 				window.data=new FactorioData(data);
 				return window.data;
 			});
-			var localep=fetch('SElocale.json').then(r=>r.json()).then(locale=>{
+			let localep=fetch('SElocale.json').then(r=>r.json()).then(locale=>{
 				window.locale=new FactorioLocale(locale);
 				return window.locale;
 			});
@@ -53,7 +53,7 @@
 		</script>
 		<script>
 			function _renderitem(item){
-				var structure={
+				let structure={
 					type:'div',
 					contents:[
 						localizer.itemlocale(item)[0],
@@ -98,11 +98,9 @@
 					]
 				};
 
-				var div=mtemplate.renderstructure(structure);
+				let div=mtemplate.renderstructure(structure);
 				put(div);
 			}
-
-			var arrow='→';
 
 			function accordionifmultiple(header,parts){
 				if(parts.length==0){
@@ -115,7 +113,7 @@
 			}
 
 			function _renderrecipe(recipe){
-				var structure={
+				let structure={
 					type:'div',
 					contents:[
 						localizer.recipelocale(recipe)[0]??'???',
@@ -147,7 +145,7 @@
 					]
 				};
 
-				var div=mtemplate.renderstructure(structure);
+				let div=mtemplate.renderstructure(structure);
 				put(div);
 			}
 
@@ -179,7 +177,7 @@
 				if(history.length<=1){
 					return;
 				}
-				var typename=history.pop();
+				let typename=history.pop();
 				fhistory.push(typename);
 				_render(...history[history.length-1]);
 			}
@@ -188,13 +186,13 @@
 				if(fhistory.length==0){
 					return;
 				}
-				var typename=fhistory.pop();
+				let typename=fhistory.pop();
 				history.push(typename);
 				_render(...typename);
 			}
 
 			function put(div) {
-		    var body=document.querySelector('.items');
+		    let body=document.querySelector('.items');
 			  while (body.firstChild) {
 			    body.removeChild(body.lastChild);
 			  }
@@ -203,9 +201,9 @@
 
 			function getraw(item){
 				solver=new msimplex.SimplexSolver(data)
-				var outs={};
+				let outs={};
 				outs[item]=-1;
-				var result=solver.solve(outs);
+				let result=solver.solve(outs);
 				return Object.entries(result).filter(
 					x=>x[0].startsWith('recipe.mine.')||x[0].startsWith('recipe.pump.')
 				).map(
