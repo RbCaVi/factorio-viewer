@@ -7,15 +7,8 @@
 		<script type='module'>
 			import {FactorioData} from './data.js';
 			import {FactorioLocale,FactorioLocalizer} from './locale.js';
-			import {util} from './util.js';
-			function resolveAll(ps){
-			  // ps is {key:promise ...}
-			  // returns a Promise that resolves to {key:promise value}
-			  // will reject with any error
-			  var values={};
-			  return Object.entries(ps).map(([k,p])=>p.then(data=>{values[k]=data;})).reduce((p1,p2)=>p1.then(()=>p2)).then(()=>values);
-			}
 			var datap=fetch('SE.json').then(r=>r.json()).then(data=>{
+			import {util,resolveAll} from './util.js';
 				window.data=new FactorioData(data);
 				return window.data;
 			});
