@@ -194,7 +194,7 @@
 				return ingcontents.concat(['→'],rescontents,' ',rdata.normal.time+' s');
 			}
 
-			function renderitem(item){
+			function _renderitem(item){
 				var structure={
 					type:'div',
 					contents:[
@@ -256,7 +256,7 @@
 				return {type:'accordion',header:header,contents:parts};
 			}
 
-			function renderrecipe(recipe){
+			function _renderrecipe(recipe){
 				var structure={
 					type:'div',
 					contents:[
@@ -309,10 +309,10 @@
 			function _render(type,name) {
 				switch(type){
 				case 'recipe':
-					renderrecipe(name);
+					_renderrecipe(name);
 					break;
 				case 'item':
-					renderitem(name);
+					_renderitem(name);
 					break;
 				}
 			}
@@ -365,8 +365,14 @@
 					{}
 				)
 			}
+
+			function renderthing(type) {
+				render(type,document.getElementById('inputbox').value);
+			}
 		</script>
 		<button onclick="back()">back</button><button onclick="forward()">forward</button>
 		<div class="items"></div>
+		<input type="text" id='inputbox'>
+		<button onclick="renderthing('item')">item</button><button onclick="renderthing('recipe')">recipe</button>
 	</body>
 </html>
