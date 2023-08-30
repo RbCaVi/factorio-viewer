@@ -46,147 +46,12 @@
 			window.msimplex=msimplex;
 		  import * as mrational from './rational.js';
 			window.mrational=mrational;
+		  import * as mtemplate from './template.js';
+			window.mtemplate=mtemplate;
 		  //import * as m from './.js';
 			//window.m=m;
 		</script>
 		<script>
-			function getimage(data,size) {
-	      var img=document.createElement('img');
-	      document.querySelector('body').append(img);
-		    return mimage.makeiconURL(data,size).then(url=>{
-		      img.src=url;
-		    });
-		  }
-
-			function addstyles(element,styles){
-				// styles is {style name:style value}
-				for(var [key,value] of Object.entries(styles)){
-					element.style[key]=value;
-				}
-			}
-
-			function addclasses(element,classes){
-				// classes is [class...]
-				for(var c of classes){
-					element.classList.add(c);
-				}
-			}
-
-			function renderstructure(structure){
-				var out;
-				if(typeof structure=='string'||typeof structure=='number'){
-					return structure;
-				}
-				if('contents' in structure){
-					structure.contents=structure.contents.flat();
-				}
-				if(structure.type=='accordion'){
-					if('header' in structure){
-						var headerparts=structure.header.map(renderstructure);
-						var header=document.createElement('span');
-						header.append(...headerparts);
-					}
-					var contents=structure.contents.map(renderstructure);
-					var div=document.createElement('div');
-					div.append(...contents);
-					out=maccordion.createaccordion(header,div);
-				}else if(structure.type=='editjson'){
-					out=meditjson.fromjson(structure.data);
-				}else if(structure.type=='json'){
-					out=maccordion.fromjson(structure.data);
-				}else if(structure.type=='icon'){
-					// promise to load the image
-					var img=document.createElement('img');
-					var idata;
-					if(structure.itype=='item'){
-						idata=data.getitem(structure.name);
-					}else if(structure.itype=='tech'){
-						idata=data.data.technology[structure.name];
-					}else if(structure.itype=='recipe'){
-						var rdata=data.data.recipe[structure.name];
-						console.log(rdata);
-						if(rdata.icons==undefined&&rdata.icon==undefined){
-							if(rdata.normal.main_product){
-								idata=data.getitem(rdata.normal.main_product);
-							}else if(rdata.normal.result){
-								idata=data.getitem(rdata.normal.result);
-							}else{
-								idata=data.getitem(rdata.normal.results[0].name);
-							}
-						}else{
-							idata=rdata;
-						}
-					}
-					mimage.makeiconURL(idata).then(url=>{
-			      	img.src=url;
-					});
-					var iconstyle={
-						borderColor:'black',
-						borderWidth:'1px',
-						borderStyle:'solid',
-						position:'relative',
-						display:'inline-block'
-					};
-					addstyles(img,iconstyle);
-					var itype=structure.itype;
-					var name=structure.name;
-					img.addEventListener('click',()=>render(itype,name));
-					out=img;
-				}else{
-					var contents=structure.contents.map(renderstructure);
-					var container=document.createElement(structure.type);
-					container.append(...contents);
-					out=container;
-				}
-				if('classes' in structure){
-					addclasses(out,structure.classes);
-				}
-				if('styles' in structure){
-					addstyles(out,structure.styles);
-				}
-				return out;
-			}
-
-			function recipetostructure(recipe){
-				var rdata=data.pdata.recipe[recipe];
-				var ings=rdata.normal.ingredients;
-				var ress=rdata.normal.results;
-				var iconstyle={
-					borderColor:'black',
-					borderWidth:'1px',
-					borderStyle:'solid',
-					position:'relative',
-					display:'inline-block'
-				};
-				var ingcontents=[];
-				for(var i=0;i<ings.length;i++){
-					ingcontents.push({
-						type:'span',
-						contents:[
-							{type:'icon',itype:'item',name:ings[i][0]},
-							{type:'span',contents:[ings[i][1]],classes:['icon-text']}
-						],
-						styles:iconstyle
-					});
-					ingcontents.push('+');
-				}
-				var rescontents=[];
-				for(var i=0;i<ress.length;i++){
-					rescontents.push({
-						type:'span',
-						contents:[
-							{type:'icon',itype:'item',name:ress[i][0]},
-							{type:'span',contents:[ress[i][1]],classes:['icon-text']}
-						],
-						styles:iconstyle
-					});
-					rescontents.push('+');
-				}
-				ingcontents.pop();
-				rescontents.pop();
-				return ingcontents.concat(['→'],rescontents,' ',rdata.normal.time+' s');
-			}
-
 			function _renderitem(item){
 				var structure={
 					type:'div',
@@ -214,7 +79,7 @@
 									{type:'span',contents:[recipe],classes:['internal-name']},
 									{type:'icon',itype:'recipe',name:recipe}
 								],
-								contents:recipetostructure(recipe)
+								contents:mtemplate.recipetostructure(recipe)
 							}))
 						},
 						{
@@ -227,13 +92,13 @@
 									{type:'span',contents:[recipe],classes:['internal-name']},
 									{type:'icon',itype:'recipe',name:recipe}
 								],
-								contents:recipetostructure(recipe)
+								contents:mtemplate.recipetostructure(recipe)
 							}))
 						}
 					]
 				};
 
-				var div=renderstructure(structure);
+				var div=mtemplate.renderstructure(structure);
 				put(div);
 			}
 
@@ -257,7 +122,7 @@
 						{type:'span',contents:[recipe],classes:['internal-name']},
 						{type:'icon',itype:'recipe',name:recipe},
 						{type:'br',contents:[]},
-						recipetostructure(recipe),
+						mtemplate.recipetostructure(recipe),
 						accordionifmultiple(
 							'Unlocked by ',
 							(data.unlockedby.normal[recipe]??[]).map(tech=>({
@@ -282,7 +147,7 @@
 					]
 				};
 
-				var div=renderstructure(structure);
+				var div=mtemplate.renderstructure(structure);
 				put(div);
 			}
 
