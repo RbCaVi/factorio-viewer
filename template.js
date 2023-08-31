@@ -116,7 +116,6 @@ function renderstructure(structure){
 		out.addEventListener('click',()=>{
 			structure.onclick(out);
 		});
-		console.log('adding event listener to',out);
 	}
 	return out;
 }
