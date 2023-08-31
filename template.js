@@ -100,7 +100,7 @@ function renderstructure(structure){
 		var span=document.createElement('span');
 		addclasses(span,['factorio-icon']);
 		span.append(img,icontext);
-		out=img;
+		out=span;
 	}else{
 		var container=document.createElement(structure.type);
 		container.append(...contents);
@@ -112,21 +112,34 @@ function renderstructure(structure){
 	if('styles' in structure){
 		addstyles(out,structure.styles);
 	}
+	if('onclick' in structure&&structure.onclick){
+		out.addEventListener('click',()=>{
+			structure.onclick(out);
+		});
+		console.log('adding event listener to',out);
+	}
 	return out;
 }
 
-function recipetostructure(recipe){
+function recipetostructure(recipe,onclick){
 	var rdata=data.pdata.recipe[recipe];
 	var ings=rdata.normal.ingredients;
 	var ress=rdata.normal.results;
+	var onclickbound;
 	var ingcontents=[];
 	for(var i=0;i<ings.length;i++){
-		ingcontents.push({type:'texticon',itype:'item',name:ings[i][0],text:ings[i][1]});
+		if(onclick){
+			onclickbound=onclick.bind(undefined,ings[i][0]);
+		}
+		ingcontents.push({type:'texticon',itype:'item',name:ings[i][0],text:ings[i][1],onclick:onclickbound});
 		ingcontents.push('+');
 	}
 	var rescontents=[];
 	for(var i=0;i<ress.length;i++){
-		rescontents.push({type:'texticon',itype:'item',name:ress[i][0],text:ress[i][1]});
+		if(onclick){
+			onclickbound=onclick.bind(undefined,ress[i][0]);
+		}
+		rescontents.push({type:'texticon',itype:'item',name:ress[i][0],text:ress[i][1],onclick:onclickbound});
 		rescontents.push('+');
 	}
 	ingcontents.pop();
