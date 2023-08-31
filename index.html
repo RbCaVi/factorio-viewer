@@ -174,13 +174,17 @@
 							{type:'span',contents:[highlightletters(lname,lmatch)]},
 							{type:'span',contents:[highlightletters(iname,imatch)],classes:['internal-name']},
 							{type:'icon',itype:'item',name:iname}
-						]
+						],
+						onclick:()=>{setitem(iname);}
 					};
 					resultsdiv.append(modules.template.renderstructure(structure));
 				}
 			}
+
+			function setitem(item) {
+				console.log(item);
+			}
 		</script>
-		<div class="items"></div>
 		<div>
 			<div style='width: 50%; float: left;'>
 				<h1>Item</h1>
@@ -188,6 +192,7 @@
 					<input type="text" id='itemsearch' oninput="itemsearch(this)">
 					<div class='searcheditems searchresults'></div>
 				</div>
+				<div class='item'></div>
 			</div>
 			<div style='width: 50%; float: right;'>
 				<h1>Recipe</h1>
