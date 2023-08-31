@@ -77,9 +77,9 @@
 								header:[
 									localizer.recipelocale(recipe)[0]??'???',
 									{type:'span',contents:[recipe],classes:['internal-name']},
-									{type:'icon',itype:'recipe',name:recipe}
+									{type:'icon',itype:'recipe',name:recipe,onclick:()=>{render('recipe',recipe)}}
 								],
-								contents:mtemplate.recipetostructure(recipe)
+								contents:mtemplate.recipetostructure(recipe,(itemname)=>{render('item',itemname)})
 							}))
 						},
 						{
@@ -90,9 +90,9 @@
 								header:[
 									localizer.recipelocale(recipe)[0]??'???',
 									{type:'span',contents:[recipe],classes:['internal-name']},
-									{type:'icon',itype:'recipe',name:recipe}
+									{type:'icon',itype:'recipe',name:recipe,onclick:()=>{render('recipe',recipe)}}
 								],
-								contents:mtemplate.recipetostructure(recipe)
+								contents:mtemplate.recipetostructure(recipe,(itemname)=>{render('item',itemname)})
 							}))
 						}
 					]
@@ -120,7 +120,7 @@
 						{type:'span',contents:[recipe],classes:['internal-name']},
 						{type:'icon',itype:'recipe',name:recipe},
 						{type:'br',contents:[]},
-						mtemplate.recipetostructure(recipe),
+						mtemplate.recipetostructure(recipe,(itemname)=>{render('item',itemname)}),
 						accordionifmultiple(
 							'Unlocked by ',
 							(data.unlockedby.normal[recipe]??[]).map(tech=>({
