@@ -59,6 +59,8 @@
 				for(var name of Object.keys(data.data.recipe)){
 					recipelocales[name]=localizer.recipelocale(name);
 				}
+				var input=document.querySelector('#itemsearch');
+				itemsearch(input);
 			});
 		</script>
 		<script>
@@ -185,6 +187,7 @@
 				console.log('picked',item);
 				var input=document.querySelector('#itemsearch');
 				input.value=itemlocales[item][0];
+				itemsearch(input);
 			}
 		</script>
 		<div>
