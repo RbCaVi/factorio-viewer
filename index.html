@@ -167,7 +167,7 @@
 				console.log(scores);
 				var resultsdiv=element.nextElementSibling;
 				resultsdiv.textContent='';
-				for(var [iname,lname,imatch,lmatch] of scores){
+				for(let [iname,lname,imatch,lmatch] of scores){
 					var structure={
 						type:'div',
 						contents:[
@@ -182,7 +182,9 @@
 			}
 
 			function setitem(item) {
-				console.log(item);
+				console.log('picked',item);
+				var input=document.querySelector('#itemsearch');
+				input.value=itemlocales[item][0];
 			}
 		</script>
 		<div>
