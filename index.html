@@ -51,7 +51,7 @@
 			}).then(()=>{
 				window.itemlocales={};
 				window.recipelocales={};
-				for(var itype of util.itemtypes){
+				for(var itype of util.itemtypes.concat(['fluid'])){
 					for(var name of Object.keys(data.data[itype])){
 						itemlocales[name]=localizer.itemlocale(name);
 					}
