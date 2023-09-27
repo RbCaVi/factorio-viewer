@@ -255,6 +255,13 @@
 				document.querySelector('.infoboxjson').innerText='';
 				document.querySelector('.infoboxjson').append(modules.editjson.fromjson(json));
 			}
+
+			function makewikitext() {
+				var infobox=new modules.infobox.Infobox(data);
+				var json=JSON.parse(modules.editjson.getjson(document.querySelector('.infoboxjson>div')));
+				infobox.info=json;
+				document.querySelector('.infoboxwikitext').innerText=infobox;
+			}
 		</script>
 		<div>
 			<div style='width: 100%; float: left;'>
@@ -276,7 +283,7 @@
 			<div class='infoboxjson'></div>
 		</div>
 		<div>
-			<button>Make infobox wikitext</button>
+			<button onclick='makewikitext()'>Make infobox wikitext</button>
 			<textarea class='infoboxwikitext'></textarea>
 		</div>
 		<div>
