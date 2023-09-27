@@ -39,6 +39,8 @@
 		  //import * as m from './.js';
 		  //modules.=m;
 		  window.wiki='https://spaceexploration.miraheze.org';
+
+		  window.wikisession=new modules.wikiapi.WikiSession(wiki);
 			var datap=fetch('SE.json').then(r=>r.json()).then(data=>{
 				window.data=new modules.data.FactorioData(data);
 				return window.data;
@@ -260,8 +262,20 @@
 				var infobox=new modules.infobox.Infobox(data);
 				var json=JSON.parse(modules.editjson.getjson(document.querySelector('.infoboxjson>div')));
 				infobox.info=json;
-				document.querySelector('.infoboxwikitext').innerText=infobox;
+				document.querySelector('.infoboxwikitext').value=""+infobox;
 			}
+
+			function loadwikitext() {
+				getpageswikitext(item)
+			}
+		</script>
+		<form id="login">
+			<input type="text" id="user">
+			<input type="text" id="password">
+			<button onclick='wikisession.login(document.querySelector("#user").value,document.querySelector("#password").value)'>login</button>
+		</form>
+		<script type="text/javascript">
+			document.querySelector('#login').onsubmit = e => e.preventDefault();
 		</script>
 		<div>
 			<div style='width: 100%; float: left;'>
@@ -291,7 +305,7 @@
 			<button>Load wikitext</button>
 		</div>
 		<div>
-			<div>old wikitext<div class='oldwikitext'></div></div>
+			<div>old wikitext<textarea class='oldwikitext'></textarea></div>
 			<div>new wikitext<textarea class='newboxwikitext'></textarea></div>
 		</div>
 		<div>
