@@ -171,6 +171,10 @@ class Infobox{
         return info;
     }
 
+    getjson(){
+        return clone(this.info);
+    }
+
     toString(){
         for(var postfix of postfixes){
             for(var x of util.difficulty){

@@ -3,6 +3,7 @@
     <link rel="stylesheet" href="accordion.css">
     <link rel="stylesheet" href="wiki.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="editjson.css">
 	</head>
 	<body>
 		<script type='module'>
@@ -240,6 +241,19 @@
 				itemsearch(input);
 				document.querySelector('.item').innerText='';
 				document.querySelector('.item').append(renderitem(item));
+				window.item=item;
+			}
+
+			function makejson() {
+				var infobox=new modules.infobox.Infobox(data);
+				if(data.data.fluid[item]){
+					infobox.addfluid(item);
+				}else{
+					infobox.additem(item);
+				}
+				var json=infobox.getjson();
+				document.querySelector('.infoboxjson').innerText='';
+				document.querySelector('.infoboxjson').append(modules.editjson.fromjson(json));
 			}
 		</script>
 		<div>
@@ -258,7 +272,7 @@
 			</div-->
 		</div>
 		<div>
-			<button>Make infobox JSON</button>
+			<button onclick='makejson()'>Make infobox JSON</button>
 			<div class='infoboxjson'></div>
 		</div>
 		<div>
