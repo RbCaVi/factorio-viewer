@@ -95,6 +95,7 @@ class Infobox{
     }
 
     addtech(tech){
+        tech=data.data.technology[tech];
         if(this.info==null){
             this.info={};
         }else{
@@ -112,6 +113,7 @@ class Infobox{
     }
 
     additem(item){
+        item=data.getitem(item);
         if(this.info==null){
             this.info={'producers':[]};
         }
@@ -121,15 +123,16 @@ class Infobox{
         this.info.consumers=this.data.uses.normal[item.name]??[].map(this.data.recipename);
     }
 
-    addfluid(fluid,group){
+    addfluid(fluid,group='intermediate-products'){
         if(this.info==null){
             this.info={'producers':[]};
         }
         this.info.category=group;
-        this.info['internal-name']=fluid.name;
+        this.info['internal-name']=fluid;
     }
 
     addrecipe(recipe){
+        recipe=data.data.recipe[recipe];
         if(this.info==null){
             this.info={'producers':[]};
         }
