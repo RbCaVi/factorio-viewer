@@ -183,15 +183,67 @@
 				}
 			}
 
+			function renderitem(item){
+				let structure={
+					type:'div',
+					contents:[
+						localizer.itemlocale(item)[0],
+						{type:'span',contents:[item],classes:['internal-name']},
+						{type:'icon',itype:'item',name:item},
+						{
+							type:'accordion',
+							header:['Prototype'],
+							contents:[
+								{
+									type:'json',
+									data:data.getrawitem(item)
+								}
+							]
+						},
+						{
+							type:'accordion',
+							header:['Produced by'],
+							contents:(data.produces.normal[item]??[]).map(recipe=>({
+								type:'accordion',
+								header:[
+									localizer.recipelocale(recipe)[0]??'???',
+									{type:'span',contents:[recipe],classes:['internal-name']},
+									{type:'icon',itype:'recipe',name:recipe}
+								],
+								contents:modules.template.recipetostructure(recipe)
+							}))
+						},
+						{
+							type:'accordion',
+							header:['Used by'],
+							contents:(data.uses.normal[item]??[]).map(recipe=>({
+								type:'accordion',
+								header:[
+									localizer.recipelocale(recipe)[0]??'???',
+									{type:'span',contents:[recipe],classes:['internal-name']},
+									{type:'icon',itype:'recipe',name:recipe}
+								],
+								contents:modules.template.recipetostructure(recipe)
+							}))
+						}
+					]
+				};
+
+				let div=modules.template.renderstructure(structure);
+				return div;
+			}
+
 			function setitem(item) {
 				console.log('picked',item);
 				var input=document.querySelector('#itemsearch');
 				input.value=itemlocales[item][0];
 				itemsearch(input);
+				document.querySelector('.item').innerText='';
+				document.querySelector('.item').append(renderitem(item));
 			}
 		</script>
 		<div>
-			<div style='width: 50%; float: left;'>
+			<div style='width: 100%; float: left;'>
 				<h1>Item</h1>
 				<div style="position: relative;">
 					<input type="text" id='itemsearch' oninput="itemsearch(this)">
@@ -199,11 +251,11 @@
 				</div>
 				<div class='item'></div>
 			</div>
-			<div style='width: 50%; float: right;'>
+			<!--div style='width: 50%; float: right;'>
 				<h1>Recipe</h1>
 				<input type="text" id='recipesearch'>
 				<div class='recipes'></div>
-			</div>
+			</div-->
 		</div>
 		<div>
 			<button>Make infobox JSON</button>
