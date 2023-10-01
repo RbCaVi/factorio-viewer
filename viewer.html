@@ -8,12 +8,12 @@
 			import {FactorioData} from './data.js';
 			import {FactorioLocale,FactorioLocalizer} from './locale.js';
 			import {util,resolveAll} from './util.js';
-			let datap=fetch('SE.json').then(r=>r.json()).then(data=>{
+			let datap=fetch('SE/data.json').then(r=>r.json()).then(data=>{
 				window.data=new FactorioData(data);
 				return window.data;
 			});
-			let localep=fetch('SElocale.json').then(r=>r.json()).then(locale=>{
-				window.locale=new FactorioLocale(locale);
+			let localep=fetch('SE/locale.json').then(r=>r.json()).then(locale=>{
+				window.locale=new FactorioLocale(locale.en);
 				return window.locale;
 			});
 			resolveAll({'data':datap,'locale':localep}).then(d=>{
@@ -29,15 +29,12 @@
 		  import * as mprocess from './process.js';
 		  import * as minfobox from './infobox.js';
 		  import * as mutil from './util.js';
-		  import * as mwikiapi from './wikiapi.js';
-		  window.wiki='https://spaceexploration.miraheze.org';
 		  window.mdata=mdata;
 			window.mimage=mimage;
 			window.mnormalize=mnormalize;
 			window.mprocess=mprocess;
 			window.minfobox=minfobox;
 			window.mutil=mutil;
-			window.mwikiapi=mwikiapi;
 		  import * as maccordion from './accordion.js';
 			window.maccordion=maccordion;
 		  import * as meditjson from './editjson.js';

@@ -1,11 +1,5 @@
 import {promiseChain,packPromise,makePromise} from './util.js';
 
-//function uploadimage(data,uploadname,size=32){
-//    if(force||forceimage||!wikiapi.pageexists('File:'+uploadname+'.png')){
-//        makeicon(data,size).then(iconcanvas=>wikiapi.upload(iconcanvas.toBlob(),uploadname+'.png'));
-//    }
-//}
-
 function toObjectURL(canvas){
     if(typeof canvas.convertToBlob=='function'){
         return canvas.convertToBlob().then(URL.createObjectURL);
@@ -146,8 +140,17 @@ function makeiconURL(data,size=32){
     }
 }
 
+function getpath(filename){
+    let mod;
+    let path;
+    let slash = filename.indexOf("/");
+    mod = filename.slice(0, slash);
+    path = filename.slice(slash);
+    return 'SE/assets/'+mod.slice(2,-2)+path
+}
+
 function geticon(name,size){
-    return loadImage('mods/'+name).then(image=>{
+    return loadImage(getpath(name)).then(image=>{
         return createImageBitmap(image,0,0,size,size);
     });
 }
