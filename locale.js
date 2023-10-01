@@ -3,11 +3,14 @@ import {stringify,clone} from './util.js';
 class FactorioLocale{
 	#localecache={};
 
-	constructor(locale){
+	constructor(locale,cache){
     if(typeof locale=='string'){
       locale=JSON.parse(locale);
     }
-		this.locale=locale;
+    this.locale=locale;
+    if(typeof cache=='object'&&cache){
+      this.#localecache=cache;
+    }
 	}
 
   #localizeraw(s){
@@ -69,9 +72,12 @@ class FactorioLocalizer{
     'tech':{}
   };
 
-	constructor(data,locale){
+	constructor(data,locale,cache){
 		this.data=data;
 		this.locale=locale;
+    if(typeof cache=='object'&&cache){
+      this.#localecache=cache;
+    }
 	}
 
 	#getnamedesc(thing,type,name){
