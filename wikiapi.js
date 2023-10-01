@@ -1,6 +1,7 @@
 import {clone} from './util.js';
 
-var headers={'User-Agent':"SEAutoUpdate/1.0 (robert@robertvail.info)"}
+var headers={'User-Agent':"SEAutoUpdate/1.0 (robert@robertvail.info)","Origin":""+window.location};
+//var headers={};
 
 function safeFetch(...args) {
     return fetch(...args).then(response => {
@@ -15,9 +16,10 @@ function get(url,params){
     params=clone(params);
     params.formatversion="2";
     params.format="json";
-    params.origin="*";
+    params.origin='*';
+    //params.callback='f';
     params=new URLSearchParams(params);
-    return safeFetch(url+'?'+params.toString(),{'headers':headers}).then(
+    return safeFetch(url+'?'+params.toString(),{'headers':headers,'mode':'no-cors'}).then(
         response=>response.json()
     );
 }
@@ -26,7 +28,8 @@ function post(url,params,body){
     params=clone(params);
     params.formatversion="2";
     params.format="json";
-    params.origin="*";
+    params.origin='*';
+    //params.callback='f';
     params=new URLSearchParams(params);
     var options={'method':'post','headers':headers};
     if(body){
