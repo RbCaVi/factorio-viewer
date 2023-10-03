@@ -21,7 +21,7 @@ function addclasses(element,classes){
 	}
 }
 
-function renderstructure(structure){
+function renderstructure(structure,options={root:"SE/"}){
 	var out;
 	if(typeof structure=='string'||typeof structure=='number'||isElement(structure)){
 		return structure;
@@ -63,7 +63,7 @@ function renderstructure(structure){
 				idata=rdata;
 			}
 		}
-		makeiconURL(idata).then(url=>{
+		makeiconURL(idata,options.root).then(url=>{
       	img.src=url;
 		});
 		addclasses(img,['factorio-icon']);
@@ -91,7 +91,7 @@ function renderstructure(structure){
 				idata=rdata;
 			}
 		}
-		makeiconURL(idata).then(url=>{
+		makeiconURL(idata,options.root).then(url=>{
       	img.src=url;
 		});
 		var icontext=document.createElement('span');

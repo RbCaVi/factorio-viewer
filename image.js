@@ -68,7 +68,7 @@ function fixcolor(col){
 
 let iconcache={}
 
-function makeiconURL(data,size=32){
+function makeiconURL(data,root,size=32){
     // return a promise for the canvas being fully rendered
     var cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size});
     if(cachekey in iconcache){
@@ -83,7 +83,7 @@ function makeiconURL(data,size=32){
         for(var icondata of icons){
             var iconname=icondata.icon;
             var iconsize=icondata.icon_size??baseiconsize;
-            parts.push(packPromise(geticon(iconname,iconsize),icondata).then(([icon,idata])=>{
+            parts.push(packPromise(geticon(iconname,iconsize,root),icondata).then(([icon,idata])=>{
                 var icanvas=getCanvas(icon.width,icon.height);
                 var ctx=icanvas.getContext("2d");
                 if('tint' in idata){
@@ -128,7 +128,7 @@ function makeiconURL(data,size=32){
         var canvas=getCanvas(size,size);
         iconname=data.icon;
         iconsize=data.icon_size;
-        return geticon(iconname,iconsize).then(icon=>{
+        return geticon(iconname,iconsize,root).then(icon=>{
             var ctx=canvas.getContext("2d");
             ctx.drawImage(icon,0,0,size,size);
         }).then(()=>{
@@ -140,17 +140,17 @@ function makeiconURL(data,size=32){
     }
 }
 
-function getpath(filename){
+function getpath(filename,root){
     let mod;
     let path;
     let slash = filename.indexOf("/");
     mod = filename.slice(0, slash);
     path = filename.slice(slash);
-    return 'SE/assets/'+mod.slice(2,-2)+path
+    return root+'/assets/'+mod.slice(2,-2)+path
 }
 
-function geticon(name,size){
-    return loadImage(getpath(name)).then(image=>{
+function geticon(name,size,root){
+    return loadImage(getpath(name,root)).then(image=>{
         return createImageBitmap(image,0,0,size,size);
     });
 }
