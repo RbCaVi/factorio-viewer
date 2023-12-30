@@ -58,7 +58,7 @@ function fixcolor(col){
             color[['r','g','b','a'][i]]=col[i];
         }
     }else{
-        ['r','g','b','a'].map(x=>{color[x]=col[x]});
+        ['r','g','b','a'].map(x=>{if(x in col){color[x]=col[x]}});
     }
     if(Math.max(...Object.values(color))<=1){
         ['r','g','b','a'].map(x=>{color[x]*=255});
