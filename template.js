@@ -21,6 +21,13 @@ function addclasses(element,classes){
 	}
 }
 
+function addprops(element,props){
+	// props is {prop:value...}
+	for(var [prop,value] of props.entries()){
+		element[prop]=value;
+	}
+}
+
 function renderstructure(structure,options={}){
     if(!('root' in options)){
         options.root="nullius/";
@@ -120,6 +127,9 @@ function renderstructure(structure,options={}){
 	}
 	if('styles' in structure){
 		addstyles(out,structure.styles);
+	}
+	if('props' in structure){
+		addprops(out,structure.props);
 	}
 	if('onclick' in structure&&structure.onclick){
 		out.addEventListener('click',()=>{
