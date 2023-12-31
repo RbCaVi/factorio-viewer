@@ -48,8 +48,6 @@ function renderstructure(structure,options={}){
 	}else if(structure.type=='json'){
 		out=accordionfromjson(structure.data);
 	}else if(structure.type=='icon'){
-		// promise to load the image
-		var img=document.createElement('img');
 		var idata;
 		if(structure.itype=='item'){
 			idata=data.getitem(structure.name);
@@ -70,17 +68,27 @@ function renderstructure(structure,options={}){
 				idata=rdata;
 			}
 		}
+		var img;
+		if('root' in options){
+			// promise to load the image
+			img=document.createElement('img');
+			makeiconURL(idata,options.root).then(url=>{
+				img.src=url;
+			});
+			addclasses(img,['factorio-icon']);
+		}else{
+			img=document.createElement('span');
+			if('localizer' in options){
+    			img.textContent=options.localizer[structure.itype+'locale'](structure.name)[0]
+			}else{
+				img.textContent=structure.name;
+			}
+		}
 		if('localizer' in options){
     		img.title=options.localizer[structure.itype+'locale'](structure.name)[0]
 		}
-		makeiconURL(idata,options.root).then(url=>{
-      	img.src=url;
-		});
-		addclasses(img,['factorio-icon']);
 		out=img;
 	}else if(structure.type=='texticon'){
-		// promise to load the image
-		var img=document.createElement('img');
 		var idata;
 		if(structure.itype=='item'){
 			idata=data.getitem(structure.name);
@@ -101,18 +109,29 @@ function renderstructure(structure,options={}){
 				idata=rdata;
 			}
 		}
-		if('localizer' in options){
-    		img.title=options.localizer[structure.itype+'locale'](structure.name)[0]
-		}
-		makeiconURL(idata,options.root).then(url=>{
-      	img.src=url;
-		});
 		var icontext=document.createElement('span');
 		icontext.textContent=structure.text;
 		addclasses(icontext,['icon-text']);
 		var span=document.createElement('span');
 		addclasses(span,['factorio-icon']);
-		span.append(img,icontext);
+		if('root' in options){
+			// promise to load the image
+			var img=document.createElement('img');
+			makeiconURL(idata,options.root).then(url=>{
+				img.src=url;
+			});
+			span.append(img);
+		}else{
+			if('localizer' in options){
+    			span.textContent=options.localizer[structure.itype+'locale'](structure.name)[0]
+			}else{
+				span.textContent=structure.name;
+			}
+		}
+		span.append(icontext);
+		if('localizer' in options){
+    		span.title=options.localizer[structure.itype+'locale'](structure.name)[0]
+		}
 		out=span;
 	}else{
 		var container=document.createElement(structure.type);
