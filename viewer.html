@@ -5,14 +5,15 @@
 	</head>
 	<body>
 		<script type='module'>
+			window.modroot='nullius/';
 			import {FactorioData} from './data.js';
 			import {FactorioLocale,FactorioLocalizer} from './locale.js';
 			import {util,resolveAll} from './util.js';
-			let datap=fetch('nullius/data.json').then(r=>r.json()).then(data=>{
+			let datap=fetch(modroot+'data.json').then(r=>r.json()).then(data=>{
 				window.data=new FactorioData(data);
 				return window.data;
 			});
-			let localep=fetch('nullius/locale.json').then(r=>r.json()).then(locale=>{
+			let localep=fetch(modroot+'locale.json').then(r=>r.json()).then(locale=>{
 				window.locale=new FactorioLocale(locale.en);
 				return window.locale;
 			});
@@ -95,7 +96,7 @@
 					]
 				};
 
-				let div=mtemplate.renderstructure(structure,{localizer});
+				let div=mtemplate.renderstructure(structure,{localizer,root:modroot});
 				put(div);
 			}
 
@@ -142,7 +143,7 @@
 					]
 				};
 
-				let div=mtemplate.renderstructure(structure,{localizer});
+				let div=mtemplate.renderstructure(structure,{localizer,root:modroot});
 				put(div);
 			}
 
