@@ -66,6 +66,9 @@ function renderstructure(structure,options={}){
 				idata=rdata;
 			}
 		}
+		if('localizer' in options){
+    		img.title=options.localizer[structure.itype+'locale'](structure.name)[0]
+		}
 		makeiconURL(idata,options.root).then(url=>{
       	img.src=url;
 		});
@@ -93,6 +96,9 @@ function renderstructure(structure,options={}){
 			}else{
 				idata=rdata;
 			}
+		}
+		if('localizer' in options){
+    		img.title=options.localizer[structure.itype+'locale'](structure.name)[0]
 		}
 		makeiconURL(idata,options.root).then(url=>{
       	img.src=url;
