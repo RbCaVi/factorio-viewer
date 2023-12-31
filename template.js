@@ -29,9 +29,6 @@ function addprops(element,props){
 }
 
 function renderstructure(structure,options={}){
-    if(!('root' in options)){
-        options.root="nullius/";
-    }
 	var out;
 	if(typeof structure=='string'||typeof structure=='number'||isElement(structure)){
 		return structure;
