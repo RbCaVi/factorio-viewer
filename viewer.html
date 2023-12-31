@@ -50,6 +50,7 @@
 			//window.m=m;
 		</script>
 		<script>
+			var structureoptions={localizer,root:modroot}
 			function _renderitem(item){
 				let structure={
 					type:'div',
@@ -96,7 +97,7 @@
 					]
 				};
 
-				let div=mtemplate.renderstructure(structure,{localizer,root:modroot});
+				let div=mtemplate.renderstructure(structure,structureoptions);
 				put(div);
 			}
 
@@ -143,7 +144,7 @@
 					]
 				};
 
-				let div=mtemplate.renderstructure(structure,{localizer,root:modroot});
+				let div=mtemplate.renderstructure(structure,structureoptions);
 				put(div);
 			}
 
