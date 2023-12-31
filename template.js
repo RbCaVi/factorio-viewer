@@ -29,10 +29,10 @@ function renderstructure(structure,options={}){
 	if(typeof structure=='string'||typeof structure=='number'||isElement(structure)){
 		return structure;
 	}
-	var contents=structure.contents?.flat().map(renderstructure);
+	var contents=structure.contents?.flat().map((x)=>renderstructure(x,options));
 	if(structure.type=='accordion'){
 		if('header' in structure){
-			var headerparts=structure.header.map(renderstructure);
+			var headerparts=structure.header.map((x)=>renderstructure(x,options));
 			var header=document.createElement('span');
 			header.append(...headerparts);
 		}
