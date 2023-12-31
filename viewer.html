@@ -8,19 +8,19 @@
 			import {FactorioData} from './data.js';
 			import {FactorioLocale,FactorioLocalizer} from './locale.js';
 			import {util,resolveAll} from './util.js';
-			let datap=fetch('SE/data.json').then(r=>r.json()).then(data=>{
+			let datap=fetch('nullius/data.json').then(r=>r.json()).then(data=>{
 				window.data=new FactorioData(data);
 				return window.data;
 			});
-			let localep=fetch('SE/locale.json').then(r=>r.json()).then(locale=>{
+			let localep=fetch('nullius/locale.json').then(r=>r.json()).then(locale=>{
 				window.locale=new FactorioLocale(locale.en);
 				return window.locale;
 			});
 			resolveAll({'data':datap,'locale':localep}).then(d=>{
 				window.localizer=new FactorioLocalizer(d.data,d.locale);
 			}).then(()=>{
-				render('recipe','se-iridium-ingot');
-				render('item','se-naquium-processor');
+				//render('recipe','se-iridium-ingot');
+				render('item','nullius-iron-plate');
 			});
 			window.util=util;
 		  import * as mdata from './data.js';
