@@ -5,19 +5,16 @@
 	</head>
 	<body>
 		<script type='module'>
-			window.modroot='nullius/';
+      let urlparams=new URLSearchParams(window.location.search);
+			window.modroot=urlparams.get('pack')??'nullius/';
 			import {FactorioData} from './data.js';
 			import {FactorioLocale,FactorioLocalizer} from './locale.js';
 			import {util,resolveAll} from './util.js';
-			let datap=fetch(modroot+'data.json').then(r=>r.json()).then(data=>{
-				window.data=new FactorioData(data);
-				return window.data;
-			});
-			let localep=fetch(modroot+'locale.json').then(r=>r.json()).then(locale=>{
-				window.locale=new FactorioLocale(locale.en);
-				return window.locale;
-			});
+			let datap=fetch(modroot+'data.json').then(r=>r.json()).then(data=>new FactorioData(data));
+			let localep=fetch(modroot+'locale.json').then(r=>r.json()).then(locale=>new FactorioLocale(locale.en));
 			resolveAll({'data':datap,'locale':localep}).then(d=>{
+        window.data=d.data;
+        window.locale=d.locale;
 				window.localizer=new FactorioLocalizer(d.data,d.locale);
 			}).then(()=>{
 				//render('recipe','se-iridium-ingot');
