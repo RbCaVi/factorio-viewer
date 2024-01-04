@@ -42,9 +42,8 @@
 			window.mtemplate=mtemplate;
 		  //import * as m from './.js';
 			//window.m=m;
-		</script>
-		<script>
-			var structureoptions={localizer,root:modroot}
+			
+			let structureoptions;
 			function _renderitem(item){
 				let structure={
 					type:'div',
@@ -219,6 +218,7 @@
 				render(type,document.getElementById('inputbox').value);
 			}
 			initializedp.then(()=>{
+				structureoptions={localizer,root:modroot};
 				render('item','iron-plate');
 			});
 		</script>
