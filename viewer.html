@@ -12,13 +12,10 @@
 			import {util,resolveAll} from './util.js';
 			let datap=fetch(modroot+'data.json').then(r=>r.json()).then(data=>new FactorioData(data));
 			let localep=fetch(modroot+'locale.json').then(r=>r.json()).then(locale=>new FactorioLocale(locale.en));
-			resolveAll({'data':datap,'locale':localep}).then(d=>{
+			window.initializedp=resolveAll({'data':datap,'locale':localep}).then(d=>{
         window.data=d.data;
         window.locale=d.locale;
 				window.localizer=new FactorioLocalizer(d.data,d.locale);
-			}).then(()=>{
-				//render('recipe','se-iridium-ingot');
-				render('item','nullius-iron-plate');
 			});
 			window.util=util;
 		  import * as mdata from './data.js';
@@ -221,6 +218,9 @@
 			function renderthing(type) {
 				render(type,document.getElementById('inputbox').value);
 			}
+			initializedp.then(()=>{
+				render('item','iron-plate');
+			});
 		</script>
 		<button onclick="back()">back</button><button onclick="forward()">forward</button>
 		<div class="items"></div>
