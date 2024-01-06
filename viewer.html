@@ -217,6 +217,11 @@
 			function renderthing(type) {
 				render(type,document.getElementById('inputbox').value);
 			}
+
+			window.renderthing=renderthing;
+			window.back=back;
+			window.forward=forward;
+
 			initializedp.then(()=>{
 				structureoptions={localizer,root:modroot};
 				render('item','iron-plate');
