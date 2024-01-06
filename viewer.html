@@ -6,7 +6,7 @@
 	<body>
 		<script type='module'>
       let urlparams=new URLSearchParams(window.location.search);
-			window.modroot=urlparams.get('pack')??'nullius/';
+			window.modroot=(urlparams.get('pack')+'/')??'nullius/';
 			import {FactorioData} from './data.js';
 			import {FactorioLocale,FactorioLocalizer} from './locale.js';
 			import {util,resolveAll} from './util.js';
@@ -42,7 +42,7 @@
 			window.mtemplate=mtemplate;
 		  //import * as m from './.js';
 			//window.m=m;
-			
+
 			let structureoptions;
 			function _renderitem(item){
 				let structure={
