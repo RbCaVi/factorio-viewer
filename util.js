@@ -1,49 +1,49 @@
 function clone(data){
   return JSON.parse(JSON.stringify(data));
-};
+}
 
 const craftertypes=[
-  'character',
-  'assembling-machine',
-  'rocket-silo',
-  'furnace'
+  "character",
+  "assembling-machine",
+  "rocket-silo",
+  "furnace"
 ];
 
 const util={};
 
 util.itemtypes=[
-  'item',
-  'ammo',
-  'capsule',
-  'gun',
-  'item-with-entity-data',
-  'item-with-label',
-  'item-with-inventory',
-  'blueprint-book',
-  'item-with-tags',
-  'selection-tool',
-  'blueprint',
-  'copy-paste-tool',
-  'deconstruction-item',
-  'upgrade-item',
-  'module',
-  'rail-planner',
-  'spidertron-remote',
-  'tool',
-  'armor',
-  'repair-tool'
+  "item",
+  "ammo",
+  "capsule",
+  "gun",
+  "item-with-entity-data",
+  "item-with-label",
+  "item-with-inventory",
+  "blueprint-book",
+  "item-with-tags",
+  "selection-tool",
+  "blueprint",
+  "copy-paste-tool",
+  "deconstruction-item",
+  "upgrade-item",
+  "module",
+  "rail-planner",
+  "spidertron-remote",
+  "tool",
+  "armor",
+  "repair-tool"
 ];
 
 util.equipmenttypes=[
-  'active-defense-equipment',
-  'battery-equipment',
-  'belt-immunity-equipment',
-  'energy-shield-equipment',
-  'generator-equipment',
-  'movement-bonus-equipment',
-  'night-vision-equipment',
-  'roboport-equipment',
-  'solar-panel-equipment',
+  "active-defense-equipment",
+  "battery-equipment",
+  "belt-immunity-equipment",
+  "energy-shield-equipment",
+  "generator-equipment",
+  "movement-bonus-equipment",
+  "night-vision-equipment",
+  "roboport-equipment",
+  "solar-panel-equipment",
 ];
 
 util.entitytypes=[
@@ -150,30 +150,30 @@ util.entitytypes=[
   "tile-ghost"
 ];
 
-util.difficulty=['normal','expensive'];
+util.difficulty=["normal","expensive"];
 
 function promiseChain(ps,f){
-    // ps is an array of promises
-    // f is a one argument function
-    // it calls f on the data from each promise in order and returns the resulting promise
-    return ps.reduce((p1,p2)=>{
-        return p1.then(data1=>{
-            f(data1);
-            return p2;
-        })
-    }).then(data=>{
-        f(data);
+  // ps is an array of promises
+  // f is a one argument function
+  // it calls f on the data from each promise in order and returns the resulting promise
+  return ps.reduce((p1,p2)=>{
+    return p1.then(data1=>{
+      f(data1);
+      return p2;
     });
+  }).then(data=>{
+    f(data);
+  });
 }
 
 function packPromise(p,data){
-    // puts a data value into a promise
-    return p.then(pdata=>[pdata,data]);
+  // puts a data value into a promise
+  return p.then(pdata=>[pdata,data]);
 }
 
 function makePromise(data){
-    // returns a promise that returns this data
-    return new Promise(resolve=>resolve(data));
+  // returns a promise that returns this data
+  return new Promise(resolve=>resolve(data));
 }
 
 function resolveAll(ps){

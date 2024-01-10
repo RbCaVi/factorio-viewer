@@ -1,158 +1,158 @@
-import {promiseChain,packPromise,makePromise} from './util.js';
+import {promiseChain,packPromise,makePromise} from "./util.js";
 
 function toObjectURL(canvas){
-    if(typeof canvas.convertToBlob=='function'){
-        return canvas.convertToBlob().then(URL.createObjectURL);
-    }else{
-        return new Promise(resolve=>canvas.toBlob(resolve)).then(URL.createObjectURL);
-    }
+  if(typeof canvas.convertToBlob=="function"){
+    return canvas.convertToBlob().then(URL.createObjectURL);
+  }else{
+    return new Promise(resolve=>canvas.toBlob(resolve)).then(URL.createObjectURL);
+  }
 }
 
 function getCanvas(width,height){
-    //if(typeof OffscreenCanvas=='function'){
-    //    return new OffscreenCanvas(width,height);
-    //}else{
-        var canvas=document.createElement('canvas');
-        canvas.width=width;
-        canvas.height=height;
-        return canvas;
-    //}
+  //if(typeof OffscreenCanvas=='function'){
+  //    return new OffscreenCanvas(width,height);
+  //}else{
+  let canvas=document.createElement("canvas");
+  canvas.width=width;
+  canvas.height=height;
+  return canvas;
+  //}
 }
 
 function loadImage(src){
-    return new Promise((resolve,reject)=>{
-        var img=new Image();
-        img.addEventListener(
-            "load",
-            ()=>{
-                resolve(img);
-            },
-            false,
-        );
-        img.addEventListener(
-            "error",
-            (event)=>{
-                reject(event);
-            },
-            false,
-        );
-        img.crossOrigin='';
-        img.src=src;
-    })
+  return new Promise((resolve,reject)=>{
+    let img=new Image();
+    img.addEventListener(
+      "load",
+      ()=>{
+        resolve(img);
+      },
+      false,
+    );
+    img.addEventListener(
+      "error",
+      (event)=>{
+        reject(event);
+      },
+      false,
+    );
+    img.crossOrigin="";
+    img.src=src;
+  });
 }
 
 function colorToString(color){
-    return color.reduce((s, channel) => {
-        var c = Math.floor(channel).toString(16);
-        c = (c.length==1?'0':'')+c;
-        s += c;
-        return s;
-    }, '#')
+  return color.reduce((s, channel) => {
+    let c = Math.floor(channel).toString(16);
+    c = (c.length==1?"0":"")+c;
+    s += c;
+    return s;
+  }, "#");
 }
 
 function fixcolor(col){
-    // return the color normalized to hex rgba format
-    var color={'r':0,'g':0,'b':0,'a':1};
-    if(Array.isArray(col)){
-        for(var i=0;i<col.length;i++){
-            color[['r','g','b','a'][i]]=col[i];
-        }
-    }else{
-        ['r','g','b','a'].map(x=>{if(x in col){color[x]=col[x]}});
+  // return the color normalized to hex rgba format
+  let color={"r":0,"g":0,"b":0,"a":1};
+  if(Array.isArray(col)){
+    for(let i=0;i<col.length;i++){
+      color[["r","g","b","a"][i]]=col[i];
     }
-    if(Math.max(...Object.values(color))<=1){
-        ['r','g','b','a'].map(x=>{color[x]*=255});
-    }
-    return colorToString(['r','g','b','a'].map(i=>color[i]))
+  }else{
+    ["r","g","b","a"].map(x=>{if(x in col){color[x]=col[x];}});
+  }
+  if(Math.max(...Object.values(color))<=1){
+    ["r","g","b","a"].map(x=>{color[x]*=255;});
+  }
+  return colorToString(["r","g","b","a"].map(i=>color[i]));
 }
 
-let iconcache={}
+let iconcache={};
 
 function makeiconURL(data,root,size=32){
-    // return a promise for the canvas being fully rendered
-    var cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size});
-    if(cachekey in iconcache){
-        console.log(cachekey);
-        return makePromise(iconcache[cachekey]);
-    }
-    if('icons' in data){
-        var icons=data.icons;
-        var baseiconsize=data.icon_size??icons[0].icon_size*((icons[0].scale??0.5)*2);
-        var canvas=getCanvas(size,size);
-        var parts=[];
-        for(var icondata of icons){
-            var iconname=icondata.icon;
-            var iconsize=icondata.icon_size??baseiconsize;
-            parts.push(packPromise(geticon(iconname,iconsize,root),icondata).then(([icon,idata])=>{
-                var icanvas=getCanvas(icon.width,icon.height);
-                var ctx=icanvas.getContext("2d");
-                if('tint' in idata){
-                    var tint=fixcolor(idata.tint);
-                    var ctx=icanvas.getContext("2d");
-                    ctx.fillStyle=tint;
-                    ctx.fillRect(0,0,icanvas.width,icanvas.height);
-                }
-                ctx.globalCompositeOperation='multiply';
-                ctx.drawImage(icon,0,0);
-                ctx.globalCompositeOperation='destination-atop';
-                ctx.drawImage(icon,0,0);
-                ctx.globalCompositeOperation='source-over';
-                return [icanvas,idata];
-            }));
+  // return a promise for the canvas being fully rendered
+  let cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size});
+  if(cachekey in iconcache){
+    console.log(cachekey);
+    return makePromise(iconcache[cachekey]);
+  }
+  if("icons" in data){
+    let icons=data.icons;
+    let baseiconsize=data.icon_size??icons[0].icon_size*((icons[0].scale??0.5)*2);
+    let canvas=getCanvas(size,size);
+    let parts=[];
+    for(let icondata of icons){
+      let iconname=icondata.icon;
+      let iconsize=icondata.icon_size??baseiconsize;
+      parts.push(packPromise(geticon(iconname,iconsize,root),icondata).then(([icon,idata])=>{
+        let icanvas=getCanvas(icon.width,icon.height);
+        let ctx=icanvas.getContext("2d");
+        if("tint" in idata){
+          let tint=fixcolor(idata.tint);
+          let ctx=icanvas.getContext("2d");
+          ctx.fillStyle=tint;
+          ctx.fillRect(0,0,icanvas.width,icanvas.height);
         }
-        return new Promise((resolve,reject)=>
-            promiseChain(parts,([icanvas,idata])=>{
-                var iconsize=idata.icon_size??baseiconsize;
-                var shift=[0,0];
-                if('shift' in idata){
-                    shift=idata.shift;
-                    shift=shift.map(x=>x*(size/baseiconsize)*2); // i don't know why 2
-                }
-                var isize=iconsize*(size/baseiconsize);
-                if('scale' in idata){
-                    isize*=idata.scale*2;
-                }
-                var ctx=canvas.getContext("2d");
-                ctx.drawImage(icanvas,(canvas.width-isize)/2+shift[0],(canvas.height-isize)/2+shift[1],isize,isize);
-            }).then(()=>{
-                return toObjectURL(canvas);
-            }).then(url=>{
-                iconcache[cachekey]=url;
-                resolve(url);
-            },
-            (error)=>
-                reject(error)
-            )
-        );
-    }else{
-        var canvas=getCanvas(size,size);
-        iconname=data.icon;
-        iconsize=data.icon_size;
-        return geticon(iconname,iconsize,root).then(icon=>{
-            var ctx=canvas.getContext("2d");
-            ctx.drawImage(icon,0,0,size,size);
-        }).then(()=>{
-            return toObjectURL(canvas);
-        }).then(url=>{
-            iconcache[cachekey]=url;
-            return url;
-        });
+        ctx.globalCompositeOperation="multiply";
+        ctx.drawImage(icon,0,0);
+        ctx.globalCompositeOperation="destination-atop";
+        ctx.drawImage(icon,0,0);
+        ctx.globalCompositeOperation="source-over";
+        return [icanvas,idata];
+      }));
     }
+    return new Promise((resolve,reject)=>
+      promiseChain(parts,([icanvas,idata])=>{
+        let iconsize=idata.icon_size??baseiconsize;
+        let shift=[0,0];
+        if("shift" in idata){
+          shift=idata.shift;
+          shift=shift.map(x=>x*(size/baseiconsize)*2); // i don't know why 2
+        }
+        let isize=iconsize*(size/baseiconsize);
+        if("scale" in idata){
+          isize*=idata.scale*2;
+        }
+        let ctx=canvas.getContext("2d");
+        ctx.drawImage(icanvas,(canvas.width-isize)/2+shift[0],(canvas.height-isize)/2+shift[1],isize,isize);
+      }).then(()=>{
+        return toObjectURL(canvas);
+      }).then(url=>{
+        iconcache[cachekey]=url;
+        resolve(url);
+      },
+      (error)=>
+        reject(error)
+      )
+    );
+  }else{
+    let canvas=getCanvas(size,size);
+    let iconname=data.icon;
+    let iconsize=data.icon_size;
+    return geticon(iconname,iconsize,root).then(icon=>{
+      let ctx=canvas.getContext("2d");
+      ctx.drawImage(icon,0,0,size,size);
+    }).then(()=>{
+      return toObjectURL(canvas);
+    }).then(url=>{
+      iconcache[cachekey]=url;
+      return url;
+    });
+  }
 }
 
 function getpath(filename,root){
-    let mod;
-    let path;
-    let slash = filename.indexOf("/");
-    mod = filename.slice(0, slash);
-    path = filename.slice(slash);
-    return root+'/assets/'+mod.slice(2,-2)+path
+  let mod;
+  let path;
+  let slash = filename.indexOf("/");
+  mod = filename.slice(0, slash);
+  path = filename.slice(slash);
+  return root+"/assets/"+mod.slice(2,-2)+path;
 }
 
 function geticon(name,size,root){
-    return loadImage(getpath(name,root)).then(image=>{
-        return createImageBitmap(image,0,0,size,size);
-    });
+  return loadImage(getpath(name,root)).then(image=>{
+    return createImageBitmap(image,0,0,size,size);
+  });
 }
 
 export {makeiconURL};
