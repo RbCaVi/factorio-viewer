@@ -102,14 +102,22 @@ class Infobox{
       throw Error("already set");
     }
     let n=this.data.pdata.technology[tech];
-    this.info.allows=this.data.postreqs.normal[tech].map(tech=>this.data.techlocale(tech)[1]).filter(unique);
-    this.info.effects=locale.recipename,this.data.unlocks.normal[tech].map(tech=>this.data.recipelocale(tech)[1]);
-    this.info["required-technologies"]=this.data.prereqs.normal[tech].map(tech=>this.data.techlocale(tech)[1]).filter(unique);
+    this.info.allows=this.data.postreqs.normal[tech].map(
+      t=>this.data.techlocale(t)[1]
+    ).filter(unique);
+    this.info.effects=this.data.unlocks.normal[tech].map(
+      t=>this.data.recipelocale(t)[1]
+    );
+    this.info["required-technologies"]=this.data.prereqs.normal[tech].map(
+      t=>this.data.techlocale(t)[1]
+    ).filter(unique);
     this.info["cost-multiplier"]=n.normal.count;
     if("expensive" in this.info){
       this.info["expensive-cost-multiplier"]=n.expensive.count;
     }
-    this.info.cost=n.normal.packs.map(pack=>this.data.itemlocale(pack[0],this.data.data)[0]+","+numtostr(pack[1])).join(" + ");
+    this.info.cost=n.normal.packs.map(
+      pack=>this.data.itemlocale(pack[0],this.data.data)[0]+","+numtostr(pack[1])
+    ).join(" + ");
   }
 
   additem(item){

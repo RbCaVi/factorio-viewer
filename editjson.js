@@ -79,25 +79,25 @@ function makepart(type){
     }
     div.append(typeinput);
   }else if(type=="number"){
-    let div=document.createElement("span");
-    div.classList.add("json"+type);
-    div.classList.add("json");
+    let span=document.createElement("span");
+    span.classList.add("json"+type);
+    span.classList.add("json");
     let valueinput=document.createElement("input");
     valueinput.type = "text";
-    div.append(valueinput);
-    return div;
+    span.append(valueinput);
+    return span;
   }else if(type=="string"){
-    let div=document.createElement("span");
-    div.classList.add("json"+type);
-    div.classList.add("json");
+    let span=document.createElement("span");
+    span.classList.add("json"+type);
+    span.classList.add("json");
     let valueinput=document.createElement("input");
     valueinput.type = "text";
-    div.append("\"",valueinput,"\"");
-    return div;
+    span.append("\"",valueinput,"\"");
+    return span;
   }else if(type=="literal"){
-    let div=document.createElement("span");
-    div.classList.add("json"+type);
-    div.classList.add("json");
+    let span=document.createElement("span");
+    span.classList.add("json"+type);
+    span.classList.add("json");
     let valueinput=document.createElement("select");
     let literals=["null","true","false"];
     for(let i=0;i<literals.length;i++){
@@ -106,8 +106,8 @@ function makepart(type){
       option.text=literals[i];
       valueinput.append(option);
     }
-    div.append(valueinput);
-    return div;
+    span.append(valueinput);
+    return span;
   }
     
   div.style.display = "none";

@@ -88,7 +88,6 @@ function makeiconURL(data,root,size=32){
         let ctx=icanvas.getContext("2d");
         if("tint" in idata){
           let tint=fixcolor(idata.tint);
-          let ctx=icanvas.getContext("2d");
           ctx.fillStyle=tint;
           ctx.fillRect(0,0,icanvas.width,icanvas.height);
         }
