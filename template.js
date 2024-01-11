@@ -28,6 +28,45 @@ function addprops(element,props){
   }
 }
 
+class Renderer{
+  constructor(){
+    this.renderers={};
+  }
+
+  // renderer(this,structure,contents,options)
+
+  render(structure,options={}){
+    let out;
+    if(typeof structure=="string"||typeof structure=="number"||isElement(structure)){
+      return structure;
+    }
+    let contents=structure.contents?.flat().map((x)=>renderstructure(x,options));
+    if(structure.type in this.renderers){
+      let renderer=this.renderers[structure.type];
+      out=renderer(structure,contents,options,this);
+    }else{
+      let container=document.createElement(structure.type);
+      container.append(...contents);
+      out=container;
+    }
+    if("classes" in structure){
+      addclasses(out,structure.classes);
+    }
+    if("styles" in structure){
+      addstyles(out,structure.styles);
+    }
+    if("props" in structure){
+      addprops(out,structure.props);
+    }
+    if("onclick" in structure&&structure.onclick){
+      out.addEventListener("click",()=>{
+        structure.onclick(out);
+      });
+    }
+    return out;
+  }
+}
+
 function renderstructure(structure,options={}){
   let out;
   if(typeof structure=="string"||typeof structure=="number"||isElement(structure)){
@@ -174,4 +213,4 @@ function accordionifmultiple(header,parts){
   return {type:"accordion",header:header,contents:parts};
 }
 
-export {addstyles,addclasses,renderstructure,recipetostructure,accordionifmultiple};
+export {addstyles,addclasses,renderstructure,recipetostructure,accordionifmultiple,Renderer};
