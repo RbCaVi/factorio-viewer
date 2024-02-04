@@ -29,7 +29,7 @@ function processrecipe(recipe){
 function processtech(tech){
   let newtech={"type":"tech"};
   newtech.name=tech.name;
-  for(let x of util.difficulty){
+  for(let x of util.util.difficulty){
     if(!(x in tech)){
       continue;
     }
