@@ -3,9 +3,9 @@ import {fromjson} from './editjson.js';
 import {makeiconURL} from './image.js';
 import {addclasses, Renderer} from './template.js';
 
-function accordion(this, structure, contents, options) {
+function accordion(self, structure, contents, options) {
   if ('header' in structure) {
-    var headerparts=structure.header.map(renderstructure);
+    var headerparts=structure.header.map(self.render.bind(self)); // bind to set this arg
     var header=document.createElement('span');
     header.append(...headerparts);
   }
@@ -14,15 +14,15 @@ function accordion(this, structure, contents, options) {
   out=createaccordion(header, div);
 }
 
-function editjson(this, structure, contents, options) {
+function editjson(self, structure, contents, options) {
   out=fromjson(structure.data);
 }
 
-function json(this, structure, contents, options) {
+function json(self, structure, contents, options) {
   out=accordionfromjson(structure.data);
 }
 
-function icon(this, structure, contents, options) {
+function icon(self, structure, contents, options) {
   // promise to load the image
   var img=document.createElement('img');
   var idata;
@@ -53,7 +53,7 @@ function icon(this, structure, contents, options) {
   out=img;
 }
 
-function texticon(this, structure, contents, options) {
+function texticon(self, structure, contents, options) {
   // promise to load the image
   var img=document.createElement('img');
   var idata;
