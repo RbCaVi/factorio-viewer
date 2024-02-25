@@ -4,14 +4,15 @@ import {makeiconURL} from './image.js';
 import {addclasses, Renderer} from './template.js';
 
 function accordion(self, structure, contents, options) {
-  if ('header' in structure) {
+  let header;
+  if("header" in structure){
     var headerparts=structure.header.map(self.render.bind(self)); // bind to set this arg
-    var header=document.createElement('span');
+    header=document.createElement("span");
     header.append(...headerparts);
   }
-  var div=document.createElement('div');
+  let div=document.createElement("div");
   div.append(...contents);
-  return createaccordion(header, div);
+  return createaccordion(header,div);
 }
 
 function editjson(self, structure, contents, options) {
@@ -23,69 +24,92 @@ function json(self, structure, contents, options) {
 }
 
 function icon(self, structure, contents, options) {
-  // promise to load the image
-  var img=document.createElement('img');
-  var idata;
-  if (structure.itype=='item') {
-    idata=data.getitem(structure.name);
-  } else if (structure.itype=='tech') {
-    idata=data.data.technology[structure.name];
-  } else if (structure.itype=='recipe') {
-    var rdata=data.data.recipe[structure.name];
+  let idata;
+  if(structure.itype=="item"){
+    idata=options.data.getitem(structure.name);
+  }else if(structure.itype=="tech"){
+    idata=options.data.data.technology[structure.name];
+  }else if(structure.itype=="recipe"){
+    let rdata=options.data.data.recipe[structure.name];
     console.log(rdata);
-    if (rdata.icons==undefined&&rdata.icon==undefined) {
-      if (rdata.normal.main_product) {
-        idata=data.getitem(rdata.normal.main_product);
-      } else if (rdata.normal.result) {
-        idata=data.getitem(rdata.normal.result);
-      } else {
-        idata=data.getitem(rdata.normal.results[0].name);
+    if(rdata.icons==undefined&&rdata.icon==undefined){
+      if(rdata.normal.main_product){
+        idata=options.data.getitem(rdata.normal.main_product);
+      }else if(rdata.normal.result){
+        idata=options.data.getitem(rdata.normal.result);
+      }else{
+        idata=options.data.getitem(rdata.normal.results[0].name);
       }
-    } else {
+    }else{
       idata=rdata;
     }
   }
-  makeiconURL(idata).then(url=> {
-    img.src=url;
+  let img;
+  if("root" in options){
+    // promise to load the image
+    img=document.createElement("img");
+    makeiconURL(idata,options.root).then(url=>{
+      img.src=url;
+    });
+    addclasses(img,["factorio-icon"]);
+  }else{
+    img=document.createElement("span");
+    if("localizer" in options){
+      img.textContent=options.localizer[structure.itype+"locale"](structure.name)[0];
+    }else{
+      img.textContent=structure.name;
+    }
   }
-  );
-  addclasses(img, ['factorio-icon']);
+  if("localizer" in options){
+    img.title=options.localizer[structure.itype+"locale"](structure.name)[0];
+  }
   return img;
 }
 
 function texticon(self, structure, contents, options) {
-  // promise to load the image
-  var img=document.createElement('img');
-  var idata;
-  if (structure.itype=='item') {
-    idata=data.getitem(structure.name);
-  } else if (structure.itype=='tech') {
-    idata=data.data.technology[structure.name];
-  } else if (structure.itype=='recipe') {
-    var rdata=data.data.recipe[structure.name];
+  let idata;
+  if(structure.itype=="item"){
+    idata=options.data.getitem(structure.name);
+  }else if(structure.itype=="tech"){
+    idata=options.data.data.technology[structure.name];
+  }else if(structure.itype=="recipe"){
+    let rdata=options.data.data.recipe[structure.name];
     console.log(rdata);
-    if (rdata.icons==undefined&&rdata.icon==undefined) {
-      if (rdata.normal.main_product) {
-        idata=data.getitem(rdata.normal.main_product);
-      } else if (rdata.normal.result) {
-        idata=data.getitem(rdata.normal.result);
-      } else {
-        idata=data.getitem(rdata.normal.results[0].name);
+    if(rdata.icons==undefined&&rdata.icon==undefined){
+      if(rdata.normal.main_product){
+        idata=options.data.getitem(rdata.normal.main_product);
+      }else if(rdata.normal.result){
+        idata=options.data.getitem(rdata.normal.result);
+      }else{
+        idata=options.data.getitem(rdata.normal.results[0].name);
       }
-    } else {
+    }else{
       idata=rdata;
     }
   }
-  makeiconURL(idata).then(url=> {
-    img.src=url;
-  }
-  );
-  var icontext=document.createElement('span');
+  let icontext=document.createElement("span");
   icontext.textContent=structure.text;
-  addclasses(icontext, ['icon-text']);
-  var span=document.createElement('span');
-  addclasses(span, ['factorio-icon']);
-  span.append(img, icontext);
+  addclasses(icontext,["icon-text"]);
+  let span=document.createElement("span");
+  addclasses(span,["factorio-icon"]);
+  if("root" in options){
+    // promise to load the image
+    let img=document.createElement("img");
+    makeiconURL(idata,options.root).then(url=>{
+      img.src=url;
+    });
+    span.append(img);
+  }else{
+    if("localizer" in options){
+      span.textContent=options.localizer[structure.itype+"locale"](structure.name)[0];
+    }else{
+      span.textContent=structure.name;
+    }
+  }
+  span.append(icontext);
+  if("localizer" in options){
+    span.title=options.localizer[structure.itype+"locale"](structure.name)[0];
+  }
   return span;
 }
 
