@@ -11,15 +11,15 @@ function accordion(self, structure, contents, options) {
   }
   var div=document.createElement('div');
   div.append(...contents);
-  out=createaccordion(header, div);
+  return createaccordion(header, div);
 }
 
 function editjson(self, structure, contents, options) {
-  out=fromjson(structure.data);
+  return fromjson(structure.data);
 }
 
 function json(self, structure, contents, options) {
-  out=accordionfromjson(structure.data);
+  return accordionfromjson(structure.data);
 }
 
 function icon(self, structure, contents, options) {
@@ -50,7 +50,7 @@ function icon(self, structure, contents, options) {
   }
   );
   addclasses(img, ['factorio-icon']);
-  out=img;
+  return img;
 }
 
 function texticon(self, structure, contents, options) {
@@ -86,7 +86,7 @@ function texticon(self, structure, contents, options) {
   var span=document.createElement('span');
   addclasses(span, ['factorio-icon']);
   span.append(img, icontext);
-  out=span;
+  return span;
 }
 
 function recipetostructure(recipe, onclick) {
@@ -150,4 +150,4 @@ function accordionifmultiple(header, parts) {
   };
 }
 
-export {accordion, editjson, json, icon, texticon, renderstructure, recipetostructure, accordionifmultiple};
+export {accordion, editjson, json, icon, texticon, recipetostructure, accordionifmultiple};

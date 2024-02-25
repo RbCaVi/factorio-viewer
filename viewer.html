@@ -40,8 +40,13 @@
 			window.mrational=mrational;
 		  import * as mtemplate from './template.js';
 			window.mtemplate=mtemplate;
+		  import * as mrenderers from './renderers.js';
+			window.mrenderers=mrenderers;
 		  //import * as m from './.js';
 			//window.m=m;
+
+			const renderer=new mtemplate.Renderer();
+			renderer.renderers={accordion:mrenderers.accordion, editjson:mrenderers.editjson, json:mrenderers.json, icon:mrenderers.icon, texticon:mrenderers.texticon};
 
 			let structureoptions;
 			function _renderitem(item){
@@ -71,7 +76,7 @@
 									{type:'span',contents:[recipe],classes:['internal-name']},
 									{type:'icon',itype:'recipe',name:recipe,onclick:()=>{render('recipe',recipe)}}
 								],
-								contents:mtemplate.recipetostructure(recipe,(itemname)=>{render('item',itemname)})
+								contents:mrenderers.recipetostructure(recipe,(itemname)=>{render('item',itemname)})
 							}))
 						},
 						{
@@ -84,13 +89,13 @@
 									{type:'span',contents:[recipe],classes:['internal-name']},
 									{type:'icon',itype:'recipe',name:recipe,onclick:()=>{render('recipe',recipe)}}
 								],
-								contents:mtemplate.recipetostructure(recipe,(itemname)=>{render('item',itemname)})
+								contents:mrenderers.recipetostructure(recipe,(itemname)=>{render('item',itemname)})
 							}))
 						}
 					]
 				};
 
-				let div=mtemplate.renderstructure(structure,structureoptions);
+				let div=renderer.render(structure,structureoptions);
 				put(div);
 			}
 
@@ -112,7 +117,7 @@
 						{type:'span',contents:[recipe],classes:['internal-name']},
 						{type:'icon',itype:'recipe',name:recipe},
 						{type:'br',contents:[]},
-						mtemplate.recipetostructure(recipe,(itemname)=>{render('item',itemname)}),
+						mrenderers.recipetostructure(recipe,(itemname)=>{render('item',itemname)}),
 						accordionifmultiple(
 							'Unlocked by ',
 							(data.unlockedby.normal[recipe]??[]).map(tech=>({
@@ -137,7 +142,7 @@
 					]
 				};
 
-				let div=mtemplate.renderstructure(structure,structureoptions);
+				let div=renderer.render(structure,structureoptions);
 				put(div);
 			}
 
