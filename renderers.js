@@ -97,6 +97,12 @@ function texticon(self, structure, contents, options) {
   return span;
 }
 
+function richtext(self, structure, contents, options) {
+  let span=document.createElement("span");
+  span.textContent=structure.text;
+  return span;
+}
+
 function recipetostructure(recipe, onclick) {
   var rdata=data.pdata.recipe[recipe];
   var ings=rdata.normal.ingredients;

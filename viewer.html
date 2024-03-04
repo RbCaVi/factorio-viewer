@@ -56,7 +56,7 @@
 						localizer.itemlocale(item)[0],
 						{type:'span',contents:[item],classes:['internal-name']},
 						{type:'icon',itype:'item',name:item},
-						{type:'p',contents:[localizer.itemlocale(item)[1]??'']},
+						{type:'richtext',text:localizer.itemlocale(item)[1]??''},
 						{
 							type:'accordion',
 							header:['Prototype'],
