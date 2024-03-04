@@ -164,4 +164,4 @@ function accordionifmultiple(header, parts) {
   };
 }
 
-export {accordion, editjson, json, icon, texticon, recipetostructure, accordionifmultiple};
+export {accordion, editjson, json, icon, texticon, recipetostructure, accordionifmultiple, richtext};
