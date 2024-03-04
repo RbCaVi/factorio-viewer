@@ -23,27 +23,30 @@ function json(self, structure, contents, options) {
   return accordionfromjson(structure.data);
 }
 
-function icon(self, structure, contents, options) {
-  let idata;
+function getidata(structure,options) {
   if(structure.itype=="item"){
-    idata=options.data.getitem(structure.name);
+    return options.data.getitem(structure.name);
   }else if(structure.itype=="tech"){
-    idata=options.data.data.technology[structure.name];
+    return options.data.data.technology[structure.name];
   }else if(structure.itype=="recipe"){
     let rdata=options.data.data.recipe[structure.name];
     console.log(rdata);
     if(rdata.icons==undefined&&rdata.icon==undefined){
       if(rdata.normal.main_product){
-        idata=options.data.getitem(rdata.normal.main_product);
+        return options.data.getitem(rdata.normal.main_product);
       }else if(rdata.normal.result){
-        idata=options.data.getitem(rdata.normal.result);
+        return options.data.getitem(rdata.normal.result);
       }else{
-        idata=options.data.getitem(rdata.normal.results[0].name);
+        return options.data.getitem(rdata.normal.results[0].name);
       }
     }else{
-      idata=rdata;
+      return rdata;
     }
   }
+}
+
+function icon(self, structure, contents, options) {
+  let idata=getidata(structure,options);
   let img;
   if("root" in options){
     // promise to load the image
@@ -67,26 +70,7 @@ function icon(self, structure, contents, options) {
 }
 
 function texticon(self, structure, contents, options) {
-  let idata;
-  if(structure.itype=="item"){
-    idata=options.data.getitem(structure.name);
-  }else if(structure.itype=="tech"){
-    idata=options.data.data.technology[structure.name];
-  }else if(structure.itype=="recipe"){
-    let rdata=options.data.data.recipe[structure.name];
-    console.log(rdata);
-    if(rdata.icons==undefined&&rdata.icon==undefined){
-      if(rdata.normal.main_product){
-        idata=options.data.getitem(rdata.normal.main_product);
-      }else if(rdata.normal.result){
-        idata=options.data.getitem(rdata.normal.result);
-      }else{
-        idata=options.data.getitem(rdata.normal.results[0].name);
-      }
-    }else{
-      idata=rdata;
-    }
-  }
+  let idata=getidata(structure,options);
   let icontext=document.createElement("span");
   icontext.textContent=structure.text;
   addclasses(icontext,["icon-text"]);
