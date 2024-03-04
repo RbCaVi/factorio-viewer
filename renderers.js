@@ -6,7 +6,7 @@ import {addclasses, Renderer} from './template.js';
 function accordion(self, structure, contents, options) {
   let header;
   if("header" in structure){
-    var headerparts=structure.header.map(self.render.bind(self)); // bind to set this arg
+    var headerparts=structure.header.map((x)=>self.render(x,options));
     header=document.createElement("span");
     header.append(...headerparts);
   }
