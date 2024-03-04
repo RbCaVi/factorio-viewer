@@ -103,11 +103,13 @@ function splitrichtext(text) {
   const tags=[];
   while(true){
     const start=text.indexOf('[',i);
-    const newtext=text.slice(i,start);
-    texts.push(newtext);
     if(start==-1){
+      const newtext=text.slice(i);
+      texts.push(newtext);
       break;
     }
+    const newtext=text.slice(i,start);
+    texts.push(newtext);
     i=text.indexOf(']',start+1)+1;
     const tag=text.slice(start,i);
     tags.push(tag);
