@@ -97,9 +97,31 @@ function texticon(self, structure, contents, options) {
   return span;
 }
 
+function splitrichtext(text) {
+  let i=0;
+  const texts=[];
+  const tags=[];
+  while(true){
+    const start=text.indexOf('[',i);
+    const newtext=text.slice(i,start);
+    texts.push(newtext);
+    if(start==-1){
+      break;
+    }
+    i=text.indexOf(']',start+1)+1;
+    const tag=text.slice(start,i);
+    tags.push(tag);
+    if(i==-1){
+      throw 'unmatched brackets in rich text';
+    }
+  }
+  return {texts,tags};
+}
+
 function richtext(self, structure, contents, options) {
   let span=document.createElement("span");
-  span.textContent=structure.text;
+  const split=splitrichtext(structure.text);
+  span.textContent=JSON.stringify(split);
   return span;
 }
 
