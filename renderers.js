@@ -51,7 +51,7 @@ function icon(self, structure, contents, options) {
   if("root" in options){
     // promise to load the image
     img=document.createElement("img");
-    makeiconURL(idata,options.root).then(url=>{
+    makeiconURL(idata,options).then(url=>{
       img.src=url;
     });
     addclasses(img,["factorio-icon"]);
@@ -79,7 +79,7 @@ function texticon(self, structure, contents, options) {
   if("root" in options){
     // promise to load the image
     let img=document.createElement("img");
-    makeiconURL(idata,options.root).then(url=>{
+    makeiconURL(idata,options).then(url=>{
       img.src=url;
     });
     span.append(img);

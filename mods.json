@@ -1,0 +1,5 @@
+{
+	"base":"mods/__base__",
+	"core":"mods/__core__",
+	"__default":"nullius/assets/{}"
+}

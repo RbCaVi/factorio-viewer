@@ -68,7 +68,8 @@ function fixcolor(col){
 
 let iconcache={};
 
-function makeiconURL(data,root,size=32){
+function makeiconURL(data,options,size=32){
+  const mods = options.mods;
   // return a promise for the canvas being fully rendered
   let cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size});
   if(cachekey in iconcache){
@@ -83,7 +84,7 @@ function makeiconURL(data,root,size=32){
     for(let icondata of icons){
       let iconname=icondata.icon;
       let iconsize=icondata.icon_size??baseiconsize;
-      parts.push(packPromise(geticon(iconname,iconsize,root),icondata).then(([icon,idata])=>{
+      parts.push(packPromise(geticon(iconname,iconsize,options),icondata).then(([icon,idata])=>{
         let icanvas=getCanvas(icon.width,icon.height);
         let ctx=icanvas.getContext("2d");
         if("tint" in idata){
@@ -127,7 +128,7 @@ function makeiconURL(data,root,size=32){
     let canvas=getCanvas(size,size);
     let iconname=data.icon;
     let iconsize=data.icon_size;
-    return geticon(iconname,iconsize,root).then(icon=>{
+    return geticon(iconname,iconsize,options).then(icon=>{
       let ctx=canvas.getContext("2d");
       ctx.drawImage(icon,0,0,size,size);
     }).then(()=>{
@@ -139,17 +140,28 @@ function makeiconURL(data,root,size=32){
   }
 }
 
-function getpath(filename,root){
+function getpath(filename,options){
   let mod;
   let path;
   let slash = filename.indexOf("/");
   mod = filename.slice(0, slash);
+  if (mod.slice(0,2)!='__'){
+    throw Error(`mod ${mod} didn\'t have __ on both sides`);
+  }
+  if (mod.slice(-2)!='__'){
+    throw Error(`mod ${mod} didn\'t have __ on both sides`);
+  }
+  let modname = mod.slice(2,-2);
   path = filename.slice(slash);
-  return root+"/assets/"+mod.slice(2,-2)+path;
+  let root = options.mods[modname];
+  if (root == undefined) {
+    root = options.mods.__default.replace('{}',modname);
+  }
+  return root+'/'+path;
 }
 
-function geticon(name,size,root){
-  return loadImage(getpath(name,root)).then(image=>{
+function geticon(name,size,options){
+  return loadImage(getpath(name,options)).then(image=>{
     return createImageBitmap(image,0,0,size,size);
   });
 }
