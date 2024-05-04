@@ -1,0 +1,21 @@
+.tab-outer {
+  background-color: #eee;
+  color: #444;
+  border: none;
+  outline: none;
+}
+
+.tab-outer>div>span.tab-selected {
+  background-color: #999;
+  color: #fff;
+  border: none;
+  outline: none;
+}
+
+.tab-outer>div>span {
+  white-space: nowrap;
+}
+
+.tab-outer>div {
+  overflow-wrap: anywhere;
+}

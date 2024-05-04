@@ -2,6 +2,7 @@
 	<head>
     <link rel="stylesheet" href="accordion.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="tabs.css">
 	</head>
 	<body>
 		<script type='module'>
@@ -48,7 +49,7 @@
 			//window.m=m;
 
 			const renderer=new mtemplate.Renderer();
-			renderer.renderers={accordion:mrenderers.accordion, editjson:mrenderers.editjson, json:mrenderers.json, icon:mrenderers.icon, texticon:mrenderers.texticon, richtext:mrenderers.richtext};
+			renderer.renderers={accordion:mrenderers.accordion, editjson:mrenderers.editjson, json:mrenderers.json, icon:mrenderers.icon, texticon:mrenderers.texticon, richtext:mrenderers.richtext, tabs:mrenderers.tabs};
 
 			let structureoptions;
 			function _renderitem(item){
@@ -229,6 +230,63 @@
 			window.renderthing=renderthing;
 			window.back=back;
 			window.forward=forward;
+
+			let div=renderer.render({
+				type:'div',
+				contents:[
+					{
+						type:'tabs',
+						styles:{
+							width:'200px'
+						},
+						tabs:['tab 1','tab 2'],
+						contents:[
+							{
+								type:'json',
+								data:{'hamburger':'hamburger'}
+							},
+							{
+								type:'json',
+								data:{'burger':'cheeseburgerburger'}
+							}
+						]
+					},
+					{
+						type:'tabs',
+						styles:{
+							width:'200px'
+						},
+						tabs:['tab 1','tab 2','tab 3','tab 4','tab 5','tab 6'],
+						contents:[
+							{
+								type:'json',
+								data:{'hamburger':'hamburger'}
+							},
+							{
+								type:'json',
+								data:{'burger':'cheeseburgerburger'}
+							},
+							{
+								type:'json',
+								data:{'burger1':'cheeseburgerburger'}
+							},
+							{
+								type:'json',
+								data:{'burger2':'cheeseburgerburger'}
+							},
+							{
+								type:'json',
+								data:{'burger3':'cheeseburgerburger'}
+							},
+							{
+								type:'json',
+								data:{'burger4':'cheeseburgerburger'}
+							}
+						]
+					}
+				]
+			},structureoptions);
+			put(div);
 
 			initializedp.then(()=>{
 				structureoptions={localizer,root:modroot,data,mods};

@@ -307,4 +307,35 @@ function accordionifmultiple(header, parts) {
   };
 }
 
-export {accordion, editjson, json, icon, texticon, recipetostructure, accordionifmultiple, richtext};
+function tabs(self, structure, contents, options) {
+  // each contents is a tab content
+  // tabs
+  const outer=document.createElement("div");
+  outer.classList.add('tab-outer');
+  const tabholder=document.createElement("div");
+  const content=document.createElement("div");
+  outer.append(tabholder,content);
+  const tabs = structure.tabs.map(
+    (x)=>self.render(x,options)
+  ).map(
+    (x)=>{
+      const tab=document.createElement("span");
+      tab.append(x);
+      return tab;
+    }
+  );
+  let number = 0;
+  for (let i = 0; i < tabs.length; i++) {
+    tabs[i].addEventListener("click",()=>{
+      contents[number].remove();
+      tabs[number].classList.remove('tab-selected');
+      number = i;
+      content.append(contents[number]);
+      tabs[number].classList.add('tab-selected');
+    });
+    tabholder.append(tabs[i],'\u200b');
+  }
+  return outer;
+}
+
+export {accordion, editjson, json, icon, texticon, recipetostructure, accordionifmultiple, richtext, tabs};
