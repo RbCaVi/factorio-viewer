@@ -231,72 +231,88 @@
 			window.back=back;
 			window.forward=forward;
 
-			let div=renderer.render({
-				type:'div',
-				contents:[
-					{
-						type:'tabs',
-						styles:{
-							width:'200px'
-						},
-						tabs:['tab 1','tab 2'],
-						contents:[
-							{
-								type:'json',
-								data:{'hamburger':'hamburger'}
-							},
-							{
-								type:'json',
-								data:{'burger':'cheeseburgerburger'}
-							}
-						]
-					},
-					{
-						type:'tabs',
-						styles:{
-							width:'200px'
-						},
-						tabs:['tab 1','tab 2','tab 3','tab 4','tab 5','tab 6'],
-						contents:[
-							{
-								type:'json',
-								data:{'hamburger':'hamburger'}
-							},
-							{
-								type:'json',
-								data:{'burger':'cheeseburgerburger'}
-							},
-							{
-								type:'json',
-								data:{'burger1':'cheeseburgerburger'}
-							},
-							{
-								type:'json',
-								data:{'burger2':'cheeseburgerburger'}
-							},
-							{
-								type:'json',
-								data:{'burger3':'cheeseburgerburger'}
-							},
-							{
-								type:'json',
-								data:{'burger4':'cheeseburgerburger'}
-							}
-						]
-					}
-				]
-			},structureoptions);
-			put(div);
-
 			initializedp.then(()=>{
 				structureoptions={localizer,root:modroot,data,mods};
 				render('item','iron-plate');
+
+				let div=renderer.render({
+					type:'div',
+					contents:[
+						{
+							type:'tabs',
+							styles:{
+								width:'200px'
+							},
+							tabs:[{
+											type:'icon',
+											itype:'item',
+											name:'iron-plate'
+										},'tab 2'],
+							contents:[
+								{
+									type:'div',
+									contents:[
+										{
+											type:'icon',
+											itype:'item',
+											name:'iron-plate'
+										},
+										{
+											type:'icon',
+											itype:'item',
+											name:'copper-plate'
+										},
+									]
+								},
+								{
+									type:'json',
+									data:{'burger':'cheeseburgerburger'}
+								}
+							]
+						},
+						{
+							type:'tabs',
+							styles:{
+								width:'200px'
+							},
+							tabs:['tab 1','tab 2','tab 3','tab 4','tab 5','tab 6'],
+							contents:[
+								{
+									type:'json',
+									data:{'hamburger':'hamburger'}
+								},
+								{
+									type:'json',
+									data:{'burger':'cheeseburgerburger'}
+								},
+								{
+									type:'json',
+									data:{'burger1':'cheeseburgerburger'}
+								},
+								{
+									type:'json',
+									data:{'burger2':'cheeseburgerburger'}
+								},
+								{
+									type:'json',
+									data:{'burger3':'cheeseburgerburger'}
+								},
+								{
+									type:'json',
+									data:{'burger4':'cheeseburgerburger'}
+								}
+							]
+						}
+					]
+				},structureoptions);
+				put(div);
 			});
 		</script>
 		<button onclick="back()">back</button><button onclick="forward()">forward</button>
 		<div class="items"></div>
 		<input type="text" id='inputbox'>
-		<button onclick="renderthing('item')">item</button><button onclick="renderthing('recipe')">recipe</button>
+		<button onclick="renderthing('item')">item</button>
+		<button onclick="renderthing('recipe')">recipe</button>
 		<script>
 			(function () {
                             var src = '//cdn.jsdelivr.net/npm/eruda';
