@@ -121,7 +121,7 @@ class FactorioData{
   }
 
   getequipment(equipment){
-    for(let etype of ["fluid"].concat(util.equipmenttypes)){
+    for(let etype of util.equipmenttypes){
       if(equipment in this.data[etype]){
         return this.data[etype][equipment];
       }
