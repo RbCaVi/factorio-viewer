@@ -157,6 +157,18 @@ class FactorioLocalizer{
     return namedesc;
   }
 
+  genericlocale(name,type){
+    this.#localecache[type] = this.#localecache[type] ?? {};
+    if(name in this.#localecache[type]){
+      return this.#localecache[type][name];
+    }
+    let namedesc;
+    let thing=this.data.data[type][name];
+    namedesc=this.#getnamedesc(thing,type);
+    this.#localecache[type][name]=namedesc;
+    return namedesc;
+  }
+
   itemlocale(item){
     if(item in this.#localecache.item){
       return this.#localecache.item[item];

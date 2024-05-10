@@ -42,6 +42,8 @@ function getidata(structure,options) {
     }else{
       return rdata;
     }
+  }else{
+    return options.data.data[structure.itype][structure.name];
   }
 }
 
@@ -64,7 +66,11 @@ function icon(self, structure, contents, options) {
     }
   }
   if("localizer" in options){
-    img.title=options.localizer[structure.itype+"locale"](structure.name)[0];
+    if ((structure.itype+"locale") in options.localizer){
+      img.title=options.localizer[structure.itype+"locale"](structure.name)[0];
+    }else{
+      img.title=options.localizer.genericlocale(structure.name,structure.itype)[0];
+    }
   }
   return img;
 }
