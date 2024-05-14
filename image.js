@@ -52,7 +52,7 @@ function colorToString(color){
 
 function fixcolor(col){
   // return the color normalized to hex rgba format
-  let color={"r":0,"g":0,"b":0,"a":1};
+  let color={"r":0,"g":0,"b":0};
   if(Array.isArray(col)){
     for(let i=0;i<col.length;i++){
       color[["r","g","b","a"][i]]=col[i];
@@ -61,7 +61,10 @@ function fixcolor(col){
     ["r","g","b","a"].map(x=>{if(x in col){color[x]=col[x];}});
   }
   if(Math.max(...Object.values(color))<=1){
+    color['a'] ??= 1;
     ["r","g","b","a"].map(x=>{color[x]*=255;});
+  }else{
+    color['a'] ??= 255;
   }
   return colorToString(["r","g","b","a"].map(i=>color[i]));
 }
@@ -89,6 +92,7 @@ function makeiconURL(data,options,size=32){
         let ctx=icanvas.getContext("2d");
         if("tint" in idata){
           let tint=fixcolor(idata.tint);
+          //console.log('tint',data.name,idata.tint,tint);
           ctx.fillStyle=tint;
           ctx.fillRect(0,0,icanvas.width,icanvas.height);
         }
