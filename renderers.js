@@ -330,14 +330,20 @@ function tabs(self, structure, contents, options) {
       return tab;
     }
   );
-  let number = 0;
+  let number = -1;
   for (let i = 0; i < tabs.length; i++) {
     tabs[i].addEventListener("click",()=>{
-      contents[number].remove();
-      tabs[number].classList.remove('tab-selected');
-      number = i;
-      content.append(contents[number]);
-      tabs[number].classList.add('tab-selected');
+      if (number != -1){
+        contents[number].remove();
+        tabs[number].classList.remove('tab-selected');
+      }
+      if (number != i){
+        number = i;
+        content.append(contents[number]);
+        tabs[number].classList.add('tab-selected');
+      } else {
+        number = -1;
+      }
     });
     tabholder.append(tabs[i],'\u200b');
   }
