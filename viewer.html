@@ -278,8 +278,18 @@
 						name:group
 					});
 					let groupcontents = [];
-					for (let [item,] of items) {
-						groupcontents.push({
+					let groupcontents2 = [];
+					let subgroup = '';
+					for (let [item,isubgroup,] of items) {
+						if (subgroup != isubgroup) {
+							groupcontents.push({
+								type:'div',
+								contents:groupcontents2
+							});
+							groupcontents2 = [];
+							subgroup = isubgroup;
+						}
+						groupcontents2.push({
 							type:'icon',
 							itype:'item',
 							name:item,
