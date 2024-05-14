@@ -194,9 +194,7 @@
 
 			function put(div) {
 		    let body=document.querySelector('.items');
-			  while (body.firstChild) {
-			    body.removeChild(body.lastChild);
-			  }
+			  body.innerText = '';
 		    body.append(div);
 			}
 
