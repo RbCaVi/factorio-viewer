@@ -305,7 +305,7 @@
 				let s = {
 					type:'tabs',
 					styles:{
-						width:'200px'
+						width:'500px'
 					},
 					tabs,
 					contents
@@ -320,13 +320,15 @@
 
 	      for (let recipe of Object.values(data.data.recipe)) {
 	      	let subgroup = recipe.subgroup;
+		      let order = recipe.order;
 	      	if (subgroup == undefined) {
 	      		let item;
 		      	if (recipe.normal.results.length == 1) {
 		      		item = recipe.normal.results[0].name;
 		      	} else if (recipe.normal.main_product) {
-		      		item = recipe.main_product;
+		      		item = recipe.normal.main_product;
 		      	}
+		      	console.log('getitem',item);
 		      	const item2 = data.getitem(item);
 		      	const defaultsubgroup = item2.type == 'fluid'?'fluid':'other';
 	      		subgroup = item2.subgroup ?? defaultsubgroup;
@@ -334,20 +336,23 @@
 		      		console.log("huh?");
 		      	}
 		      }
-		      let order = recipe.order;
 	      	if (order == undefined) {
 	      		let item;
 		      	if (recipe.normal.results.length == 1) {
 		      		item = recipe.normal.results[0].name;
 		      	} else if (recipe.normal.main_product) {
-		      		item = recipe.main_product;
+		      		item = recipe.normal.main_product;
 		      	}
-	      		order = data.getitem(item).order;
+		      	const item2 = data.getitem(item);
+		      	order = item2?.order ?? '';
 		      	if (order == undefined) {
 		      		console.log("huh?");
 		      	}
 		      }
 	        console.log(recipe.name,subgroup,subgrouptogroup[subgroup]);
+	        if (recipe.normal.hidden) {
+	        	continue;
+	        }
 	        recipegroups[subgrouptogroup[subgroup]].push([recipe.name,subgroup,order]);
 	      }
 
@@ -395,7 +400,7 @@
 				let s2 = {
 					type:'tabs',
 					styles:{
-						width:'200px'
+						width:'500px'
 					},
 					tabs:tabs2,
 					contents:contents2
