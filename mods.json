@@ -1,5 +1,14 @@
 {
 	"base":"mods/__base__",
 	"core":"mods/__core__",
+	"aai-containers":"aai/assets/aai-containers",
+	"aai-industry":"aai/assets/aai-industry",
+	"InserterFuelLeech":"aai/assets/InserterFuelLeech",
+	"angelspetrochem":"https://raw.githubusercontent.com/Arch666Angel/mods/master/angelspetrochem/",
+	"angelsrefining":"https://raw.githubusercontent.com/Arch666Angel/mods/master/angelsrefining/",
+	"angelssmelting":"https://raw.githubusercontent.com/Arch666Angel/mods/master/angelssmelting/",
+	"boblibrary":"https://raw.githubusercontent.com/modded-factorio/bobsmods/main/boblibrary",
+	"boblogistics":"https://raw.githubusercontent.com/modded-factorio/bobsmods/main/boblogistics",
+	"nullius":"https://raw.githubusercontent.com/GregorSamsanite/nullius/main/nullius/",
 	"__default":"nullius/assets/{}"
 }
