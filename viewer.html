@@ -268,7 +268,12 @@
 	      let tabs = [];
 	      let contents = [];
 
-	      for (let [group,items] of Object.entries(groups)) {
+	      const groupnames = Object.keys(groups);
+
+	      groupnames.sort((a,b)=>compare(data.data['item-group'][a].order,data.data['item-group'][b].order));
+
+	      for (const group of groupnames) {
+	      	const items = groups[group];
 	      	if (items.length == 0) {
 	      		continue;
 	      	}
@@ -363,7 +368,12 @@
 	      let tabs2 = [];
 	      let contents2 = [];
 
-	      for (let [recipegroup,recipes] of Object.entries(recipegroups)) {
+	      const recipegroupnames = Object.keys(recipegroups);
+
+	      recipegroupnames.sort((a,b)=>compare(data.data['item-group'][a].order,data.data['item-group'][b].order));
+
+	      for (let recipegroup of recipegroupnames) {
+	      	const recipes = recipegroups[recipegroup];
 	      	if (recipes.length == 0) {
 	      		continue;
 	      	}
