@@ -100,7 +100,7 @@
 					]
 				};
 
-				let div=renderer.render(structure,structureoptions);
+				let div=renderer.render(structure);
 				put(div);
 			}
 
@@ -147,7 +147,7 @@
 					]
 				};
 
-				let div=renderer.render(structure,structureoptions);
+				let div=renderer.render(structure);
 				put(div);
 			}
 
@@ -232,6 +232,8 @@
 
 			initializedp.then(()=>{
 				structureoptions={localizer,root:modroot,data,mods};
+				renderer.setoptions(structureoptions);
+
 				render('item','iron-plate');
 
 				let groups = {};
@@ -420,7 +422,7 @@
 				let div=renderer.render({
 					type:'div',
 					contents:[s,{type:'br',contents:[]},s2]
-				},structureoptions);
+				});
 				document.querySelector('.selectors').append(div);
 			});
 		</script>
