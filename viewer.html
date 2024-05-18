@@ -224,11 +224,6 @@
 				)
 			}
 
-			function renderthing(type) {
-				render(type,document.getElementById('inputbox').value);
-			}
-
-			window.renderthing=renderthing;
 			window.back=back;
 			window.forward=forward;
 
@@ -443,15 +438,12 @@
 			});
 		</script>
 		<button onclick="back()">back</button><button onclick="forward()">forward</button>
-		<div class="selectors"></div>
-		<div class="items"></div>
-		<input type="text" id='inputbox'>
-		<button onclick="renderthing('item')">item</button>
-		<button onclick="renderthing('recipe')">recipe</button>
-		<div style="position: relative;">
+		<div class="search-bar" style="position: relative;">
 			<input type="text" id='itemsearch' oninput="msearch.itemsearch(this,computedlocale,render,renderer)">
 			<div class='searcheditems searchresults'></div>
 		</div>
+		<div class="selectors"></div>
+		<div class="items"></div>
 		<script>
 			(function () {
                             var src = '//cdn.jsdelivr.net/npm/eruda';
