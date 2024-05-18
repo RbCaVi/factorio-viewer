@@ -1,0 +1,15 @@
+.searcheditems{
+	display: none;
+}
+
+input:focus + .searcheditems,.searcheditems:hover,.searcheditems:focus{
+	position: absolute; top: 100%;
+	display: block;
+	overflow: scroll;
+	max-height: 200px;
+	background: white;
+	border-width: 2px;
+	border-color: black;
+	border-style: solid;
+	z-index: 1;
+}

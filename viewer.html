@@ -3,6 +3,7 @@
     <link rel="stylesheet" href="accordion.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="tabs.css">
+    <link rel="stylesheet" href="search.css">
 	</head>
 	<body>
 		<script type='module'>
@@ -429,6 +430,10 @@
 		<input type="text" id='inputbox'>
 		<button onclick="renderthing('item')">item</button>
 		<button onclick="renderthing('recipe')">recipe</button>
+		<div style="position: relative;">
+			<input type="text" id='itemsearch' oninput="itemsearch(this)">
+			<div class='searcheditems searchresults'></div>
+		</div>
 		<script>
 			(function () {
                             var src = '//cdn.jsdelivr.net/npm/eruda';
