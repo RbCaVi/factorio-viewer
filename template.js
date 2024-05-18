@@ -33,9 +33,16 @@ class Renderer{
     this.renderers={};
   }
 
+  setoptions(options){
+    this.options = options;
+  }
+
   // renderer(this,structure,contents,options)
 
-  render(structure,options={}){
+  render(structure,options){
+    if (options == undefined) {
+      options = this.options;
+    }
     let out;
     if(typeof structure=="string"||typeof structure=="number"||isElement(structure)){
       return structure;
