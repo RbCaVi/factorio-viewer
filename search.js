@@ -1,3 +1,5 @@
+import {addclasses} from './template.js';
+
 function match(pattern,s){
 	// find pattern in s
 	const patterns=pattern.toLowerCase().split(/\s/);
@@ -38,7 +40,7 @@ function comparematch(m1,m2){
 	return 0;
 }
 
-function compare([,,im1,lm1],[,,im2,lm2]){
+function compare([,,,im1,lm1],[,,,im2,lm2]){
 	// compare the locale match first
 	var empty1=lm1.length==0;
 	var empty2=lm2.length==0;
@@ -88,7 +90,7 @@ function highlightletters(s,highlighted){
 		if(highlighted.includes(i)){
 			var h=document.createElement('span');
 			h.textContent=s.charAt(i);
-			modules.template.addclasses(h,['search-highlighted']);
+			addclasses(h,['search-highlighted']);
 			out.append(h);
 		}else{
 			out.append(s.charAt(i));
@@ -97,39 +99,46 @@ function highlightletters(s,highlighted){
 	return out;
 }
 
-function itemsearch(element){
-	var search=element.value;
-	var scores=[];
-	for(var [iname,[lname,ldesc]] of Object.entries(itemlocales)){
-		var [imatched,imatch]=match(search,iname);
-		var [lmatched,lmatch]=match(search,lname);
+function itemsearch(element,locales,callback,renderer){
+	// callback is called to render a thing
+	const search=element.value;
+	const scores=[];
+	for(const [itype,iname,[lname,ldesc]] of locales){
+		const [imatched,imatch]=match(search,iname);
+		const [lmatched,lmatch]=match(search,lname);
 		if(imatched||lmatched){
-			insort(scores,[iname,lname,imatch,imatch],compare);
+			insort(scores,[itype,iname,lname,imatch,imatch],compare);
 		}
 	}
 	console.log(scores);
-	var resultsdiv=element.nextElementSibling;
+	const resultsdiv=element.nextElementSibling;
 	resultsdiv.textContent='';
-	for(let [iname,lname,imatch,lmatch] of scores){
-		var structure={
+	for(const [itype,iname,lname,imatch,lmatch] of scores){
+		let postfix;
+		if (itype == 'item'){
+			postfix = '';
+		} else if (itype == 'recipe'){
+			postfix = ' (recipe)';
+		} else {
+			throw 'what is this??? '+itype;
+		}
+		const structure={
 			type:'div',
 			contents:[
 				{type:'span',contents:[highlightletters(lname,lmatch)]},
+				postfix,
 				{type:'span',contents:[highlightletters(iname,imatch)],classes:['internal-name']},
-				{type:'icon',itype:'item',name:iname}
+				{type:'icon',itype,name:iname}
 			],
-			onclick:()=>{setitem(iname);}
+			onclick:function setitem() {
+				console.log('picked',iname);
+				element.value=lname;
+				itemsearch(element,locales,callback,renderer);
+				callback(itype,iname);
+			}
 		};
-		resultsdiv.append(modules.template.renderstructure(structure));
+		resultsdiv.append(renderer.render(structure));
 	}
 }
 
-function setitem(item) {
-	console.log('picked',item);
-	var input=document.querySelector('#itemsearch');
-	input.value=itemlocales[item][0];
-	itemsearch(input);
-	document.querySelector('.item').innerText='';
-	document.querySelector('.item').append(renderitem(item));
-	window.item=item;
-}
+export {itemsearch};

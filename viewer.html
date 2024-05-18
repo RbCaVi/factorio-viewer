@@ -46,6 +46,8 @@
 			window.mtemplate=mtemplate;
 		  import * as mrenderers from './renderers.js';
 			window.mrenderers=mrenderers;
+		  import * as msearch from './search.js';
+			window.msearch=msearch;
 		  //import * as m from './.js';
 			//window.m=m;
 
@@ -424,6 +426,20 @@
 					contents:[s,{type:'br',contents:[]},s2]
 				});
 				document.querySelector('.selectors').append(div);
+
+				const computedlocale = [];
+				for(var itype of util.itemtypes.concat(['fluid'])){
+					for(var name of Object.keys(data.data[itype])){
+						computedlocale.push(['item',name,localizer.itemlocale(name)]);
+					}
+				}
+				for(var name of Object.keys(data.data.recipe)){
+					computedlocale.push(['recipe',name,localizer.recipelocale(name)]);
+				}
+
+				window.computedlocale = computedlocale;
+				window.render = render;
+				window.renderer = renderer;
 			});
 		</script>
 		<button onclick="back()">back</button><button onclick="forward()">forward</button>
@@ -433,7 +449,7 @@
 		<button onclick="renderthing('item')">item</button>
 		<button onclick="renderthing('recipe')">recipe</button>
 		<div style="position: relative;">
-			<input type="text" id='itemsearch' oninput="itemsearch(this)">
+			<input type="text" id='itemsearch' oninput="msearch.itemsearch(this,computedlocale,render,renderer)">
 			<div class='searcheditems searchresults'></div>
 		</div>
 		<script>
