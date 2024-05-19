@@ -417,23 +417,24 @@
 						itype:'item-group',
 						name:recipegroup
 					});
+					const groupedrecipes = groupBy(recipes,([,subgroup,])=>subgroup);
+					const subgroups = Object.keys(groupedrecipes);
+					subgroups.sort((a,b)=>compare(data.data['item-subgroup'][a].order,data.data['item-subgroup'][b].order));
 					let recipegroupcontents = [];
-					let recipegroupcontents2 = [];
-					let subgroup = '';
-					for (let [recipe,rsubgroup,] of recipes) {
-						if (subgroup != rsubgroup) {
-							recipegroupcontents.push({
-								type:'div',
-								contents:recipegroupcontents2
+					for (const subgroup of subgroups) {
+						const row = groupedrecipes[subgroup];
+						let recipegroupcontents2 = [];
+						for (let [recipe,isubgroup,] of row) {
+							recipegroupcontents2.push({
+								type:'icon',
+								itype:'recipe',
+								name:recipe,
+								onclick:render.bind(undefined,'recipe',recipe)
 							});
-							recipegroupcontents2 = [];
-							subgroup = rsubgroup;
 						}
-						recipegroupcontents2.push({
-							type:'icon',
-							itype:'recipe',
-							name:recipe,
-							onclick:render.bind(undefined,'recipe',recipe)
+						recipegroupcontents.push({
+							type:'div',
+							contents:recipegroupcontents2
 						});
 					}
 					contents2.push({
