@@ -284,13 +284,19 @@
 		    for (let itype of mutil.util.itemtypes) {
 		      for (let item of Object.values(data.data[itype])) {
 		        console.log(item.name,item.subgroup,subgrouptogroup[item.subgroup ?? 'other']);
+		        if (item.flags && item.flags.includes('hidden')) {
+		        	continue;
+		        }
 		        groups[subgrouptogroup[item.subgroup ?? 'other']].push([item.name,item.subgroup ?? 'other',item.order]);
 		      }
 		    }
 
 	      for (let fluid of Object.values(data.data.fluid)) {
 	        console.log(fluid.name,fluid.subgroup,subgrouptogroup[fluid.subgroup ?? 'fluid']);
-	        groups[subgrouptogroup[fluid.subgroup ?? 'fluid']].push([fluid.name,fluid.subgroup ?? 'fluid',fluid.order]);
+	        if (fluid.hidden) {
+	        	continue;
+	        }
+		      groups[subgrouptogroup[fluid.subgroup ?? 'fluid']].push([fluid.name,fluid.subgroup ?? 'fluid',fluid.order]);
 	      }
 
     	  let compare = (a,b)=>a<b?-1:a>b?1:0;
