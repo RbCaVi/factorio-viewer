@@ -284,17 +284,17 @@
 		    for (let itype of mutil.util.itemtypes) {
 		      for (let item of Object.values(data.data[itype])) {
 		        console.log(item.name,item.subgroup,subgrouptogroup[item.subgroup ?? 'other']);
-		        groups[subgrouptogroup[item.subgroup ?? 'other']].push([item.name,item.subgroup,item.order]);
+		        groups[subgrouptogroup[item.subgroup ?? 'other']].push([item.name,item.subgroup ?? 'other',item.order]);
 		      }
 		    }
 
 	      for (let fluid of Object.values(data.data.fluid)) {
 	        console.log(fluid.name,fluid.subgroup,subgrouptogroup[fluid.subgroup ?? 'fluid']);
-	        groups[subgrouptogroup[fluid.subgroup ?? 'fluid']].push([fluid.name,fluid.subgroup,fluid.order]);
+	        groups[subgrouptogroup[fluid.subgroup ?? 'fluid']].push([fluid.name,fluid.subgroup ?? 'fluid',fluid.order]);
 	      }
 
     	  let compare = (a,b)=>a<b?-1:a>b?1:0;
-    	  let comparator = (a,b)=>compare(a[1],b[1])||compare(a[2],b[2]);
+    	  let comparator = (a,b)=>compare(a[1],b[1])||compare(a[2],b[2])||compare(a[0],b[0]);
 	      for (let group of Object.values(groups)) {
 	      	group.sort(comparator);
 	      }
@@ -316,23 +316,24 @@
 						itype:'item-group',
 						name:group
 					});
+					const groupeditems = groupBy(items,([,subgroup,])=>subgroup);
+					const subgroups = Object.keys(groupeditems);
+					subgroups.sort((a,b)=>compare(data.data['item-subgroup'][a].order,data.data['item-subgroup'][b].order));
 					let groupcontents = [];
-					let groupcontents2 = [];
-					let subgroup = '';
-					for (let [item,isubgroup,] of items) {
-						if (subgroup != isubgroup) {
-							groupcontents.push({
-								type:'div',
-								contents:groupcontents2
+					for (const subgroup of subgroups) {
+						const row = groupeditems[subgroup];
+						let groupcontents2 = [];
+						for (let [item,isubgroup,] of row) {
+							groupcontents2.push({
+								type:'icon',
+								itype:'item',
+								name:item,
+								onclick:render.bind(undefined,'item',item)
 							});
-							groupcontents2 = [];
-							subgroup = isubgroup;
 						}
-						groupcontents2.push({
-							type:'icon',
-							itype:'item',
-							name:item,
-							onclick:render.bind(undefined,'item',item)
+						groupcontents.push({
+							type:'div',
+							contents:groupcontents2
 						});
 					}
 					contents.push({
