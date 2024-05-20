@@ -262,7 +262,7 @@
 
 				render('item','iron-plate');
 
-				{
+				{ // item/recipe groups
 					let groups = {};
 
 					for (let group of Object.keys(data.data['item-group'])) {
@@ -459,9 +459,9 @@
 						contents:[s,{type:'br',contents:[]},s2]
 					});
 					document.querySelector('.selectors').append(div);
-				}
+				} // item/recipe groups
 
-				{
+				{ // computed locale
 					const computedlocale = [];
 					for(var itype of mutil.util.itemtypes.concat(['fluid'])){
 						for(var name of Object.keys(data.data[itype])){
@@ -473,7 +473,7 @@
 					}
 
 					window.computedlocale = computedlocale;
-				}
+				} // computed locale
 
 				window.render = render;
 				window.renderer = renderer;
