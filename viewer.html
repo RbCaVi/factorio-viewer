@@ -262,214 +262,219 @@
 
 				render('item','iron-plate');
 
-				let groups = {};
+				{
+					let groups = {};
 
-				for (let group of Object.keys(data.data['item-group'])) {
-					//console.log(group);
-					groups[group] = [];
-				}
+					for (let group of Object.keys(data.data['item-group'])) {
+						//console.log(group);
+						groups[group] = [];
+					}
 
-				let subgrouptogroup = {};
+					let subgrouptogroup = {};
 
-				for (let subgroup of Object.values(data.data['item-subgroup'])) {
-					//console.log(subgroup);
-					subgrouptogroup[subgroup.name] = subgroup.group;
-				}
+					for (let subgroup of Object.values(data.data['item-subgroup'])) {
+						//console.log(subgroup);
+						subgrouptogroup[subgroup.name] = subgroup.group;
+					}
 
-		    for (let itype of mutil.util.itemtypes) {
-		      for (let item of Object.values(data.data[itype])) {
-		        console.log(item.name,item.subgroup,subgrouptogroup[item.subgroup ?? 'other']);
-		        if (item.flags && item.flags.includes('hidden')) {
+			    for (let itype of mutil.util.itemtypes) {
+			      for (let item of Object.values(data.data[itype])) {
+			        console.log(item.name,item.subgroup,subgrouptogroup[item.subgroup ?? 'other']);
+			        if (item.flags && item.flags.includes('hidden')) {
+			        	continue;
+			        }
+			        groups[subgrouptogroup[item.subgroup ?? 'other']].push([item.name,item.subgroup ?? 'other',item.order]);
+			      }
+			    }
+
+		      for (let fluid of Object.values(data.data.fluid)) {
+		        console.log(fluid.name,fluid.subgroup,subgrouptogroup[fluid.subgroup ?? 'fluid']);
+		        if (fluid.hidden) {
 		        	continue;
 		        }
-		        groups[subgrouptogroup[item.subgroup ?? 'other']].push([item.name,item.subgroup ?? 'other',item.order]);
+			      groups[subgrouptogroup[fluid.subgroup ?? 'fluid']].push([fluid.name,fluid.subgroup ?? 'fluid',fluid.order]);
 		      }
-		    }
 
-	      for (let fluid of Object.values(data.data.fluid)) {
-	        console.log(fluid.name,fluid.subgroup,subgrouptogroup[fluid.subgroup ?? 'fluid']);
-	        if (fluid.hidden) {
-	        	continue;
-	        }
-		      groups[subgrouptogroup[fluid.subgroup ?? 'fluid']].push([fluid.name,fluid.subgroup ?? 'fluid',fluid.order]);
-	      }
+	    	  let compare = (a,b)=>a<b?-1:a>b?1:0;
+	    	  let comparator = (a,b)=>compare(a[1],b[1])||compare(a[2],b[2])||compare(a[0],b[0]);
+		      for (let group of Object.values(groups)) {
+		      	group.sort(comparator);
+		      }
 
-    	  let compare = (a,b)=>a<b?-1:a>b?1:0;
-    	  let comparator = (a,b)=>compare(a[1],b[1])||compare(a[2],b[2])||compare(a[0],b[0]);
-	      for (let group of Object.values(groups)) {
-	      	group.sort(comparator);
-	      }
+		      let tabs = [];
+		      let contents = [];
 
-	      let tabs = [];
-	      let contents = [];
+		      const groupnames = Object.keys(groups);
 
-	      const groupnames = Object.keys(groups);
+		      groupnames.sort((a,b)=>compare(data.data['item-group'][a].order,data.data['item-group'][b].order));
 
-	      groupnames.sort((a,b)=>compare(data.data['item-group'][a].order,data.data['item-group'][b].order));
-
-	      for (const group of groupnames) {
-	      	const items = groups[group];
-	      	if (items.length == 0) {
-	      		continue;
-	      	}
-	      	tabs.push({
-						type:'icon',
-						itype:'item-group',
-						name:group
-					});
-					const groupeditems = groupBy(items,([,subgroup,])=>subgroup);
-					const subgroups = Object.keys(groupeditems);
-					subgroups.sort((a,b)=>compare(data.data['item-subgroup'][a].order,data.data['item-subgroup'][b].order));
-					let groupcontents = [];
-					for (const subgroup of subgroups) {
-						const row = groupeditems[subgroup];
-						let groupcontents2 = [];
-						for (let [item,isubgroup,] of row) {
-							groupcontents2.push({
-								type:'icon',
-								itype:'item',
-								name:item,
-								onclick:render.bind(undefined,'item',item)
+		      for (const group of groupnames) {
+		      	const items = groups[group];
+		      	if (items.length == 0) {
+		      		continue;
+		      	}
+		      	tabs.push({
+							type:'icon',
+							itype:'item-group',
+							name:group
+						});
+						const groupeditems = groupBy(items,([,subgroup,])=>subgroup);
+						const subgroups = Object.keys(groupeditems);
+						subgroups.sort((a,b)=>compare(data.data['item-subgroup'][a].order,data.data['item-subgroup'][b].order));
+						let groupcontents = [];
+						for (const subgroup of subgroups) {
+							const row = groupeditems[subgroup];
+							let groupcontents2 = [];
+							for (let [item,isubgroup,] of row) {
+								groupcontents2.push({
+									type:'icon',
+									itype:'item',
+									name:item,
+									onclick:render.bind(undefined,'item',item)
+								});
+							}
+							groupcontents.push({
+								type:'div',
+								contents:groupcontents2
 							});
 						}
-						groupcontents.push({
+						contents.push({
 							type:'div',
-							contents:groupcontents2
+							contents:groupcontents
 						});
+		      }
+
+					let s = {
+						type:'tabs',
+						styles:{
+							width:'500px'
+						},
+						tabs,
+						contents
 					}
-					contents.push({
-						type:'div',
-						contents:groupcontents
-					});
-	      }
 
-				let s = {
-					type:'tabs',
-					styles:{
-						width:'500px'
-					},
-					tabs,
-					contents
-				}
+					let recipegroups = {};
 
-				let recipegroups = {};
+					for (let group of Object.keys(data.data['item-group'])) {
+						//console.log(group);
+						recipegroups[group] = [];
+					}
 
-				for (let group of Object.keys(data.data['item-group'])) {
-					//console.log(group);
-					recipegroups[group] = [];
-				}
-
-	      for (let recipe of Object.values(data.data.recipe)) {
-	      	let subgroup = recipe.subgroup;
-		      let order = recipe.order;
-	      	if (subgroup == undefined) {
-	      		let item;
-		      	if (recipe.normal.results.length == 1) {
-		      		item = recipe.normal.results[0].name;
-		      	} else if (recipe.normal.main_product) {
-		      		item = recipe.normal.main_product;
-		      	}
-		      	console.log('getitem',item);
-		      	const item2 = data.getitem(item);
-		      	const defaultsubgroup = item2.type == 'fluid'?'fluid':'other';
-	      		subgroup = item2.subgroup ?? defaultsubgroup;
+		      for (let recipe of Object.values(data.data.recipe)) {
+		      	let subgroup = recipe.subgroup;
+			      let order = recipe.order;
 		      	if (subgroup == undefined) {
-		      		console.log("huh?");
-		      	}
-		      }
-	      	if (order == undefined) {
-	      		let item;
-		      	if (recipe.normal.results.length == 1) {
-		      		item = recipe.normal.results[0].name;
-		      	} else if (recipe.normal.main_product) {
-		      		item = recipe.normal.main_product;
-		      	}
-		      	const item2 = data.getitem(item);
-		      	order = item2?.order ?? '';
+		      		let item;
+			      	if (recipe.normal.results.length == 1) {
+			      		item = recipe.normal.results[0].name;
+			      	} else if (recipe.normal.main_product) {
+			      		item = recipe.normal.main_product;
+			      	}
+			      	console.log('getitem',item);
+			      	const item2 = data.getitem(item);
+			      	const defaultsubgroup = item2.type == 'fluid'?'fluid':'other';
+		      		subgroup = item2.subgroup ?? defaultsubgroup;
+			      	if (subgroup == undefined) {
+			      		console.log("huh?");
+			      	}
+			      }
 		      	if (order == undefined) {
-		      		console.log("huh?");
-		      	}
+		      		let item;
+			      	if (recipe.normal.results.length == 1) {
+			      		item = recipe.normal.results[0].name;
+			      	} else if (recipe.normal.main_product) {
+			      		item = recipe.normal.main_product;
+			      	}
+			      	const item2 = data.getitem(item);
+			      	order = item2?.order ?? '';
+			      	if (order == undefined) {
+			      		console.log("huh?");
+			      	}
+			      }
+		        console.log(recipe.name,subgroup,subgrouptogroup[subgroup]);
+		        if (recipe.normal.hidden) {
+		        	continue;
+		        }
+		        recipegroups[subgrouptogroup[subgroup]].push([recipe.name,subgroup,order]);
 		      }
-	        console.log(recipe.name,subgroup,subgrouptogroup[subgroup]);
-	        if (recipe.normal.hidden) {
-	        	continue;
-	        }
-	        recipegroups[subgrouptogroup[subgroup]].push([recipe.name,subgroup,order]);
-	      }
 
-	      for (let recipegroup of Object.values(recipegroups)) {
-	      	recipegroup.sort(comparator);
-	      }
+		      for (let recipegroup of Object.values(recipegroups)) {
+		      	recipegroup.sort(comparator);
+		      }
 
-	      let tabs2 = [];
-	      let contents2 = [];
+		      let tabs2 = [];
+		      let contents2 = [];
 
-	      const recipegroupnames = Object.keys(recipegroups);
+		      const recipegroupnames = Object.keys(recipegroups);
 
-	      recipegroupnames.sort((a,b)=>compare(data.data['item-group'][a].order,data.data['item-group'][b].order));
+		      recipegroupnames.sort((a,b)=>compare(data.data['item-group'][a].order,data.data['item-group'][b].order));
 
-	      for (let recipegroup of recipegroupnames) {
-	      	const recipes = recipegroups[recipegroup];
-	      	if (recipes.length == 0) {
-	      		continue;
-	      	}
-	      	tabs2.push({
-						type:'icon',
-						itype:'item-group',
-						name:recipegroup
-					});
-					const groupedrecipes = groupBy(recipes,([,subgroup,])=>subgroup);
-					const subgroups = Object.keys(groupedrecipes);
-					subgroups.sort((a,b)=>compare(data.data['item-subgroup'][a].order,data.data['item-subgroup'][b].order));
-					let recipegroupcontents = [];
-					for (const subgroup of subgroups) {
-						const row = groupedrecipes[subgroup];
-						let recipegroupcontents2 = [];
-						for (let [recipe,isubgroup,] of row) {
-							recipegroupcontents2.push({
-								type:'icon',
-								itype:'recipe',
-								name:recipe,
-								onclick:render.bind(undefined,'recipe',recipe)
+		      for (let recipegroup of recipegroupnames) {
+		      	const recipes = recipegroups[recipegroup];
+		      	if (recipes.length == 0) {
+		      		continue;
+		      	}
+		      	tabs2.push({
+							type:'icon',
+							itype:'item-group',
+							name:recipegroup
+						});
+						const groupedrecipes = groupBy(recipes,([,subgroup,])=>subgroup);
+						const subgroups = Object.keys(groupedrecipes);
+						subgroups.sort((a,b)=>compare(data.data['item-subgroup'][a].order,data.data['item-subgroup'][b].order));
+						let recipegroupcontents = [];
+						for (const subgroup of subgroups) {
+							const row = groupedrecipes[subgroup];
+							let recipegroupcontents2 = [];
+							for (let [recipe,isubgroup,] of row) {
+								recipegroupcontents2.push({
+									type:'icon',
+									itype:'recipe',
+									name:recipe,
+									onclick:render.bind(undefined,'recipe',recipe)
+								});
+							}
+							recipegroupcontents.push({
+								type:'div',
+								contents:recipegroupcontents2
 							});
 						}
-						recipegroupcontents.push({
+						contents2.push({
 							type:'div',
-							contents:recipegroupcontents2
+							contents:recipegroupcontents
 						});
+		      }
+
+					let s2 = {
+						type:'tabs',
+						styles:{
+							width:'500px'
+						},
+						tabs:tabs2,
+						contents:contents2
 					}
-					contents2.push({
+
+					let div=renderer.render({
 						type:'div',
-						contents:recipegroupcontents
+						contents:[s,{type:'br',contents:[]},s2]
 					});
-	      }
-
-				let s2 = {
-					type:'tabs',
-					styles:{
-						width:'500px'
-					},
-					tabs:tabs2,
-					contents:contents2
+					document.querySelector('.selectors').append(div);
 				}
 
-				let div=renderer.render({
-					type:'div',
-					contents:[s,{type:'br',contents:[]},s2]
-				});
-				document.querySelector('.selectors').append(div);
-
-				const computedlocale = [];
-				for(var itype of mutil.util.itemtypes.concat(['fluid'])){
-					for(var name of Object.keys(data.data[itype])){
-						computedlocale.push(['item',name,localizer.itemlocale(name)]);
+				{
+					const computedlocale = [];
+					for(var itype of mutil.util.itemtypes.concat(['fluid'])){
+						for(var name of Object.keys(data.data[itype])){
+							computedlocale.push(['item',name,localizer.itemlocale(name)]);
+						}
 					}
-				}
-				for(var name of Object.keys(data.data.recipe)){
-					computedlocale.push(['recipe',name,localizer.recipelocale(name)]);
+					for(var name of Object.keys(data.data.recipe)){
+						computedlocale.push(['recipe',name,localizer.recipelocale(name)]);
+					}
+
+					window.computedlocale = computedlocale;
 				}
 
-				window.computedlocale = computedlocale;
 				window.render = render;
 				window.renderer = renderer;
 			});
