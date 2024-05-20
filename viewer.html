@@ -21,35 +21,31 @@
         window.mods=d.mods;
 				window.localizer=new FactorioLocalizer(d.data,d.locale);
 			});
+			const modulenames = [
+				"data",
+				"image",
+				"normalize",
+				"process",
+				"infobox",
+				"util",
+				"accordion",
+				"editjson",
+				"simplex",
+				"rational",
+				"template",
+				"renderers",
+				"search",
+			];
+			const moduleps = {}
+			for (const modulename of modulenames) {
+				const modulep = import(`./${modulename}.js`);
+				moduleps[modulename] = modulep;
+			}
+			const modules = await resolveAll(moduleps);
+			for (const [modulename,module] of Object.entries(modules)) {
+				window['m'+modulename] = module;
+			}
 			window.util=util;
-		  import * as mdata from './data.js';
-		  import * as mimage from './image.js';
-		  import * as mnormalize from './normalize.js';
-		  import * as mprocess from './process.js';
-		  import * as minfobox from './infobox.js';
-		  import * as mutil from './util.js';
-		  window.mdata=mdata;
-			window.mimage=mimage;
-			window.mnormalize=mnormalize;
-			window.mprocess=mprocess;
-			window.minfobox=minfobox;
-			window.mutil=mutil;
-		  import * as maccordion from './accordion.js';
-			window.maccordion=maccordion;
-		  import * as meditjson from './editjson.js';
-			window.meditjson=meditjson;
-		  import * as msimplex from './simplex.js';
-			window.msimplex=msimplex;
-		  import * as mrational from './rational.js';
-			window.mrational=mrational;
-		  import * as mtemplate from './template.js';
-			window.mtemplate=mtemplate;
-		  import * as mrenderers from './renderers.js';
-			window.mrenderers=mrenderers;
-		  import * as msearch from './search.js';
-			window.msearch=msearch;
-		  //import * as m from './.js';
-			//window.m=m;
 
 			/*
 				Copyright (c) 2014-2024 Denis Pushkarev
