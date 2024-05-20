@@ -8,12 +8,12 @@
 	<body>
 		<script type='module'>
       let urlparams=new URLSearchParams(window.location.search);
-			window.modroot=(urlparams.get('pack')+'/')??'nullius/';
+			window.modroot=(urlparams.get('pack'))??'nullius';
 			import {FactorioData} from './data.js';
 			import {FactorioLocale,FactorioLocalizer} from './locale.js';
 			import {util,resolveAll} from './util.js';
-			let datap=fetch(modroot+'data.json').then(r=>r.json()).then(data=>new FactorioData(data));
-			let localep=fetch(modroot+'locale.json').then(r=>r.json()).then(locale=>new FactorioLocale(locale.en));
+			let datap=fetch(modroot+'/data.json').then(r=>r.json()).then(data=>new FactorioData(data));
+			let localep=fetch(modroot+'/locale.json').then(r=>r.json()).then(locale=>new FactorioLocale(locale.en));
 			let modsp=fetch('mods.json').then(r=>r.json());
 			window.initializedp=resolveAll({'data':datap,'locale':localep,'mods':modsp}).then(d=>{
         window.data=d.data;
