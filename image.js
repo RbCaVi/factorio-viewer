@@ -8,15 +8,19 @@ function toObjectURL(canvas){
   }
 }
 
-function getCanvas(width,height){
-  //if(typeof OffscreenCanvas=='function'){
-  //    return new OffscreenCanvas(width,height);
-  //}else{
-  let canvas=document.createElement("canvas");
-  canvas.width=width;
-  canvas.height=height;
-  return canvas;
-  //}
+
+// too bad for eslint
+if(typeof OffscreenCanvas=='function'){
+  function getCanvas(width,height){
+      return new OffscreenCanvas(width,height);
+  }
+}else{
+  function getCanvas(width,height){
+    let canvas=document.createElement("canvas");
+    canvas.width=width;
+    canvas.height=height;
+    return canvas;
+  }
 }
 
 function loadImage(src){
