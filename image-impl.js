@@ -54,19 +54,11 @@ function fixcolor(col){
   return colorToString(["r","g","b","a"].map(i=>color[i]));
 }
 
-let iconcache={};
-
-function makeiconURL(promiseChain,packPromise,makePromise,data,options,size=32){
+function makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,size=32){
   // return a promise for the canvas being fully rendered
-  let cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size});
-  if(cachekey in iconcache){
-    console.log(cachekey);
-    return makePromise(iconcache[cachekey]);
-  }
   if("icons" in data){
     let icons=data.icons;
     let baseiconsize=data.icon_size??icons[0].icon_size*((icons[0].scale??0.5)*2);
-    let canvas=getCanvas(size,size);
     let parts=[];
     for(let icondata of icons){
       let iconname=icondata.icon;
@@ -105,7 +97,6 @@ function makeiconURL(promiseChain,packPromise,makePromise,data,options,size=32){
       }).then(()=>{
         return toObjectURL(canvas);
       }).then(url=>{
-        iconcache[cachekey]=url;
         resolve(url);
       },
       (error)=>
@@ -113,7 +104,6 @@ function makeiconURL(promiseChain,packPromise,makePromise,data,options,size=32){
       )
     );
   }else{
-    let canvas=getCanvas(size,size);
     let iconname=data.icon;
     let iconsize=data.icon_size;
     return geticon(iconname,iconsize,options).then(icon=>{
@@ -122,7 +112,6 @@ function makeiconURL(promiseChain,packPromise,makePromise,data,options,size=32){
     }).then(()=>{
       return toObjectURL(canvas);
     }).then(url=>{
-      iconcache[cachekey]=url;
       return url;
     });
   }
@@ -155,5 +144,5 @@ function geticon(name,size,options){
 }
 
 if (self.window) {
-  window.__imagestuff__ = {makeiconURL};
+  window.__imagestuff__ = {makeiconURL,getCanvas};
 }

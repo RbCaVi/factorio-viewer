@@ -1,15 +1,38 @@
 import {WorkerPool} from "./workers.js";
+import {promiseChain,packPromise,makePromise} from "./util.js";
+await import('./image-impl.js');
 
 let makeiconURL;
 
-if (!window.Worker) { // workers don't exist
-  await import('./image-impl.js');
-  makeiconURL = window.__imagestuff__.makeiconURL.bind(undefined,promiseChain,packPromise,makePromise);
-} else { // running in the window and workers exist
+let iconcache={};
+
+if (!window.Worker || !window.OffscreenCanvas) { // workers or offscreencanvas don't exist
+  makeiconURL = function makeiconURL(data,options,size=32){
+    let cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size,rendered_size:size});
+    if(cachekey in iconcache){
+      console.log(cachekey);
+      return makePromise(iconcache[cachekey]);
+    }
+    let canvas=window.__imagestuff__.getCanvas(size,size);
+    return window.__imagestuff__.makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,size).then((url)=>{
+      iconcache[cachekey]=url;
+      return url;
+    });
+  }
+} else { // workers exist
   const pool = new WorkerPool('image-worker.js'); // no trickery
 
   makeiconURL = function makeiconURL(data,options,size=32){
-    return pool.run([data,options,size]);
+    let cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size,rendered_size:size});
+    if(cachekey in iconcache){
+      console.log(cachekey);
+      return makePromise(iconcache[cachekey]);
+    }
+    let canvas=window.__imagestuff__.getCanvas(size,size);
+    return pool.run([canvas,data,options,size],{transfer:[canvas]}).then((url)=>{
+      iconcache[cachekey]=url;
+      return url;
+    });
   }
 }
 

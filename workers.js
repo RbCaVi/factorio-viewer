@@ -27,8 +27,8 @@ class WorkerPool {
 				if (this.queue.length == 0) {
 					this.workers[i][1] = false;
 				} else {
-					const [data2,resolve2] = this.queue.pop();
-					this.workers[i][0].postMessage(data);
+					const [data2,options,resolve2] = this.queue.pop();
+					this.workers[i][0].postMessage(data2,options);
 					this.workers[i][2] = resolve2;
 				}
 				resolve(data);
@@ -37,20 +37,20 @@ class WorkerPool {
 		}
 	}
 
-	run(data) { // returns a promise which fulfills when the worker sends back a message
+	run(data,options) { // returns a promise which fulfills when the worker sends back a message
 		for (let i = 0; i < this.workers.length; i++) {
 			const [worker,running,] = this.workers[i];
 			if (running) {
 				continue;
 			}
-			worker.postMessage(data);
+			worker.postMessage(data,options);
 			const {promise,resolve} = makePromise();
 			this.workers[i][1] = true;
 			this.workers[i][2] = resolve;
 			return promise;
 		}
 		const {promise,resolve} = makePromise();
-		this.queue.push([data,resolve]);
+		this.queue.push([data,options,resolve]);
 		return promise;
 	}
 }
