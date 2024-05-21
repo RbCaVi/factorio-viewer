@@ -1,16 +1,12 @@
 {
 	"assetlocations":{
-		"base":"https://rbcavi.github.io/factorio-mod-data/vanilla/assets/base",
-		"core":"https://rbcavi.github.io/factorio-mod-data/vanilla/assets/core",
-		"aai-containers":"https://rbcavi.github.io/factorio-mod-data/aai/assets/aai-containers",
-		"aai-industry":"https://rbcavi.github.io/factorio-mod-data/aai/assets/aai-industry",
 		"angelspetrochem":"https://raw.githubusercontent.com/Arch666Angel/mods/master/angelspetrochem",
 		"angelsrefining":"https://raw.githubusercontent.com/Arch666Angel/mods/master/angelsrefining",
 		"angelssmelting":"https://raw.githubusercontent.com/Arch666Angel/mods/master/angelssmelting",
 		"boblibrary":"https://raw.githubusercontent.com/modded-factorio/bobsmods/main/boblibrary",
 		"boblogistics":"https://raw.githubusercontent.com/modded-factorio/bobsmods/main/boblogistics",
 		"nullius":"https://raw.githubusercontent.com/GregorSamsanite/nullius/main/nullius",
-		"__default":"https://rbcavi.github.io/factorio-mod-data/nullius/assets/{}"
+		"__default":"https://rbcavi.github.io/factorio-mod-data/assets/{}"
 	},
 	"datalocations":{
 		"vanilla":{
