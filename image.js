@@ -72,7 +72,6 @@ function fixcolor(col){
 let iconcache={};
 
 function makeiconURL(data,options,size=32){
-  const mods = options.mods;
   // return a promise for the canvas being fully rendered
   let cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size});
   if(cachekey in iconcache){
@@ -157,9 +156,9 @@ function getpath(filename,options){
   }
   let modname = mod.slice(2,-2);
   path = filename.slice(slash);
-  let root = options.mods[modname];
+  let root = options.modassets[modname];
   if (root == undefined) {
-    root = options.mods.__default.replace('{}',modname);
+    root = options.modassets.__default.replace('{}',modname);
   }
   return root+'/'+path;
 }

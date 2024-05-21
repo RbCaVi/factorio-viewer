@@ -50,7 +50,7 @@ function getidata(structure,options) {
 function icon(self, structure, contents, options) {
   let idata=getidata(structure,options);
   let img;
-  if("mods" in options){
+  if("modassets" in options){
     // promise to load the image
     img=document.createElement("img");
     makeiconURL(idata,options).then(url=>{
@@ -78,7 +78,7 @@ function texticon(self, structure, contents, options) {
   addclasses(icontext,["icon-text"]);
   let span=document.createElement("span");
   addclasses(span,["factorio-icon"]);
-  if("mods" in options){
+  if("modassets" in options){
     // promise to load the image
     let img=document.createElement("img");
     makeiconURL(idata,options).then(url=>{
