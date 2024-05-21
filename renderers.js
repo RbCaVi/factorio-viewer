@@ -50,7 +50,7 @@ function getidata(structure,options) {
 function icon(self, structure, contents, options) {
   let idata=getidata(structure,options);
   let img;
-  if("root" in options){
+  if("mods" in options){
     // promise to load the image
     img=document.createElement("img");
     makeiconURL(idata,options).then(url=>{
@@ -60,17 +60,13 @@ function icon(self, structure, contents, options) {
   }else{
     img=document.createElement("span");
     if("localizer" in options){
-      img.textContent=options.localizer[structure.itype+"locale"](structure.name)[0];
+      img.textContent=options.localizer.typelocale(structure.name,structure.itype)[0];
     }else{
       img.textContent=structure.name;
     }
   }
   if("localizer" in options){
-    if ((structure.itype+"locale") in options.localizer){
-      img.title=options.localizer[structure.itype+"locale"](structure.name)[0];
-    }else{
-      img.title=options.localizer.genericlocale(structure.name,structure.itype)[0];
-    }
+    img.title=options.localizer.typelocale(structure.name,structure.itype)[0];
   }
   return img;
 }
@@ -82,7 +78,7 @@ function texticon(self, structure, contents, options) {
   addclasses(icontext,["icon-text"]);
   let span=document.createElement("span");
   addclasses(span,["factorio-icon"]);
-  if("root" in options){
+  if("mods" in options){
     // promise to load the image
     let img=document.createElement("img");
     makeiconURL(idata,options).then(url=>{
@@ -91,14 +87,14 @@ function texticon(self, structure, contents, options) {
     span.append(img);
   }else{
     if("localizer" in options){
-      span.textContent=options.localizer[structure.itype+"locale"](structure.name)[0];
+      span.textContent=options.localizer.typelocale(structure.name,structure.itype)[0];
     }else{
       span.textContent=structure.name;
     }
   }
   span.append(icontext);
   if("localizer" in options){
-    span.title=options.localizer[structure.itype+"locale"](structure.name)[0];
+    span.title=options.localizer.typelocale(structure.name,structure.itype)[0];
   }
   return span;
 }

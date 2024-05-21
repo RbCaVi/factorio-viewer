@@ -169,6 +169,14 @@ class FactorioLocalizer{
     return namedesc;
   }
 
+  typelocale(name,type) {
+    if ((type+"locale") in this){
+      return this[type+"locale"](name);
+    }else{
+      return this.genericlocale(name,type);
+    }
+  }
+
   itemlocale(item){
     if(item in this.#localecache.item){
       return this.#localecache.item[item];
