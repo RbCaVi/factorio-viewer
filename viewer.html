@@ -245,10 +245,11 @@
 			window.forward=forward;
 			
 			let urlparams=new URLSearchParams(window.location.search);
-			window.modroot=(urlparams.get('pack'))??'nullius';
-			let datap=fetch(modroot+'/data.json').then(r=>r.json()).then(data=>new mdata.FactorioData(data));
-			let localep=fetch(modroot+'/locale.json').then(r=>r.json()).then(locale=>new mlocale.FactorioLocale(locale.en));
+			const modpack = (urlparams.get('pack'))??'nullius';
 			let modsp=fetch('mods.json').then(r=>r.json());
+			const datalocationp = modsp.then(mods=>mods.datalocations);
+			let datap=datalocationp.then(locs=>fetch(locs[modpack].data)).then(r=>r.json()).then(data=>new mdata.FactorioData(data));
+			let localep=datalocationp.then(locs=>fetch(locs[modpack].locale)).then(r=>r.json()).then(locale=>new mlocale.FactorioLocale(locale.en));
 			window.initializedp=mutil.resolveAll({'data':datap,'locale':localep,'mods':modsp}).then(d=>{
         window.data=d.data;
         window.locale=d.locale;
@@ -257,7 +258,7 @@
 			});
 
 			initializedp.then(()=>{
-				structureoptions={localizer,root:modroot,data,mods};
+				structureoptions={localizer,data,modassets:mods.assetlocations};
 				renderer.setoptions(structureoptions);
 
 				render('item','iron-plate');
