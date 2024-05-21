@@ -20,25 +20,7 @@ function getCanvas(width,height){
 }
 
 function loadImage(src){
-  return new Promise((resolve,reject)=>{
-    let img=new Image();
-    img.addEventListener(
-      "load",
-      ()=>{
-        resolve(img);
-      },
-      false,
-    );
-    img.addEventListener(
-      "error",
-      (event)=>{
-        reject(event);
-      },
-      false,
-    );
-    img.crossOrigin="";
-    img.src=src;
-  });
+  return fetch(src).then(r=>r.blob()).then(createImageBitmap);
 }
 
 function colorToString(color){
