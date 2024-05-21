@@ -1,35 +1,24 @@
-let promiseChain,packPromise,makePromise;
-
-if(importScripts) {
-  importScripts("./util.js");
-} else {
-  const {_promiseChain,_packPromise,_makePromise} = require("./util.js");
-  promiseChain = _promiseChain;
-  packPromise = _packPromise;
-  makePromise = _makePromise;
-}
+let getCanvas,toObjectURL;
 
 // too bad for eslint or whatever linter i used
-if(typeof canvas.convertToBlob=="function"){
-  function toObjectURL(canvas){
+if(typeof OffscreenCanvas=='function'){
+  getCanvas = function getCanvas(width,height){
+      return new OffscreenCanvas(width,height);
+  }
+
+  toObjectURL = function toObjectURL(canvas){
     return canvas.convertToBlob().then(URL.createObjectURL);
   }
 }else{
-  function toObjectURL(canvas){
-    return new Promise(resolve=>canvas.toBlob(resolve)).then(URL.createObjectURL);
-  }
-}
-
-if(typeof OffscreenCanvas=='function'){
-  function getCanvas(width,height){
-      return new OffscreenCanvas(width,height);
-  }
-}else{
-  function getCanvas(width,height){
+  getCanvas = function getCanvas(width,height){
     let canvas=document.createElement("canvas");
     canvas.width=width;
     canvas.height=height;
     return canvas;
+  }
+
+  toObjectURL = function toObjectURL(canvas){
+    return new Promise(resolve=>canvas.toBlob(resolve)).then(URL.createObjectURL);
   }
 }
 
@@ -67,7 +56,7 @@ function fixcolor(col){
 
 let iconcache={};
 
-function makeiconURL(data,options,size=32){
+function makeiconURL(promiseChain,packPromise,makePromise,data,options,size=32){
   // return a promise for the canvas being fully rendered
   let cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size});
   if(cachekey in iconcache){
