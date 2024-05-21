@@ -2,6 +2,9 @@ import {addclasses} from './template.js';
 
 function match(pattern,s){
 	// find pattern in s
+	if (s==null) {
+		return [false,[]];
+	}
 	const patterns=pattern.toLowerCase().split(/\s/);
 	s=s.toLowerCase();
 	const patternis=patterns.filter(p=>p.length>0).map(p=>[p,0]);
@@ -86,6 +89,10 @@ function insort(array, element, compare) {
 
 function highlightletters(s,highlighted){
 	var out=document.createElement('span');
+	if (s==null) {
+		out.append('<no name>');
+		return out;
+	}
 	for(var i=0;i<s.length;i++){
 		if(highlighted.includes(i)){
 			var h=document.createElement('span');
