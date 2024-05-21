@@ -1,15 +1,16 @@
 import {promiseChain,packPromise,makePromise} from "./util.js";
 
-function toObjectURL(canvas){
-  if(typeof canvas.convertToBlob=="function"){
+// too bad for eslint or whatever linter i used
+if(typeof canvas.convertToBlob=="function"){
+  function toObjectURL(canvas){
     return canvas.convertToBlob().then(URL.createObjectURL);
-  }else{
+  }
+}else{
+  function toObjectURL(canvas){
     return new Promise(resolve=>canvas.toBlob(resolve)).then(URL.createObjectURL);
   }
 }
 
-
-// too bad for eslint
 if(typeof OffscreenCanvas=='function'){
   function getCanvas(width,height){
       return new OffscreenCanvas(width,height);
@@ -37,7 +38,7 @@ function colorToString(color){
 }
 
 function fixcolor(col){
-  // return the color normalized to hex rgba format
+  // return the color normalized to hex rgba string
   let color={"r":0,"g":0,"b":0};
   if(Array.isArray(col)){
     for(let i=0;i<col.length;i++){
