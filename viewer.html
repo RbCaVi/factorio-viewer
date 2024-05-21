@@ -257,6 +257,23 @@
 				window.localizer=new mlocale.FactorioLocalizer(d.data,d.locale);
 			});
 
+			modsp.then(mods=>{
+				const container = document.querySelector('.links');
+				for (const imodpack of Object.keys(mods.datalocations)) {
+					if (imodpack == modpack) {
+						continue;
+					}
+					const link = document.createElement('a');
+					link.append(imodpack);
+					const thisurl = new URL(window.location.href);
+					const urlparams=new URLSearchParams(thisurl.search);
+					urlparams.set('pack',imodpack);
+					thisurl.search = '?'+urlparams;
+					link.href = thisurl.href;
+					container.append(link);
+				}
+			});
+
 			initializedp.then(()=>{
 				structureoptions={localizer,data,modassets:mods.assetlocations};
 				renderer.setoptions(structureoptions);
@@ -480,6 +497,7 @@
 				window.renderer = renderer;
 			});
 		</script>
+		<div class="links"></div>
 		<button onclick="back()">back</button><button onclick="forward()">forward</button>
 		<div class="search-bar" style="position: relative;">
 			<input type="text" id='itemsearch' oninput="msearch.itemsearch(this,computedlocale,render,renderer)">
