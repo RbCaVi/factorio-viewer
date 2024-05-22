@@ -1,23 +1,23 @@
-let getCanvas,toObjectURL;
+const __imagestuff__ = {};
 
 // too bad for eslint or whatever linter i used
 if(typeof OffscreenCanvas=='function'){
-  getCanvas = function getCanvas(width,height){
+  __imagestuff__.getCanvas = function getCanvas(width,height){
       return new OffscreenCanvas(width,height);
   }
 
-  toObjectURL = function toObjectURL(canvas){
+  __imagestuff__.toObjectURL = function toObjectURL(canvas){
     return canvas.convertToBlob().then(URL.createObjectURL);
   }
 }else{
-  getCanvas = function getCanvas(width,height){
+  __imagestuff__.getCanvas = function getCanvas(width,height){
     let canvas=document.createElement("canvas");
     canvas.width=width;
     canvas.height=height;
     return canvas;
   }
 
-  toObjectURL = function toObjectURL(canvas){
+  __imagestuff__.toObjectURL = function toObjectURL(canvas){
     return new Promise(resolve=>canvas.toBlob(resolve)).then(URL.createObjectURL);
   }
 }
@@ -54,7 +54,8 @@ function fixcolor(col){
   return colorToString(["r","g","b","a"].map(i=>color[i]));
 }
 
-function makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,size=32){
+// the first three arguments are a "hack" to avoid imports
+__imagestuff__.makeiconURL = function makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,size=32){
   // return a promise for the canvas being fully rendered
   if("icons" in data){
     let icons=data.icons;
@@ -64,7 +65,7 @@ function makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,si
       let iconname=icondata.icon;
       let iconsize=icondata.icon_size??baseiconsize;
       parts.push(packPromise(geticon(iconname,iconsize,options),icondata).then(([icon,idata])=>{
-        let icanvas=getCanvas(icon.width,icon.height);
+        let icanvas=__imagestuff__.getCanvas(icon.width,icon.height);
         let ctx=icanvas.getContext("2d");
         if("tint" in idata){
           let tint=fixcolor(idata.tint);
@@ -95,7 +96,7 @@ function makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,si
         let ctx=canvas.getContext("2d");
         ctx.drawImage(icanvas,(canvas.width-isize)/2+shift[0],(canvas.height-isize)/2+shift[1],isize,isize);
       }).then(()=>{
-        return toObjectURL(canvas);
+        return __imagestuff__.toObjectURL(canvas);
       }).then(url=>{
         resolve(url);
       },
@@ -110,7 +111,7 @@ function makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,si
       let ctx=canvas.getContext("2d");
       ctx.drawImage(icon,0,0,size,size);
     }).then(()=>{
-      return toObjectURL(canvas);
+      return __imagestuff__.toObjectURL(canvas);
     }).then(url=>{
       return url;
     });
@@ -143,6 +144,7 @@ function geticon(name,size,options){
   });
 }
 
+// "hack" to allow importing in a web worker
 if (self.window) {
-  window.__imagestuff__ = {makeiconURL,getCanvas};
+  window.__imagestuff__ = __imagestuff__;
 }
