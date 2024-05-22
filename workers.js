@@ -16,13 +16,13 @@ if (Promise.withResolvers) {
 }
 
 class WorkerPool {
-	constructor(workersource, workercount = 16){
+	constructor(workersource, workercount = 4){
 		this.workers = [];
 		this.queue = [];
 
 		for (let i = 0; i < workercount; i++) {
 			const worker = new Worker(workersource);
-			worker.addEventListener('message',(([data])=>{
+			worker.addEventListener('message',(({data})=>{
 				const [,,resolve] = this.workers[i];
 				if (this.queue.length == 0) {
 					this.workers[i][1] = false;

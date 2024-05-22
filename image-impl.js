@@ -64,7 +64,7 @@ __imagestuff__.makeiconURL = function makeiconURL(promiseChain,packPromise,makeP
     for(let icondata of icons){
       let iconname=icondata.icon;
       let iconsize=icondata.icon_size??baseiconsize;
-      parts.push(packPromise(geticon(iconname,iconsize,options),icondata).then(([icon,idata])=>{
+      parts.push(packPromise(__imagestuff__.geticon(iconname,iconsize,options),icondata).then(([icon,idata])=>{
         let icanvas=__imagestuff__.getCanvas(icon.width,icon.height);
         let ctx=icanvas.getContext("2d");
         if("tint" in idata){
@@ -107,7 +107,7 @@ __imagestuff__.makeiconURL = function makeiconURL(promiseChain,packPromise,makeP
   }else{
     let iconname=data.icon;
     let iconsize=data.icon_size;
-    return geticon(iconname,iconsize,options).then(icon=>{
+    return __imagestuff__.geticon(iconname,iconsize,options).then(icon=>{
       let ctx=canvas.getContext("2d");
       ctx.drawImage(icon,0,0,size,size);
     }).then(()=>{
@@ -138,7 +138,7 @@ function getpath(filename,options){
   return root+'/'+path;
 }
 
-function geticon(name,size,options){
+__imagestuff__.geticon = function geticon(name,size,options){
   return loadImage(getpath(name,options)).then(image=>{
     return createImageBitmap(image,0,0,size,size);
   });

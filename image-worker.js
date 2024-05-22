@@ -26,5 +26,5 @@ function makePromise(data){
 importScripts("./image-impl.js");
 
 addEventListener('message',
-	async ({data:[canvas,data,options,size]})=>postMessage(await makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,size))
+	async ({data:[canvas,data,options,size]})=>postMessage(await __imagestuff__.makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,size))
 );
