@@ -35,17 +35,13 @@ if (!window.Worker || !window.OffscreenCanvas) { // workers or offscreencanvas d
     if(cachekey in iconcache){
       console.log(cachekey);
       console.log(cachekey,'found in cache');
-      const out = iconcache[cachekey].deref();
-      if (out != undefined) {
-        return makePromise(out.data);
-      } else {
-        delete iconcache[cachekey];
-      }
+      const out = iconcache[cachekey];
+      return makePromise(out);
     }
     let canvas=window.__imagestuff__.getCanvas(size,size);
     const urlp = window.__imagestuff__.makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,size);
-    iconcache[cachekey] = new WeakRef({data:urlp});
-    urlp.then(x=>{iconcache[cachekey]=new WeakRef({data:x});});
+    iconcache[cachekey] = urlp;
+    urlp.then(x=>{iconcache[cachekey]=x;});
     return urlp;
   }
 } else { // workers exist
@@ -56,17 +52,13 @@ if (!window.Worker || !window.OffscreenCanvas) { // workers or offscreencanvas d
     if(cachekey in iconcache){
       console.log(cachekey);
       console.log(cachekey,'found in cache');
-      const out = iconcache[cachekey].deref();
-      if (out != undefined) {
-        return makePromise(out.data);
-      } else {
-        delete iconcache[cachekey];
-      }
+      const out = iconcache[cachekey];
+      return makePromise(out);
     }
     let canvas=window.__imagestuff__.getCanvas(size,size);
     const urlp = pool.run([canvas,data,options,size],{transfer:[canvas]});
-    concache[cachekey] = new WeakRef({data:urlp});
-    urlp.then(x=>{concache[cachekey]=new WeakRef({data:x});});
+    concache[cachekey] = urlp;
+    urlp.then(x=>{concache[cachekey]=x;});
     return urlp;
   }
 }
