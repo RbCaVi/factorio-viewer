@@ -2,7 +2,7 @@ import {WorkerPool} from "./workers.js";
 import {promiseChain,packPromise,makePromise} from "./util.js";
 await import('./image-impl.js');
 
-let makeiconURL;
+let makeiconURLimpl;
 
 let iconcache={};
 
@@ -30,37 +30,30 @@ if (!window.Worker || !window.OffscreenCanvas) { // workers or offscreencanvas d
     }
   }
 
-  makeiconURL = function makeiconURL(data,options,size=32){
-    let cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size,rendered_size:size});
-    if(cachekey in iconcache){
-      console.log(cachekey);
-      console.log(cachekey,'found in cache');
-      const out = iconcache[cachekey];
-      return makePromise(out);
-    }
-    let canvas=window.__imagestuff__.getCanvas(size,size);
-    const urlp = window.__imagestuff__.makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,size);
-    iconcache[cachekey] = urlp;
-    urlp.then(x=>{iconcache[cachekey]=x;});
-    return urlp;
+  makeiconURLimpl = function makeiconURLimpl(canvas,data,options,size){
+    return window.__imagestuff__.makeiconURL(promiseChain,packPromise,makePromise,canvas,data,options,size);
   }
 } else { // workers exist
   const pool = new WorkerPool('image-worker.js'); // no trickery
 
-  makeiconURL = function makeiconURL(data,options,size=32){
-    let cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size,rendered_size:size});
-    if(cachekey in iconcache){
-      console.log(cachekey);
-      console.log(cachekey,'found in cache');
-      const out = iconcache[cachekey];
-      return makePromise(out);
-    }
-    let canvas=window.__imagestuff__.getCanvas(size,size);
+  makeiconURLimpl = function makeiconURLimpl(canvas,data,options,size){
     const urlp = pool.run([canvas,data,options,size],{transfer:[canvas]});
-    concache[cachekey] = urlp;
-    urlp.then(x=>{concache[cachekey]=x;});
-    return urlp;
   }
+}
+
+function makeiconURL(data,options,size=32){
+  let cachekey=JSON.stringify({icon:data.icon,icons:data.icons,icon_size:data.icon_size,rendered_size:size});
+  if(cachekey in iconcache){
+    console.log(cachekey);
+    console.log(cachekey,'found in cache');
+    const out = iconcache[cachekey];
+    return makePromise(out);
+  }
+  let canvas=window.__imagestuff__.getCanvas(size,size);
+  const urlp = makeiconURLimpl(canvas,data,options,size);
+  iconcache[cachekey] = urlp;
+  urlp.then(x=>{iconcache[cachekey]=x;});
+  return urlp;
 }
 
 export {makeiconURL};
