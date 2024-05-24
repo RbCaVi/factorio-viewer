@@ -4,9 +4,16 @@ function clone(data){
 
 const craftertypes=[
   "character",
+  "god-controller",
   "assembling-machine",
   "rocket-silo",
   "furnace"
+];
+
+const minertypes=[
+  "character",
+  "god-controller",
+  "mining-drill"
 ];
 
 const util={};
