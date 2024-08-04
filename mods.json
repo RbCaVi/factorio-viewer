@@ -23,6 +23,7 @@
 		},
 		"nullius":{
 			"data":"https://rbcavi.github.io/factorio-mod-data/nullius/data.json",
+			"processeddata":"nulliusprocesseddata.json",
 			"locale":"https://rbcavi.github.io/factorio-mod-data/nullius/locale.json"
 		}
 	}
