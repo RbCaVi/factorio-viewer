@@ -1,6 +1,6 @@
 import {createaccordion, fromjson as accordionfromjson} from './accordion.js';
 import {fromjson} from './editjson.js';
-import {makeiconURL} from './image.js';
+import {makeiconURL} from './image2.js';
 import {addclasses, Renderer} from './template.js';
 
 function accordion(self, structure, contents, options) {

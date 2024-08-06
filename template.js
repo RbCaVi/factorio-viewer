@@ -1,6 +1,6 @@
 import {createaccordion,fromjson as accordionfromjson} from "./accordion.js";
 import {fromjson} from "./editjson.js";
-import {makeiconURL} from "./image.js";
+import {makeiconURL} from "./image2.js";
 
 // https://stackoverflow.com/questions/384286/how-do-you-check-if-a-javascript-object-is-a-dom-object
 function isElement(element) {
