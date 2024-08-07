@@ -30,6 +30,10 @@ class WorkerFuncs {
 					this.worker.removeEventListener('message', listener);
 					resolve(data);
 				}
+				if (type == 'error' && rid == id) {
+					this.worker.removeEventListener('message', listener);
+					reject(data);
+				}
 			};
 			this.worker.addEventListener('message', listener);
 		});
@@ -45,7 +49,7 @@ class SingleFuncs {
 		this.funcs[name] = f;
 	}
 
-	call(name, , ...args) {
+	call(name, options, ...args) {
 		return this.funcs[name].bind(this)(...args);
 	}
 }

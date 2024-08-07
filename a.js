@@ -5,7 +5,11 @@ self.onmessage = async function onmessage (message) {
   if (type == "call") {
     // data is the id and data to call with
     const [id, args] = data;
-    self.postMessage(["data", id, await funcs[name](...args)]);
+    try {
+		  self.postMessage(["data", id, await funcs[name](...args)]);
+		} catch (e) {
+    	self.postMessage(["error", id, e]);
+    }
   }
   if (type == "new") {
     // data is the function's definition

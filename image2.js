@@ -18,8 +18,8 @@ function toObjectURL_nooffscreencanvas(canvas){
   return new Promise(resolve=>canvas.toBlob(resolve)).then(URL.createObjectURL);
 }
 
-const getCanvas = OffscreenCanvas ? getCanvas_offscreencanvas : getCanvas_nooffscreencanvas;
-const toObjectURL = OffscreenCanvas ? toObjectURL_offscreencanvas : toObjectURL_nooffscreencanvas;
+const getCanvas = window.OffscreenCanvas ? getCanvas_offscreencanvas : getCanvas_nooffscreencanvas;
+const toObjectURL = window.OffscreenCanvas ? toObjectURL_offscreencanvas : toObjectURL_nooffscreencanvas;
 
 function loadImage(src){
   return fetch(src).then(r=>r.blob()).then(createImageBitmap);
@@ -153,14 +153,14 @@ const fs = new Funcs();
 
 const funcs = {packPromise, promiseChain, toObjectURL, geticon};
 
-if (Worker && OffscreenCanvas) { // workers and offscreencanvas exist
+if (window.Worker && window.OffscreenCanvas) { // workers and offscreencanvas exist
   fs.addfunc("makeiconURL", makeiconURLinternal);
 
   makeiconURLimpl = function makeiconURLimpl_func(canvas,data,options,size){
     return fs.call("makeiconURL", {transfer:[canvas]}, canvas, data, options, size);
   };
 } else { // workers or offscreen canvas don't exist
-  if (Worker) { // no canvas, worker only loads
+  if (window.Worker) { // no canvas, worker only loads
     funcs.geticon = function geticon_func(name,size,options) {
       return fs.call("geticon", {}, name, size, options);
     };
