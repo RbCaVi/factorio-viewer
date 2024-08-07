@@ -242,13 +242,20 @@
 
 			window.back=back;
 			window.forward=forward;
+
+			function tee(prefix) {
+				return function(arg) {
+					console.log(prefix, arg);
+					return arg;
+				}
+			}
 			
 			let urlparams=new URLSearchParams(window.location.search);
 			const modpack = (urlparams.get('pack'))??'nullius';
-			let modsp=fetch('mods.json').then(r=>r.json());
-			const datalocationp = modsp.then(mods=>mods.datalocations);
-			let datap=datalocationp.then(locs=>fetch(locs[modpack].data)).then(r=>r.json()).then(data=>new mdata.FactorioData(data));
-			let localep=datalocationp.then(locs=>fetch(locs[modpack].locale)).then(r=>r.json()).then(locale=>new mlocale.FactorioLocale(locale.en));
+			let modsp=fetch('mods.json').then(r=>r.json()).then(tee('m'));
+			const datalocationp = modsp.then(mods=>mods.datalocations).then(tee('ml'));
+			let datap=datalocationp.then(locs=>fetch(locs[modpack].data)).then(r=>r.json()).then(data=>new mdata.FactorioData(data)).then(tee('d'));
+			let localep=datalocationp.then(locs=>fetch(locs[modpack].locale)).then(r=>r.json()).then(locale=>new mlocale.FactorioLocale(locale.en)).then(tee('l'));
 			window.initializedp=mutil.resolveAll({'data':datap,'locale':localep,'mods':modsp}).then(d=>{
         window.data=d.data;
         window.locale=d.locale;
