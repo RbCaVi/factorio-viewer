@@ -1,25 +1,25 @@
 const __imagestuff__ = {};
 
 // too bad for eslint or whatever linter i used
-if(typeof OffscreenCanvas=='function'){
+if(typeof OffscreenCanvas=="function"){
   __imagestuff__.getCanvas = function getCanvas(width,height){
-      return new OffscreenCanvas(width,height);
-  }
+    return new OffscreenCanvas(width,height);
+  };
 
   __imagestuff__.toObjectURL = function toObjectURL(canvas){
     return canvas.convertToBlob().then(URL.createObjectURL);
-  }
+  };
 }else{
   __imagestuff__.getCanvas = function getCanvas(width,height){
     let canvas=document.createElement("canvas");
     canvas.width=width;
     canvas.height=height;
     return canvas;
-  }
+  };
 
   __imagestuff__.toObjectURL = function toObjectURL(canvas){
     return new Promise(resolve=>canvas.toBlob(resolve)).then(URL.createObjectURL);
-  }
+  };
 }
 
 function loadImage(src){
@@ -46,10 +46,10 @@ function fixcolor(col){
     ["r","g","b","a"].map(x=>{if(x in col){color[x]=col[x];}});
   }
   if(Math.max(...Object.values(color))<=1){
-    color['a'] ??= 1;
+    color["a"] ??= 1;
     ["r","g","b","a"].map(x=>{color[x]*=255;});
   }else{
-    color['a'] ??= 255;
+    color["a"] ??= 255;
   }
   return colorToString(["r","g","b","a"].map(i=>color[i]));
 }
@@ -116,33 +116,33 @@ __imagestuff__.makeiconURL = function makeiconURL(promiseChain,packPromise,makeP
       return url;
     });
   }
-}
+};
 
 function getpath(filename,options){
   let mod;
   let path;
   let slash = filename.indexOf("/");
   mod = filename.slice(0, slash);
-  if (mod.slice(0,2)!='__'){
+  if (mod.slice(0,2)!="__"){
     throw Error(`mod ${mod} didn\'t have __ on both sides`);
   }
-  if (mod.slice(-2)!='__'){
+  if (mod.slice(-2)!="__"){
     throw Error(`mod ${mod} didn\'t have __ on both sides`);
   }
   let modname = mod.slice(2,-2);
   path = filename.slice(slash);
   let root = options.modassets[modname];
   if (root == undefined) {
-    root = options.modassets.__default.replace('{}',modname);
+    root = options.modassets.__default.replace("{}",modname);
   }
-  return root+'/'+path;
+  return root+"/"+path;
 }
 
 __imagestuff__.geticon = function geticon(name,size,options){
   return loadImage(getpath(name,options)).then(image=>{
     return createImageBitmap(image,0,0,size,size);
   });
-}
+};
 
 // "hack" to allow importing in a web worker
 if (self.window) {

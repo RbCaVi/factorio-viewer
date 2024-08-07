@@ -104,7 +104,7 @@ function splitrichtext(text) {
   const texts=[];
   const tags=[];
   while(true){
-    const start=text.indexOf('[',i);
+    const start=text.indexOf("[",i);
     if(start==-1){
       const newtext=text.slice(i);
       texts.push(newtext);
@@ -112,11 +112,11 @@ function splitrichtext(text) {
     }
     const newtext=text.slice(i,start);
     texts.push(newtext);
-    i=text.indexOf(']',start+1)+1;
+    i=text.indexOf("]",start+1)+1;
     const tag=text.slice(start,i);
     tags.push(tag);
     if(i==-1){
-      throw 'unmatched brackets in rich text';
+      throw "unmatched brackets in rich text";
     }
   }
   return {texts,tags};
@@ -125,69 +125,69 @@ function splitrichtext(text) {
 // default, red, green, blue, orange, yellow, pink, purple, white, black, gray, brown, cyan, acid
 const colors={
   red:{r:1,g:0,b:0,a:1},
-}
+};
 
 function gettaginfo(tag){
   tag=tag.slice(1,-1);
-  const equals=tag.indexOf('=');
+  const equals=tag.indexOf("=");
   if(equals==-1){
     return {type:tag.trim()};
   }
   const type=tag.slice(0,equals).trim();
   const value=tag.slice(equals+1).trim();
-  if(type=='color'){
+  if(type=="color"){
     // [color=col]...[/color]
     // [color=r,g,b]...[/color]
     // [color=#rrggbb]...[/color]
     // [color=#aarrggbb]...[/color]
     if(value in colors){
-      return {type:'color',color:colors[value]};
+      return {type:"color",color:colors[value]};
     }
-    if(value.startsWith('#')){
+    if(value.startsWith("#")){
       // https://learnersbucket.com/examples/interview/convert-hex-color-to-rgb-in-javascript/
       if(value.length==6){
         const a = 1;
         const r = parseInt(hex.slice(0, 2), 16) / 255;
         const g = parseInt(hex.slice(2, 4), 16) / 255;
         const b = parseInt(hex.slice(4, 6), 16) / 255;
-        return {type:'color',color:{a,r,g,b}};
+        return {type:"color",color:{a,r,g,b}};
       }else{
         const a = parseInt(hex.slice(0, 2), 16) / 255;
         const r = parseInt(hex.slice(2, 4), 16) / 255;
         const g = parseInt(hex.slice(4, 6), 16) / 255;
         const b = parseInt(hex.slice(6, 8), 16) / 255;
-        return {type:'color',color:{a,r,g,b}};
+        return {type:"color",color:{a,r,g,b}};
       }
     }
-    const channels=value.split(',');
-    return {type:'color',color:{
+    const channels=value.split(",");
+    return {type:"color",color:{
       a:1,
       r:parseInt(channels[0]),
       g:parseInt(channels[1]),
       b:parseInt(channels[2])
     }};
   }
-  if(type=='font'){
-    return {type:'font',font:value};
+  if(type=="font"){
+    return {type:"font",font:value};
   }
   return {type,value};
 }
 
 function nestrichtext(split) {
   const {texts,tags}=split;
-  const stack=[{type:'root',contents:[]}]
+  const stack=[{type:"root",contents:[]}];
   for(let i=0;i<tags.length;i++){
     if(texts[i].length>0){
       stack.at(-1).contents.push(texts[i]);
     }
     const tag=gettaginfo(tags[i]);
-    if(tag.type=='color'){
-      stack.push({type:'color',color:tag.color,contents:[]});
-    }else if(tag.type=='font'){
-      stack.push({type:'font',font:tag.font,contents:[]});
-    }else if(tag.type=='/color'||tag.type=='/font'){
+    if(tag.type=="color"){
+      stack.push({type:"color",color:tag.color,contents:[]});
+    }else if(tag.type=="font"){
+      stack.push({type:"font",font:tag.font,contents:[]});
+    }else if(tag.type=="/color"||tag.type=="/font"){
       if(stack.at(-1).type!=tag.type.slice(1)){
-        throw 'unmatched tags';
+        throw "unmatched tags";
       }
       const top=stack.pop();
       stack.at(-1).contents.push(top);
@@ -197,7 +197,7 @@ function nestrichtext(split) {
   }
   stack.at(-1).contents.push(texts.at(-1));
   if(stack.length>1){
-    throw 'unmatched tags';
+    throw "unmatched tags";
   }
   return stack[0];
 }
@@ -214,25 +214,25 @@ function colorToString(color){
 
 function renderrichtext(nested) {
   const span=document.createElement("span");
-  console.log('render',nested);
+  console.log("render",nested);
   for(const part of nested.contents){
-    if(typeof part=='string'){
+    if(typeof part=="string"){
       span.append(part);
-    }else if(part.type=='color'||part.type=='font'){
+    }else if(part.type=="color"||part.type=="font"){
       const span2=document.createElement("span");
-      if(part.type=='color'){
-        span2.style.color=colorToString([part.color.r,part.color.g,part.color.b,part.color.a])
+      if(part.type=="color"){
+        span2.style.color=colorToString([part.color.r,part.color.g,part.color.b,part.color.a]);
       }else{
-        span2.style.padding='15px'
-        span2.style.color='green'
+        span2.style.padding="15px";
+        span2.style.color="green";
       }
-      span2.append(renderrichtext(part))
-      span.append(span2)
+      span2.append(renderrichtext(part));
+      span.append(span2);
     }else{
       const span2=document.createElement("span");
-      span2.style.padding='10px'
+      span2.style.padding="10px";
       span2.textContent=JSON.stringify(part);
-      span.append(span2)
+      span.append(span2);
     }
   }
   return span;
@@ -259,15 +259,15 @@ function recipetostructure(recipe, onclick) {
       onclickbound=onclick.bind(undefined, ings[i][0]);
     }
     ingcontents.push( {
-    type:
-    'texticon', itype:
-    'item', name:
+      type:
+    "texticon", itype:
+    "item", name:
     ings[i][0], text:
     ings[i][1], onclick:
       onclickbound
     }
     );
-    ingcontents.push('+');
+    ingcontents.push("+");
   }
   var rescontents=[];
   for (var i=0; i<ress.length; i++) {
@@ -275,19 +275,19 @@ function recipetostructure(recipe, onclick) {
       onclickbound=onclick.bind(undefined, ress[i][0]);
     }
     rescontents.push( {
-    type:
-    'texticon', itype:
-    'item', name:
+      type:
+    "texticon", itype:
+    "item", name:
     ress[i][0], text:
     ress[i][1], onclick:
       onclickbound
     }
     );
-    rescontents.push('+');
+    rescontents.push("+");
   }
   ingcontents.pop();
   rescontents.pop();
-  return ingcontents.concat(['→'], rescontents, ' ', rdata.normal.time+' s');
+  return ingcontents.concat(["→"], rescontents, " ", rdata.normal.time+" s");
 }
 
 function accordionifmultiple(header, parts) {
@@ -296,14 +296,14 @@ function accordionifmultiple(header, parts) {
   }
   if (parts.length==1) {
     return {
-    type:
-    'div', contents:
+      type:
+    "div", contents:
       [header, parts[0]]
     };
   }
   return {
-  type:
-  'accordion', header:
+    type:
+  "accordion", header:
   header, contents:
     parts
   };
@@ -313,7 +313,7 @@ function tabs(self, structure, contents, options) {
   // each contents is a tab content
   // tabs
   const outer=document.createElement("div");
-  outer.classList.add('tab-outer');
+  outer.classList.add("tab-outer");
   const tabholder=document.createElement("div");
   const content=document.createElement("div");
   outer.append(tabholder,content);
@@ -331,17 +331,17 @@ function tabs(self, structure, contents, options) {
     tabs[i].addEventListener("click",()=>{
       if (number != -1){
         contents[number].remove();
-        tabs[number].classList.remove('tab-selected');
+        tabs[number].classList.remove("tab-selected");
       }
       if (number != i){
         number = i;
         content.append(contents[number]);
-        tabs[number].classList.add('tab-selected');
+        tabs[number].classList.add("tab-selected");
       } else {
         number = -1;
       }
     });
-    tabholder.append(tabs[i],'\u200b');
+    tabholder.append(tabs[i],"\u200b");
   }
   return outer;
 }
