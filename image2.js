@@ -219,7 +219,7 @@ function makeiconURL(data,options,size=32){
     return makePromise(out);
   }
   let canvas=getCanvas(size,size);
-  const urlp = makeiconURLimpl(canvas,data,options,size);
+  const urlp = makeiconURLimpl(canvas,data,{modassets:options.modassets},size);
   iconcache[cachekey] = urlp;
   urlp.then(x=>{iconcache[cachekey]=x;});
   return urlp;
