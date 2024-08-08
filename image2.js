@@ -145,6 +145,37 @@ function geticon(name,size,options){
 import {Funcs} from "./b.js";
 import {promiseChain,packPromise,makePromise} from "./util.js";
 
+function deparallel(f, maxthreads) {
+  let threads = 0;
+  let queue = [];
+  return function(...args) {
+    if (threads < maxthreads) {
+      threads++;
+      console.log(threads);
+      return new Promise(async (resolve, reject) => {
+        while (true) {
+          const p = makePromise().then(() => f(...args));
+          p.then(resolve,reject);
+          try {
+            await p;
+          } catch {}
+          const item = queue.pop();
+          if (item == undefined) {
+            break;
+          }
+          [resolve, reject, args] = item;
+        }
+        threads--;
+      });
+    } else {
+      let resolve, reject;
+      const p = new Promise((res, rej) => {[resolve, reject] = [res, rej];});
+      queue.push([resolve, reject, args]);
+      return p
+    }
+  }
+}
+
 let makeiconURLimpl;
 
 let iconcache={};
@@ -166,7 +197,7 @@ if (window.Worker && window.OffscreenCanvas) { // workers and offscreencanvas ex
     };
   }
 
-  makeiconURLimpl = makeiconURLinternal;
+  makeiconURLimpl = deparallel(makeiconURLinternal, 4);
 }
 
 function makeiconURL(data,options,size=32){

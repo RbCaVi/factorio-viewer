@@ -2,6 +2,9 @@ class WorkerFuncs {
 	constructor() {
 		this.worker = new Worker('a.js');
 		this.counter = 0;
+		this.threads = 0;
+		this.maxthreads = 4;
+		this.queue = [];
 	}
 
 	addfunc(name, f) {
@@ -20,23 +23,47 @@ class WorkerFuncs {
 
 	call(name, options, ...args) {
 		// data should be already in the right format for the worker
-		const id = this.counter;
+		let id = this.counter;
 		this.counter++;
-		this.worker.postMessage(['call', name, [id, args]]);
-		return new Promise((resolve, reject) => {
-			const listener = (message) => {
-				const [type, rid, data] = message.data;
-				if (type == 'data' && rid == id) {
-					this.worker.removeEventListener('message', listener);
-					resolve(data);
+		if (this.threads < this.maxthreads) {
+			const f = (name, id, resolve, reject, options, args) => {
+				const listener = (message) => {
+					const [type, rid, data] = message.data;
+					if (type == 'data' && rid == id) {
+						this.worker.removeEventListener('message', listener);
+						resolve(data);
+					}
+					if (type == 'error' && rid == id) {
+						this.worker.removeEventListener('message', listener);
+						reject(data);
+					}
+				};
+				this.worker.postMessage(['call', name, [id, args]]);
+				this.worker.addEventListener('message', listener);
+			}
+			this.threads++;
+			console.log(this.threads);
+			return new Promise(async (resolve, reject) => {
+				while (true) {
+					const p = new Promise((res, rej) => f(name, id, res, rej, options, args));
+					p.then(resolve, reject);
+					try {
+						await p;
+					} finally {}
+					const item = this.queue.pop();
+					if (item == undefined) {
+						break;
+					}
+					[name, id, resolve, reject, options, args] = item;
 				}
-				if (type == 'error' && rid == id) {
-					this.worker.removeEventListener('message', listener);
-					reject(data);
-				}
-			};
-			this.worker.addEventListener('message', listener);
-		});
+				this.threads--;
+			});
+		} else {
+			let resolve, reject;
+			const p = new Promise((res, rej) => {[resolve, reject] = [res, rej];});
+			this.queue.push([name, id, resolve, reject, options, args]);
+			return p
+		}
 	}
 }
 
