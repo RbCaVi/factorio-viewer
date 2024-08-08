@@ -18,6 +18,10 @@
   height: 32px;
 }
 
+.factorio-icon-inner {
+  height: 32px;
+}
+
 .internal-name {
   padding-left:1em;
   padding-right:1em;

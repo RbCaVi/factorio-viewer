@@ -84,6 +84,7 @@ function texticon(self, structure, contents, options) {
     makeiconURL(idata,options).then(url=>{
       img.src=url;
     });
+    addclasses(img,["factorio-icon-inner"]);
     span.append(img);
   }else{
     if("localizer" in options){
