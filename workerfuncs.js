@@ -1,6 +1,6 @@
 class WorkerFuncs {
 	constructor() {
-		this.worker = new Worker('a.js');
+		this.worker = new Worker('genericworker.js');
 		this.counter = 0;
 		this.threads = 0;
 		this.maxthreads = 16;

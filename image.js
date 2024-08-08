@@ -1,3 +1,6 @@
+import {Funcs} from "./workerfuncs.js";
+import {promiseChain,packPromise,makePromise} from "./util.js";
+
 // too bad for eslint or whatever linter i used
 function getCanvas_offscreencanvas(width,height){
   return new OffscreenCanvas(width,height);
@@ -141,9 +144,6 @@ function geticon(name,size,options){
     return createImageBitmap(image,0,0,size,size);
   });
 }
-
-import {Funcs} from "./b.js";
-import {promiseChain,packPromise,makePromise} from "./util.js";
 
 function deparallel(f, maxthreads) {
   let threads = 0;
