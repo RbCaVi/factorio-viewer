@@ -137,7 +137,7 @@ function getpath(filename,options){
 }
 
 function geticon(name,size,options){
-  return loadImage(getpath(name,options)).then(image=>{
+  return funcs.loadImage(funcs.getpath(name,options)).then(image=>{
     return createImageBitmap(image,0,0,size,size);
   });
 }
@@ -182,16 +182,26 @@ let iconcache={};
 
 const fs = new Funcs();
 
-const funcs = {packPromise, promiseChain, toObjectURL, geticon};
+const funcs = {packPromise, promiseChain, toObjectURL, geticon, getCanvas};
 
 if (window.Worker && window.OffscreenCanvas) { // workers and offscreencanvas exist
+  console.log('has workers and offscreen canvas');
+
   fs.addfunc("makeiconURL", makeiconURLinternal);
 
   makeiconURLimpl = function makeiconURLimpl_func(canvas,data,options,size){
     return fs.call("makeiconURL", {transfer:[canvas]}, canvas, data, options, size);
   };
 } else { // workers or offscreen canvas don't exist
+  console.log('has no workers or no offscreen canvas');
+
   if (window.Worker) { // no canvas, worker only loads
+    console.log('has workers but no offscreen canvas');
+
+    fs.addfunc("geticon", geticon);
+    fs.addfunc("loadImage", loadImage);
+    fs.addfunc("getpath", getpath);
+
     funcs.geticon = function geticon_func(name,size,options) {
       return fs.call("geticon", {}, name, size, options);
     };
