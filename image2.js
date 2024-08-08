@@ -207,7 +207,7 @@ if (window.Worker && window.OffscreenCanvas) { // workers and offscreencanvas ex
     };
   }
 
-  makeiconURLimpl = deparallel(makeiconURLinternal, 4);
+  makeiconURLimpl = deparallel(makeiconURLinternal, 16);
 }
 
 function makeiconURL(data,options,size=32){

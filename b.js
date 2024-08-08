@@ -3,7 +3,7 @@ class WorkerFuncs {
 		this.worker = new Worker('a.js');
 		this.counter = 0;
 		this.threads = 0;
-		this.maxthreads = 4;
+		this.maxthreads = 16;
 		this.queue = [];
 	}
 
