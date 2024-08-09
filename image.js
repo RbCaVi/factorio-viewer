@@ -182,12 +182,23 @@ let iconcache={};
 
 const fs = new Funcs();
 
-const funcs = {packPromise, promiseChain, toObjectURL, geticon, getCanvas};
+const funcs = {
+  makeiconURL: makeiconURLinternal, 
+  packPromise, 
+  promiseChain, 
+  toObjectURL, 
+  geticon, 
+  getCanvas, 
+  getpath, 
+  loadImage
+};
+
+for (const [name, f] of Object.keys(funcs)) {
+  fs.addfunc(name, f);
+}
 
 if (window.Worker && window.OffscreenCanvas) { // workers and offscreencanvas exist
   console.log('has workers and offscreen canvas');
-
-  fs.addfunc("makeiconURL", makeiconURLinternal);
 
   makeiconURLimpl = function makeiconURLimpl_func(canvas,data,options,size){
     return fs.call("makeiconURL", {transfer:[canvas]}, canvas, data, options, size);
@@ -197,10 +208,6 @@ if (window.Worker && window.OffscreenCanvas) { // workers and offscreencanvas ex
 
   if (window.Worker) { // no canvas, worker only loads
     console.log('has workers but no offscreen canvas');
-
-    fs.addfunc("geticon", geticon);
-    fs.addfunc("loadImage", loadImage);
-    fs.addfunc("getpath", getpath);
 
     funcs.geticon = function geticon_func(name,size,options) {
       return fs.call("geticon", {}, name, size, options);

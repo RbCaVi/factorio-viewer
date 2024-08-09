@@ -81,6 +81,6 @@ class SingleFuncs {
 	}
 }
 
-const Funcs = Worker ? WorkerFuncs : SingleFuncs;
+const Funcs = window.Worker ? WorkerFuncs : SingleFuncs;
 
 export {Funcs};
