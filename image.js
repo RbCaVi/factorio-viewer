@@ -193,7 +193,7 @@ const funcs = {
   loadImage
 };
 
-for (const [name, f] of Object.keys(funcs)) {
+for (const [name, f] of Object.entries(funcs)) {
   fs.addfunc(name, f);
 }
 

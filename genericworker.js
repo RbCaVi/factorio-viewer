@@ -8,7 +8,7 @@ self.onmessage = async function onmessage (message) {
     try {
 		  self.postMessage(["data", id, await funcs[name](...args)]);
 		} catch (e) {
-    	self.postMessage(["error", id, e]);
+    	self.postMessage(["error", id, e.toString()]);
     }
   }
   if (type == "new") {
