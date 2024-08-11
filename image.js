@@ -60,7 +60,7 @@ function makeiconURLinternal(canvas,data,options,size=32){
   // return a promise for the canvas being fully rendered
   if("icons" in data){
     let icons=data.icons;
-    let baseiconsize=data.icon_size??icons[0].icon_size*((icons[0].scale??0.5)*2);
+    let baseiconsize=data.icon_size??(icons[0].icon_size*((icons[0].scale??1)));
     let parts=[];
     for(let icondata of icons){
       let iconname=icondata.icon;
@@ -88,11 +88,11 @@ function makeiconURLinternal(canvas,data,options,size=32){
         let shift=[0,0];
         if("shift" in idata){
           shift=idata.shift;
-          shift=shift.map(x=>x*(size/baseiconsize)*2); // i don't know why 2
+          shift=shift.map(x=>x*(size/baseiconsize)); // i don't know why 2
         }
         let isize=iconsize*(size/baseiconsize);
         if("scale" in idata){
-          isize*=idata.scale*2;
+          isize*=idata.scale;
         }
         let ctx=canvas.getContext("2d");
         ctx.drawImage(icanvas,(canvas.width-isize)/2+shift[0],(canvas.height-isize)/2+shift[1],isize,isize);
