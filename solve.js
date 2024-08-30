@@ -87,8 +87,57 @@ class Solver {
 		return matrix;
 	}
 
-	solve(out) {
+	solve(outin) {
 		// uses the simplex algorithm
 		const matrix = this.creatematrix();
+		const out = outin;
+		matrix['.out'] = out
+		while (true) {
+			// find minimum column in outs or break
+			const requiredouts = Object.entries(out).filter(
+				([, v]) => v.sign == -1
+			);
+			if (requiredouts.length == 0) {
+				break;
+			}
+			const [mincol, ] = getmin(requiredouts,
+				([, v1], [, v2]) => signsub(v1, v2)
+			);
+			// find minimum cost/recipe[mincol] where recipe[mincol] > 0
+			const selectedrows = Object.entries(matrix).filter(
+				([, v]) => v.sign == 1
+			).map(
+				([k, v]) => [k, v, div(v['.cost'], v[minrow])]
+			);
+			if (selectedrows.length == 0) {
+				throw Error(`no recipe that makes ${mincol}`);
+			}
+			const [minrecipe, minrow, ] = getmin(selectedrows,
+				([, , cost1], [, , cost2]) => signsub(cost1, cost2)
+			);
+			// divide all of minrow by minrow[mincol]
+			const mincolamount = minrow[mincol];
+			for (const [item, amount] of Object.entries(minrow)) {
+				if (item == mincol) {
+					minrow[item] = new Rational({}, 1);
+				} else {
+					minrow[item].div(mincolamount);
+				}
+			}
+			// for each recipe in the table:
+			for (const [recipe, row] in Object.values(matrix)) {
+				if (recipe == minrecipe) {
+					continue;
+				}
+				for (const [item, amount] of Object.entries(minrow)) {
+					if (item in row) {
+						row[item].sub(mul(minrow[item], row[mincol]));
+					} else {
+						row[item] = neg(mul(minrow[item], row[mincol]));
+					}
+				}
+			}
+		}
+		return out;
 	}
 }
