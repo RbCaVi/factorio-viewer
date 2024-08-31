@@ -26,7 +26,7 @@ function factor(n) {
 	if (n == 0) {
 		return new Rational({}, 0);
 	}
-	const sign = 1;
+	let sign = 1;
 	if (n < 0) {
 		n = -n;
 		sign = -1;
