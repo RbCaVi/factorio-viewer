@@ -57,14 +57,22 @@ function fracapprox(f) {
 		epsilon *= base;
 		n += 1;
 	}
-	return [Math.round(f),n,factors];
+	return [Math.round(f), n, factors];
 }
 
 function createrational(n) {
-	const [n,power,base] = fracapprox(f);
-	let num = factor(n);
-	const b = pow(base, power);
+	const [n, power, base] = fracapprox(f);
+	const num = factor(n);
+	const b = pow(new Rational(base, 1), power);
 	return div(num, b);
+}
+
+function pow(base, pow) {
+	const factors = {};
+	for (const [prime, bpow] of Object.entries(base)) {
+		factors[prime] = bpow * pow;
+	}
+	return factors;
 }
 
 function add(r1, r2) {
@@ -94,7 +102,7 @@ function add(r1, r2) {
 		n1 *= prime ** exp1 - gcd[p];
 		n2 *= prime ** exp2 - gcd[p];
 	}
-	return mul(gcd, factor(s1 * n1 + s2 * n2));
+	return mul(new Rational(gcd, 1), factor(s1 * n1 + s2 * n2));
 }
 
 function sub(r1, r2) {
