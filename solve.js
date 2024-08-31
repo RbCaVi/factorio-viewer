@@ -1,4 +1,5 @@
 import {Rational, mul, div, createrational} from "./rational2.js";
+import {normalizeresult} from './normalize.js';
 
 class Solver {
 	constructor(data, cost = 'normal') {
@@ -18,7 +19,7 @@ class Solver {
         entry[ing].sub(div(createrational(amt), createrational(recipe[cost].time)));
 			}
 
-			for (const [res, amt] of recipe[cost].result) {
+			for (const [res, amt] of recipe[cost].results) {
         if(!(res in entry)){
           entry[res] = new Rational({}, 0);
         }
@@ -40,7 +41,7 @@ class Solver {
 			if (!('minable' in resource)) {
 				continue; // it can't be mined
 			}
-			if (!resource.collision_mask.includes('resource-layer')) {
+			if (('collision_mask' in resource) && !resource.collision_mask.includes('resource-layer')) {
 				continue; // it can't be mined with a drill type entity
 			}
 			const entry = {};
@@ -55,7 +56,7 @@ class Solver {
           entry[res].add(div(createrational(amount), createrational(mining_time)));
 				}
 			} else {
-				const {result: res, count: amount = 1} = normalizeresult(result);
+				const {result: res, count: amount = 1} = normalizeresult(resource.minable.result);
         entry[res] = div(createrational(amount), createrational(mining_time));
 			}
 
