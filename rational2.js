@@ -60,6 +60,44 @@ function factor(n) {
 	return new Rational(factors, sign);
 }
 
+function factorbi(n) {
+	if (n == 0) {
+		return new Rational({}, 0);
+	}
+	let sign = 1;
+	if (n < 0) {
+		n = -n;
+		sign = -1;
+	}
+	const factors = {};
+	for (const prime of startprimes) {
+		while (n % BigInt(prime) == 0) {
+			factors[prime] = (factors[prime] ?? 0) + 1;
+			n /= BigInt(prime);
+		}
+		if (n == 1) {
+			return new Rational(factors, sign);
+		}
+	}
+	for (let i = 0; BigInt(i) * BigInt(i) < n; i += wheelsize) {
+		for (const j of wheel) {
+			const prime = i + j; // possibly a prime
+			if (prime == 1) {
+				continue;
+			}
+			while (n % BigInt(prime) == 0) {
+				factors[prime] = (factors[prime] ?? 0) + 1;
+				n /= BigInt(prime);
+			}
+			if (n == 1) {
+				return new Rational(factors, sign);
+			}
+		}
+	}
+	factors[Number(n)] = 1;
+	return new Rational(factors, sign);
+}
+
 function fracapprox(f) {
 	let epsilon = 0.001;
 	let n = 0;
@@ -108,15 +146,16 @@ function add(r1, r2) {
 			gcd[prime] = Math.min(0, exp2);
 		}
 	}
-	let n1 = new BigInt(1), n2 = new BigInt(1);
+	let n1 = BigInt(1), n2 = BigInt(1);
 	for (const p in gcd) {
 		const prime = BigInt(p);
+		const exp = gcd[p];
 		const exp1 = f1[p] ?? 0;
 		const exp2 = f2[p] ?? 0;
-		n1 *= prime ** exp1 - gcd[p];
-		n2 *= prime ** exp2 - gcd[p];
+		n1 *= prime ** BigInt(exp1 - exp);
+		n2 *= prime ** BigInt(exp2 - exp);
 	}
-	return mul(new Rational(gcd, 1), factor(s1 * n1 + s2 * n2));
+	return mul(new Rational(gcd, 1), factorbi(BigInt(s1) * n1 + BigInt(s2) * n2));
 }
 
 function sub(r1, r2) {
