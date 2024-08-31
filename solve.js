@@ -84,6 +84,11 @@ class Solver {
 			matrix[recipename] = row;
 		}
 		// TODO: a processing step to remove net negative loops
+		const produces = {};
+		const consumes = {};
+		for (const [recipename, recipe] of Object.entries(matrix)) {
+			// cheese
+		}
 		return matrix;
 	}
 
