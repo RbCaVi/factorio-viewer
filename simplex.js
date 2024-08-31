@@ -5,13 +5,9 @@ import {Rational,mult,div} from "./rational.js";
 class SimplexSolver{
   constructor(data){
     this.data=data;
-    this.reciperanks=rankrecipes(this.data);
     this.rtable={};
     for(let recipename in this.data.pdata.recipe){
       let recipe=this.data.pdata.recipe[recipename];
-      if(this.#unallowed(recipe)){
-        continue;
-      }
       let entry={};
       for(let ing of recipe.normal.ingredients){
         if(!(ing[0] in entry)){
@@ -61,125 +57,9 @@ class SimplexSolver{
     }
   }
 
-  #unallowed(recipe) {
-    /*
-      if(recipe.name=='empty-barrel'){
-        return false;
-      }
-      if(recipe.name=='se-matter-fusion-dirty'){
-        return false;
-      }
-      if(recipe.name=='se-bio-methane-to-crude-oil'){
-        console.log('rejected',recipe,'by bio-crude');
-        return true;
-      }
-      if(recipe.name=='se-bio-sludge-crude-oil'){
-        console.log('rejected',recipe,'by bio-crude');
-        return true;
-      }
-      if(recipe.name=='coal-liquefaction'){
-        console.log('rejected',recipe,'by coal');
-        return true;
-      }
-      if(recipe.name.includes('naq')){
-        console.log('rejected',recipe,'by naquium');
-        return true;
-      }
-      if(recipe.name.includes('cry')){
-        console.log('rejected',recipe,'by cryonite');
-        return true;
-      }
-      if(recipe.name.includes('vul')){
-        console.log('rejected',recipe,'by vulcanite');
-        return true;
-      }
-      if(recipe.name.includes('beryl')){
-        console.log('rejected',recipe,'by beryllium');
-        return true;
-      }
-      if(recipe.name.includes('vita')){
-        console.log('rejected',recipe,'by vitamelange');
-        return true;
-      }
-      if(recipe.name.includes('holm')){
-        console.log('rejected',recipe,'by holmium');
-        return true;
-      }
-      if(recipe.name.includes('iri')){
-        console.log('rejected',recipe,'by iridium');
-        return true;
-      }
-      if(recipe.name.includes('scrap')){
-        console.log('rejected',recipe,'by scrap');
-        return true;
-      }
-      if(recipe.name.includes('wood')||recipe.name.includes('bio')||recipe.name.includes('spec')){
-        console.log('rejected',recipe,'by biology');
-        return true;
-      }
-      if(recipe.name.startsWith('se-melting-')){
-        console.log('rejected',recipe,'by ice');
-        return true;
-      }
-      if(recipe.name.startsWith('se-matter-fusion-')){
-        console.log('rejected',recipe,'by fusion');
-        return true;
-      }
-    */
-    if(recipe.name=="se-big-turbine-internal"){
-      console.log("rejected",recipe,"by turbine-internal");
-      return true;
-    }
-    if(recipe.name.startsWith("se-condenser-turbine-reclaim-water-")){
-      console.log("rejected",recipe,"by turbine-reclaim");
-      return true;
-    }
-    if(recipe.name.startsWith("se-core-fragment-")){
-      console.log("rejected",recipe,"by core");
-      return true;
-    }
-    if(recipe.name.startsWith("empty-")&&recipe.name.endsWith("-barrel")){
-      console.log("rejected",recipe,"by barrel");
-      return true;
-    }
-    if(recipe.category!="hard-recycling"){
-      return false;
-    }
-    if(recipe.normal.ingredients.length==1){
-      for(let precipe of this.data.produces.normal[recipe.normal.ingredients[0][0]]??[]){
-        if(this.data.pdata.recipe[precipe].normal.results.length>1){
-          continue;
-        }
-        let icounts={};
-        for(let [ing,count] of this.data.pdata.recipe[precipe].normal.ingredients){
-          icounts[ing]=(icounts[ing]??0)+count;
-        }
-        let rcounts={};
-        for(let [res,count] of this.data.pdata.recipe[precipe].normal.results){
-          rcounts[res]=(icounts[res]??0)+count;
-        }
-        let pass=true;
-        for(let [res,count] of recipe.normal.results){
-          if((count/recipe.normal.ingredients[0][1])>=((icounts[res]??0)/rcounts[recipe.normal.ingredients[0][0]])){
-            pass=false;
-            break;
-          }
-        }
-        if(pass){
-          console.log("rejected",recipe,"by",this.data.pdata.recipe[precipe]);
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  #clonertable(rank){
+  #clonertable(){
     let newtable={};
     for(let [key,recipe] of Object.entries(this.rtable)){
-      if(this.reciperanks[key]>rank){
-        continue;
-      }
       let newrecipe={};
       for(let [item,amount] of Object.entries(recipe)){
         newrecipe[item]=new Rational(amount.num,amount.denom);
@@ -189,16 +69,9 @@ class SimplexSolver{
     return newtable;
   }
 
-  #getitemrank(item){
-    if(item.startsWith("recipe.")){
-      return this.reciperanks[item]+1;
-    }
-    return Math.min(...this.data.produces.normal[item].map(recipe=>this.reciperanks[recipe]));
-  }
-
   solve(outs){
-    let rank=Math.max(...Object.keys(outs).map(item=>this.#getitemrank(item)??0));
-    let rtable2=this.#clonertable(rank);
+    let rtable2=this.#clonertable();
+    prunerecipes(rtable2)
     addcosts(rtable2);
     addslacks(rtable2);
     outs=clone(outs);
@@ -292,51 +165,6 @@ function addslacks(rtable) {
     }
     rtable[key]["recipe."+key]=new Rational(1);
   }
-}
-
-function ranktech(data) {
-  let techpres=new Map((
-    function*() {
-      for (let key in data.data.technology){
-        yield [key, data.prereqs.normal[key]??[]];
-      }
-    })()
-  );
-  let ranked={};
-  let allranked=new Set();
-  for(let i=0;;i++){
-    let newranks=[];
-    for(let [techname,prereqs] of techpres.entries()){
-      if(prereqs.every(p=>allranked.has(p))){
-        techpres.delete(techname);
-        newranks.push(techname);
-        ranked[techname]=i;
-      }
-    }
-    if(newranks.length==0){
-      break;
-    }
-    newranks.forEach(item=>allranked.add(item));
-  }
-  return ranked;
-}
-
-function rankrecipes(data){
-  let techrank=ranktech(data);
-  let ranks={};
-  for(let recipename in data.data.recipe){
-    let recipe=data.data.recipe[recipename];
-    if(recipe.normal.enabled??true){
-      ranks[recipename]=0;
-      continue;
-    }
-    let techs=data.unlockedby.normal[recipename];
-    if(techs==undefined){
-      continue;
-    }
-    ranks[recipename]=Math.min(...techs.map(tech=>techrank[tech]))+1;
-  }
-  return ranks;
 }
 
 export {SimplexSolver};
