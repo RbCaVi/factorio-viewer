@@ -3,6 +3,19 @@ class Rational {
 		this.factors = factors;
 		this.sign = sign; // -1 or 1 or 0
 	}
+
+	#replace(that) {
+		this.factors = that.factors;
+		this.sign = that.sign;
+	}
+
+	add(that) {
+		this.#replace(add(this, that));
+	}
+
+	sub(that) {
+		this.#replace(sub(this, that));
+	}
 }
 
 const wheel = [1, 5];
