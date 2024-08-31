@@ -39,7 +39,7 @@ function factor(n) {
 				n /= prime;
 			}
 			if (n == 1) {
-				return factors;
+				return new Rational(factors, sign);
 			}
 		}
 	}
@@ -60,19 +60,20 @@ function fracapprox(f) {
 	return [Math.round(f), n, factors];
 }
 
-function createrational(n) {
+function createrational(f) {
 	const [n, power, base] = fracapprox(f);
 	const num = factor(n);
 	const b = pow(new Rational(base, 1), power);
 	return div(num, b);
 }
 
-function pow(base, pow) {
-	const factors = {};
-	for (const [prime, bpow] of Object.entries(base)) {
-		factors[prime] = bpow * pow;
+function pow(r, e) {
+	const {factors: f, sign: s} = r;
+	const newfactors = {};
+	for (const [prime, exp] of Object.entries(f)) {
+		newfactors[prime] = exp * e;
 	}
-	return factors;
+	return new Rational(newfactors, s)
 }
 
 function add(r1, r2) {
@@ -157,4 +158,4 @@ function div(r1, r2) {
 	return new Rational(factors, s1 * s2);
 }
 
-export {Rational};
+export {Rational, mul, div, add, sub, createrational};
