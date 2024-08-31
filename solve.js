@@ -13,26 +13,26 @@ class Solver {
 
 			for (const [ing, amt] of recipe.normal.ingredients) {
         if(!(ing in entry)){
-          entry[ing] = createrational(0);
+          entry[ing] = new Rational({}, 0);
         }
         entry[ing].sub(div(amt, recipe.normal.time));
 			}
 
 			for (const [res, amt] of recipe.normal.result) {
         if(!(res in entry)){
-          entry[res] = createrational(0);
+          entry[res] = new Rational({}, 0);
         }
         entry[res].add(div(amt, recipe.normal.time));
 			}
 
-			entry['recipe.' + recipename] = new Rational(1);
+			entry['recipe.' + recipename] = new Rational({}, 1);
 			recipes['recipe.' + recipename] = entry;
 		}
 
 		for (const [pumpname, pump] of Object.entries(data.data['offshore-pump'])) {
 			recipes['pump.' + pumpname] = {
-				'pump.' + pumpname: new Rational(1);
-				pump.fluid: new Rational(pump.pumping_speed * 60)
+				'pump.' + pumpname: new Rational({}, 1);
+				pump.fluid: createrational(pump.pumping_speed * 60)
 			};
 		}
 
@@ -50,7 +50,7 @@ class Solver {
 				for (const result of resource.minable.results) {
 					const {name: res, amount} = normalizeresult(result);
           if(!(res in entry)){
-            entry[res] = new Rational(0);
+            entry[res] = new Rational({}, 0);
           }
           entry[res].add(div(amount, mining_time));
 				}
@@ -66,7 +66,7 @@ class Solver {
 				}
 			}
 
-			entry['mine.' + resourcename] = new Rational(1);
+			entry['mine.' + resourcename] = new Rational({}, 1);
 			recipes['mine.' + resourcename] = entry;
 		}
 
@@ -78,7 +78,7 @@ class Solver {
 		for (const [recipename, recipe] of Object.entries(this.recipes)) {
 			const row = {};
 			for (const [item, amount] of Object.entries(recipe)) {
-				row[item] = new Rational(amount);
+				row[item] = copyrational(amount);
 			}
 			row['.cost'] = 1; // for now
 			matrix[recipename] = row;
