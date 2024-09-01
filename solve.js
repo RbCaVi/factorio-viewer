@@ -196,6 +196,21 @@ class Solver {
 	solve(matin, outin) {
 		// uses the simplex algorithm
 		const matrix = clonematrix(matin);
+		const produces = {};
+		for (const [recipename, recipe] of Object.entries(matrix)) {
+			for (const [item, amount] of Object.entries(recipe)) {
+				if (amount.sign == 1) {
+					if (!(item in produces)) {
+						produces[item] = new Set();
+					}
+					produces[item].add(recipename);
+				}
+			}
+		}
+		// get items with only one recipe
+		const forcedpivots = Object.keys(produces).filter(item => produces[item].size() == 1);
+		// get items with only one recipe
+		const choicepivots = Object.keys(produces).filter(item => produces[item].size() > 1);
 		const out = outin;
 		matrix['.out'] = out
 		while (true) {
