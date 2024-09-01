@@ -174,9 +174,8 @@ class Solver {
 
 	solve(matin, outin) {
 		// uses the simplex algorithm
-		const matrix = clonematrix(matin);
 		const produces = {};
-		for (const [recipename, recipe] of Object.entries(matrix)) {
+		for (const [recipename, recipe] of Object.entries(matin)) {
 			for (const [item, amount] of Object.entries(recipe)) {
 				if (amount.sign == 1) {
 					if (!(item in produces)) {
@@ -186,16 +185,35 @@ class Solver {
 				}
 			}
 		}
-		// any time this item is used, it always pivots on the same row
+		const out = outin;
+		
+		const matrix = {};
+		matrix['.out'] = out
+		
+		// any time these items are used, it always pivots on the same row
 		// pivot out on all of these and ignore them for the rest of time
 		const forcedpivotitems = Object.keys(produces).filter(item => produces[item].size() == 1);
-		// the items that have more than one recipe producing them
+		const forcedpivots = Object.fromentries(forcedpivotitems.map(item => [item, normalizerow(clonerow(matin[[...produces[item]][0]]), item)]));
+		
+		// the recipe that produce non unique products
 		// usually only a few
-		const choicepivotitems = Object.keys(produces).filter(item => produces[item].size() > 1);
-		const out = outin;
-		matrix['.out'] = out
+		const choicepivots = Object.keys(produces).filter(item => produces[item].size() > 1).map(item => produces[item]).reduce((rs1, rs2) => rs1.union(rs2));
+		
+		for (const item in out) {
+			if (item in forcedpivots) {
+				pivotrow(forcedpivots[item], item, out);
+			}
+		}
+
+		for (const recipe of choicepivots) {
+			if (Object.values(forcedpivots).includes(recipe)){
+				//continue;
+			}
+			matrix[recipe] = clonerow(matin[recipe]);
+		}
+		
 		while (true) {
-			// find minimum column in outs or break
+			// find largest magnitude negative column in outs or break
 			const requiredouts = Object.entries(out).filter(
 				([, v]) => v.sign == -1
 			);
@@ -205,6 +223,7 @@ class Solver {
 			const [mincol, ] = getmin(requiredouts,
 				([, v1], [, v2]) => signsub(v1, v2)
 			);
+			
 			// find minimum cost/recipe[mincol] where recipe[mincol] > 0
 			const selectedrows = Object.entries(matrix).filter(
 				([, v]) => (mincol in v) && v[mincol].sign == 1
@@ -217,13 +236,17 @@ class Solver {
 			const [minrecipe, minrow, ] = getmin(selectedrows,
 				([, , cost1], [, , cost2]) => signsub(cost1, cost2)
 			);
+			
 			// divide all of minrow by minrow[mincol]
 			normalizerow(minrow, mincol);
+			
 			// for each recipe in the table:
 			for (const [recipe, row] of Object.entries(matrix)) {
+				// (if it's not the one i'm pivoting by)
 				if (recipe == minrecipe) {
 					continue;
 				}
+				// pivot it
 				pivotrow(minrow, mincol, row);
 			}
 		}
@@ -231,16 +254,12 @@ class Solver {
 	}
 }
 
-function clonematrix(mat) {
-	const newmat = {};
-	for (const [recipe, row] of Object.entries(mat)) {
-		const newrow = {};
-		for (const [item, amt] of Object.entries(row)) {
-			newrow[item] = copyrational(amt);
-		}
-		newmat[recipe] = newrow;
+function clonerow(row) {
+	const newrow = {};
+	for (const [item, amt] of Object.entries(row)) {
+		newrow[item] = copyrational(amt);
 	}
-	return newmat;
+	return newrow;
 }
 
 function getmin(l, compare) {
