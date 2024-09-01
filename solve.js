@@ -1,4 +1,4 @@
-import {Rational, mul, div, createrational} from "./rational2.js";
+import {Rational, mul, div, createrational, copyrational, neg, signsub} from "./rational2.js";
 import {normalizeresult} from './normalize.js';
 
 class Solver {
