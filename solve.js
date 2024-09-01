@@ -98,67 +98,96 @@ class Solver {
 					consumes[item].add(recipename);
 				}
 			}
-			row['.cost'] = 1; // for now
+			row['.cost'] = new Rational({}, 1); // for now
 			row[recipename] = new Rational({}, 1);
 			matrix[recipename] = row;
 		}
 		// a processing step to remove net negative loops
 		// do forced pivots (only one recipe produces this item)
 		// remove all-negative recipes
-		for (const [item, recipes] of produces) {
-			if (recipes.size != 1) {
-				continue;
-			}
-			const recipename = recipes.keys()[0];
-			console.log('forced pivot by', recipename, 'on', item);
-			const recipe = matrix[recipename];
-			const itemamount = recipe[item];
-			for (const [pitem, amount] of Object.entries(recipe)) {
-				if (pitem == item) {
-					recipe[pitem] = new Rational({}, 1);
-				} else {
-					recipe[pitem].div(itemamount);
+		const pivoted = new Set();
+		while (true) {
+			let haspivoted = false;
+			for (const [item, recipes] of Object.entries(produces)) {
+				if (recipes.size != 1) {
+					continue;
 				}
-			}
-			const crecipes = consumes[item].keys();
-			for (const crecipename of crecipes) {
-				const crecipe = matrix[crecipename];
-				// these are recipes that consume the item
-				// remove all produces and consumes entries
-				for (const [citem, amount] of Object.entries(crecipe)) {
-					// these should always return true - i'm not checking them
-					if (amount.sign == 1) {
-						produces[citem].remove(recipename);
-					}
-					if (amount.sign == -1) {
-						consumes[citem].remove(recipename);
-					}
+				delete produces[item];
+				pivoted.add(item);
+				haspivoted = true;
+				if (!(item in consumes)) {
+					continue;
 				}
-				// forced pivot
+				const recipename = [...recipes.keys()][0];
+				console.log('forced pivot by', recipename, 'on', item);
+				const recipe = matrix[recipename];
+				const itemamount = recipe[item];
 				for (const [pitem, amount] of Object.entries(recipe)) {
 					if (pitem == item) {
 						continue;
 					}
-					if (pitem in crecipe) {
-						crecipe[pitem].sub(mul(recipe[pitem], crecipe[item]));
-						if (crecipe[pitem].sign == 0) {
-							delete crecipe[pitem];
+					recipe[pitem].div(itemamount);
+				}
+				recipe[item] = new Rational({}, 1);
+				const crecipes = [...consumes[item].keys()];
+				for (const crecipename of crecipes) {
+					//console.log('pivoting', crecipename);
+					const crecipe = matrix[crecipename];
+					// these are recipes that consume the item
+					// remove all produces and consumes entries
+					for (const [citem, amount] of Object.entries(crecipe)) {
+						// these should always return true - i'm not checking them
+						if (citem.includes('.')) {
+							continue;
 						}
-					} else {
-						crecipe[pitem] = neg(mul(recipe[pitem], crecipe[item]));
+						if (amount.sign == 1) {
+							if (pivoted.has(citem)) {
+								continue;
+							}
+							produces[citem].delete(crecipename);
+						}
+						if (amount.sign == -1) {
+							consumes[citem].delete(crecipename);
+						}
+					}
+					// forced pivot
+					for (const [pitem, amount] of Object.entries(recipe)) {
+						//console.log('pre', pitem, String(crecipe[pitem]), '-', String(recipe[pitem]), '*', String(crecipe[item]));
+						if (pitem == item) {
+							continue;
+						}
+						if (pitem in crecipe) {
+							crecipe[pitem].sub(mul(recipe[pitem], crecipe[item]));
+							if (crecipe[pitem].sign == 0) {
+								delete crecipe[pitem];
+							}
+						} else {
+							crecipe[pitem] = neg(mul(recipe[pitem], crecipe[item]));
+						}
+						//console.log('post =', String(crecipe[pitem]));
+					}
+					delete crecipe[item];
+					// TODO: check for all-negative ness
+					// add new produces and consumes entries
+					for (const [citem, amount] of Object.entries(crecipe)) {
+						if (citem.includes('.')) {
+							continue;
+						}
+						// these should always return true - i'm not checking them
+						if (amount.sign == 1) {
+							if (pivoted.has(citem)) {
+								continue;
+							}
+							produces[citem].add(crecipename);
+						}
+						if (amount.sign == -1) {
+							consumes[citem].add(crecipename);
+						}
 					}
 				}
-				// check for all-negative ness
-				// add new produces and consumes entries
-				for (const [item, amount] of Object.entries(crecipe)) {
-					// these should always return true - i'm not checking them
-					if (amount.sign == 1) {
-						produces[item].add(recipename);
-					}
-					if (amount.sign == -1) {
-						consumes[item].add(recipename);
-					}
-				}
+			}
+			if (!haspivoted) {
+				break;
 			}
 		}
 		return matrix;
