@@ -16,6 +16,10 @@ class Rational {
 	sub(that) {
 		this.#replace(sub(this, that));
 	}
+
+	div(that) {
+		this.#replace(div(this, that));
+	}
 }
 
 const wheel = [1, 5];
