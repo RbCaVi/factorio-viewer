@@ -26,13 +26,11 @@ class Solver {
         entry[res].add(div(createrational(amt), createrational(recipe[cost].time)));
 			}
 
-			entry['recipe.' + recipename] = new Rational({}, 1);
 			recipes['recipe.' + recipename] = entry;
 		}
 
 		for (const [pumpname, pump] of Object.entries(data.data['offshore-pump'])) {
 			recipes['pump.' + pumpname] = {
-				['pump.' + pumpname]: new Rational({}, 1),
 				[pump.fluid]: createrational(pump.pumping_speed * 60)
 			};
 		}
@@ -45,7 +43,7 @@ class Solver {
 				continue; // it can't be mined with a drill type entity
 			}
 			const entry = {};
-			const mining_time = resource.minable.mining_time;
+			const mining_time = createrational(resource.minable.mining_time);
 
 			if ('results' in resource.minable) {
 				for (const result of resource.minable.results) {
@@ -53,21 +51,24 @@ class Solver {
           if(!(res in entry)){
             entry[res] = new Rational({}, 0);
           }
-          entry[res].add(div(createrational(amount), createrational(mining_time)));
+          entry[res].add(div(createrational(amount), mining_time));
 				}
 			} else {
-				const {result: res, count: amount = 1} = normalizeresult(resource.minable.result);
-        entry[res] = div(createrational(amount), createrational(mining_time));
+				if (!('result' in resource.minable)) {
+					continue;
+				}
+				const res = resource.minable.result;
+				const amount = resource.minable.amount ?? 1;
+        entry[res] = div(createrational(amount), mining_time);
 			}
 
 			if ('fluid_amount' in resource.minable) {
 				const {fluid_amount: amount, required_fluid: fluid} = resource.minable;
 				if (amount > 0) {
-        	entry[fluid]=div(createrational(-amount),createrational(mining_time));
+        	entry[fluid]=div(createrational(-amount),mining_time);
 				}
 			}
 
-			entry['mine.' + resourcename] = new Rational({}, 1);
 			recipes['mine.' + resourcename] = entry;
 		}
 
@@ -98,6 +99,7 @@ class Solver {
 				}
 			}
 			row['.cost'] = 1; // for now
+			row[recipename] = new Rational({}, 1);
 			matrix[recipename] = row;
 		}
 		// a processing step to remove net negative loops
