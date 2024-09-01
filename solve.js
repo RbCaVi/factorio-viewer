@@ -104,7 +104,6 @@ class Solver {
 		}
 		// a processing step to remove net negative loops
 		// do forced pivots (only one recipe produces this item)
-		// remove all-negative recipes
 		const pivoted = new Set();
 		while (true) {
 			let haspivoted = false;
