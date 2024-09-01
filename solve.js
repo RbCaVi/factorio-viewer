@@ -121,14 +121,7 @@ class Solver {
 				const recipename = [...recipes.keys()][0];
 				console.log('forced pivot by', recipename, 'on', item);
 				const recipe = matrix[recipename];
-				const itemamount = recipe[item];
-				for (const [pitem, amount] of Object.entries(recipe)) {
-					if (pitem == item) {
-						continue;
-					}
-					recipe[pitem].div(itemamount);
-				}
-				recipe[item] = new Rational({}, 1);
+				normalizerow(recipe, item);
 				const crecipes = [...consumes[item].keys()];
 				for (const crecipename of crecipes) {
 					//console.log('pivoting', crecipename);
@@ -151,21 +144,7 @@ class Solver {
 						}
 					}
 					// forced pivot
-					for (const [pitem, amount] of Object.entries(recipe)) {
-						//console.log('pre', pitem, String(crecipe[pitem]), '-', String(recipe[pitem]), '*', String(crecipe[item]));
-						if (pitem == item) {
-							continue;
-						}
-						if (pitem in crecipe) {
-							crecipe[pitem].sub(mul(recipe[pitem], crecipe[item]));
-							if (crecipe[pitem].sign == 0) {
-								delete crecipe[pitem];
-							}
-						} else {
-							crecipe[pitem] = neg(mul(recipe[pitem], crecipe[item]));
-						}
-						//console.log('post =', String(crecipe[pitem]));
-					}
+					pivotrow(recipe, item, crecipe);
 					delete crecipe[item];
 					// TODO: check for all-negative ness
 					// add new produces and consumes entries
@@ -207,10 +186,12 @@ class Solver {
 				}
 			}
 		}
-		// get items with only one recipe
-		const forcedpivots = Object.keys(produces).filter(item => produces[item].size() == 1);
-		// get items with only one recipe
-		const choicepivots = Object.keys(produces).filter(item => produces[item].size() > 1);
+		// any time this item is used, it always pivots on the same row
+		// pivot out on all of these and ignore them for the rest of time
+		const forcedpivotitems = Object.keys(produces).filter(item => produces[item].size() == 1);
+		// the items that have more than one recipe producing them
+		// usually only a few
+		const choicepivotitems = Object.keys(produces).filter(item => produces[item].size() > 1);
 		const out = outin;
 		matrix['.out'] = out
 		while (true) {
@@ -237,36 +218,13 @@ class Solver {
 				([, , cost1], [, , cost2]) => signsub(cost1, cost2)
 			);
 			// divide all of minrow by minrow[mincol]
-			const mincolamount = minrow[mincol];
-			for (const [item, amount] of Object.entries(minrow)) {
-				if (item == mincol) {
-					minrow[item] = new Rational({}, 1);
-				} else {
-					minrow[item].div(mincolamount);
-				}
-			}
+			normalizerow(minrow, mincol);
 			// for each recipe in the table:
 			for (const [recipe, row] of Object.entries(matrix)) {
 				if (recipe == minrecipe) {
 					continue;
 				}
-				if (!(mincol in row)) {
-					continue;
-				}
-				for (const [item, amount] of Object.entries(minrow)) {
-					if (item == mincol) {
-						continue;
-					}
-					if (item in row) {
-						row[item].sub(mul(minrow[item], row[mincol]));
-						if (row[item].sign == 0) {
-							delete row[item];
-						}
-					} else {
-						row[item] = neg(mul(minrow[item], row[mincol]));
-					}
-				}
-				delete row[mincol];
+				pivotrow(minrow, mincol, row);
 			}
 		}
 		return out;
@@ -296,6 +254,38 @@ function getmin(l, compare) {
 		}
 	}
 	return minv;
+}
+
+function pivot(pivotrow, pivotcol, row) {
+	if (!(pivotcol in row)) {
+  	continue;
+	}
+	for (const [item, amount] of Object.entries(pivotrow)) {
+		if (item == pivotcol) {
+			continue;
+		}
+		if (item in row) {
+			row[item].sub(mul(pivotrow[item], row[pivotcol]));
+			if (row[item].sign == 0) {
+				delete row[item];
+			}
+		} else {
+			row[item] = neg(mul(pivotrow[item], row[pivotcol]));
+		}
+	}
+	delete row[pivotcol];
+}
+
+function normalizerow(row, col) {
+	// multiply every entry so row[col] = 1
+	const colamount = row[col];
+	for (const [item, amount] of Object.entries(row)) {
+		if (item == col) {
+			continue;
+		}
+		row[item].div(colamount);
+	}
+	row[col] = new Rational({}, 1);
 }
 
 export {Solver};
