@@ -256,7 +256,7 @@ function div(r1, r2) {
 }
 
 function copyrational(r) {
-	return r; // "copy"
+	return new Rational(r.factors, r.sign); // "copy"
 }
 
 function neg(r) {
