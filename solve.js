@@ -211,9 +211,9 @@ class Solver {
 			);
 			// find minimum cost/recipe[mincol] where recipe[mincol] > 0
 			const selectedrows = Object.entries(matrix).filter(
-				([, v]) => v.sign == 1
+				([, v]) => (mincol in v) && v[mincol].sign == 1
 			).map(
-				([k, v]) => [k, v, div(v['.cost'], v[minrow])]
+				([k, v]) => [k, v, div(v['.cost'], v[mincol])]
 			);
 			if (selectedrows.length == 0) {
 				throw Error(`no recipe that makes ${mincol}`);
@@ -238,10 +238,10 @@ class Solver {
 				if (!(mincol in row)) {
 					continue;
 				}
-				if (item == mincol) {
-					continue;
-				}
 				for (const [item, amount] of Object.entries(minrow)) {
+					if (item == mincol) {
+						continue;
+					}
 					if (item in row) {
 						row[item].sub(mul(minrow[item], row[mincol]));
 						if (row[item].sign == 0) {
@@ -251,10 +251,24 @@ class Solver {
 						row[item] = neg(mul(minrow[item], row[mincol]));
 					}
 				}
+				delete row[mincol];
 			}
 		}
 		return out;
 	}
+}
+
+function getmin(l, compare) {
+	if (l.length == 0) {
+		throw new Error('no minimum of empty list');
+	}
+	let minv = l[0];
+	for (const v of l) {
+		if (compare(minv, v) < 0) {
+			minv = v;
+		}
+	}
+	return minv;
 }
 
 export {Solver};
