@@ -193,9 +193,9 @@ class Solver {
 		return matrix;
 	}
 
-	solve(outin) {
+	solve(matin, outin) {
 		// uses the simplex algorithm
-		const matrix = this.creatematrix();
+		const matrix = clonematrix(matin);
 		const out = outin;
 		matrix['.out'] = out
 		while (true) {
@@ -256,6 +256,18 @@ class Solver {
 		}
 		return out;
 	}
+}
+
+function clonematrix(mat) {
+	const newmat = {};
+	for (const [recipe, row] of Object.entries(mat)) {
+		const newrow = {};
+		for (const [item, amt] of Object.entries(row)) {
+			newrow[item] = copyrational(amt);
+		}
+		newmat[recipe] = newrow;
+	}
+	return newmat;
 }
 
 function getmin(l, compare) {
