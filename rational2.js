@@ -20,6 +20,10 @@ class Rational {
 	div(that) {
 		this.#replace(div(this, that));
 	}
+
+	toString() {
+		return asnum(this);
+	}
 }
 
 const wheel = [1, 5];
@@ -167,6 +171,43 @@ function sub(r1, r2) {
 	return add(r1, new Rational(f2, -s2));
 }
 
+function signsub(r1, r2) {
+	const {factors: f2, sign: s2} = r2;
+	return signadd(r1, new Rational(f2, -s2));
+}
+
+function signadd(r1, r2) {
+	const {factors: f1, sign: s1} = r1;
+	const {factors: f2, sign: s2} = r2;
+	if (s1 == 0) {
+		return r2.sign;
+	}
+	if (s2 == 0) {
+		return r1.sign;
+	}
+	const gcd = {};
+	for (const [prime, exp1] of Object.entries(f1)) {
+		const exp2 = f2[prime] ?? 0;
+		gcd[prime] = Math.min(exp1, exp2);
+	}
+	for (const [prime, exp2] of Object.entries(f2)) {
+		if (!(prime in gcd)) {
+			gcd[prime] = Math.min(0, exp2);
+		}
+	}
+	let n1 = BigInt(1), n2 = BigInt(1);
+	for (const p in gcd) {
+		const prime = BigInt(p);
+		const exp = gcd[p];
+		const exp1 = f1[p] ?? 0;
+		const exp2 = f2[p] ?? 0;
+		n1 *= prime ** BigInt(exp1 - exp);
+		n2 *= prime ** BigInt(exp2 - exp);
+	}
+	const v = BigInt(s1) * n1 + BigInt(s2) * n2;
+	return v == 0 ? 0 : v > 0 ? 1 : -1;
+}
+
 function mul(r1, r2) {
 	const {factors: f1, sign: s1} = r1;
 	const {factors: f2, sign: s2} = r2;
@@ -214,4 +255,22 @@ function div(r1, r2) {
 	return new Rational(factors, s1 * s2);
 }
 
-export {Rational, mul, div, add, sub, createrational};
+function copyrational(r) {
+	return r; // "copy"
+}
+
+function neg(r) {
+	const {factors: f, sign: s} = r;
+	return new Rational(f, -s);
+}
+
+function asnum(r) {
+	const {factors: f, sign: s} = r;
+	let n = s;
+	for (const [prime, exp] of Object.entries(f)) {
+		n *= prime ** exp;
+	}
+	return n;
+}
+
+export {Rational, mul, div, add, sub, createrational, copyrational, neg, signsub};
