@@ -182,7 +182,7 @@ function mul(r1, r2) {
 		factors[prime] = exp1 + exp2;
 	}
 	for (const [prime, exp2] of Object.entries(f2)) {
-		if (!(prime in factors)) {
+		if (!(prime in f1)) {
 			factors[prime] = exp2;
 		}
 	}
@@ -207,7 +207,7 @@ function div(r1, r2) {
 		factors[prime] = exp1 - exp2;
 	}
 	for (const [prime, exp2] of Object.entries(f2)) {
-		if (!(prime in factors)) {
+		if (!(prime in f1)) {
 			factors[prime] = exp2;
 		}
 	}
