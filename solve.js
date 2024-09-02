@@ -143,7 +143,7 @@ class Solver {
 						}
 					}
 					// forced pivot
-					pivotrow(recipe, item, crecipe);
+					pivot(recipe, item, crecipe);
 					delete crecipe[item];
 					// TODO: check for all-negative ness
 					// add new produces and consumes entries
@@ -191,16 +191,16 @@ class Solver {
 		
 		// any time these items are used, it always pivots on the same row
 		// pivot out on all of these and ignore them for the rest of time
-		const forcedpivotitems = Object.keys(produces).filter(item => produces[item].size() == 1);
+		const forcedpivotitems = Object.keys(produces).filter(item => produces[item].size == 1);
 		const forcedpivots = Object.fromentries(forcedpivotitems.map(item => [item, normalizerow(clonerow(matin[[...produces[item]][0]]), item)]));
 		
 		// the recipe that produce non unique products
 		// usually only a few
-		const choicepivots = Object.keys(produces).filter(item => produces[item].size() > 1).map(item => produces[item]).reduce((rs1, rs2) => rs1.union(rs2));
+		const choicepivots = Object.keys(produces).filter(item => produces[item].size > 1).map(item => produces[item]).reduce((rs1, rs2) => rs1.union(rs2));
 		
 		for (const item in out) {
 			if (item in forcedpivots) {
-				pivotrow(forcedpivots[item], item, out);
+				pivot(forcedpivots[item], item, out);
 			}
 		}
 
@@ -246,7 +246,7 @@ class Solver {
 					continue;
 				}
 				// pivot it
-				pivotrow(minrow, mincol, row);
+				pivot(minrow, mincol, row);
 			}
 		}
 		return out;
@@ -276,7 +276,7 @@ function getmin(l, compare) {
 
 function pivot(pivotrow, pivotcol, row) {
 	if (!(pivotcol in row)) {
-  	continue;
+  	return;
 	}
 	for (const [item, amount] of Object.entries(pivotrow)) {
 		if (item == pivotcol) {
