@@ -53,7 +53,7 @@ function fixcolor(col){
   }else{
     color["a"] ??= 255;
   }
-  return colorToString(["r","g","b","a"].map(i=>color[i]));
+  return funcs.colorToString(["r","g","b","a"].map(i=>color[i]));
 }
 
 function makeiconURLinternal(canvas,data,options,size=32){
@@ -69,7 +69,7 @@ function makeiconURLinternal(canvas,data,options,size=32){
         let icanvas=funcs.getCanvas(icon.width,icon.height);
         let ctx=icanvas.getContext("2d");
         if("tint" in idata){
-          let tint=fixcolor(idata.tint);
+          let tint=funcs.fixcolor(idata.tint);
           //console.log('tint',data.name,idata.tint,tint);
           ctx.fillStyle=tint;
           ctx.fillRect(0,0,icanvas.width,icanvas.height);
@@ -183,14 +183,16 @@ let iconcache={};
 const fs = new Funcs();
 
 const funcs = {
-  makeiconURL: makeiconURLinternal, 
-  packPromise, 
-  promiseChain, 
-  toObjectURL, 
-  geticon, 
-  getCanvas, 
-  getpath, 
-  loadImage
+  makeiconURL: makeiconURLinternal,
+  packPromise,
+  promiseChain,
+  toObjectURL,
+  geticon,
+  getCanvas,
+  getpath,
+  loadImage,
+  fixcolor,
+  colorToString,
 };
 
 for (const [name, f] of Object.entries(funcs)) {
