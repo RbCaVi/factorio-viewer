@@ -38,7 +38,7 @@ class WorkerFuncs {
 						reject(data);
 					}
 				};
-				this.worker.postMessage(['call', name, [id, args]]);
+				this.worker.postMessage(['call', name, [id, args]], options);
 				this.worker.addEventListener('message', listener);
 			}
 			this.threads++;
